@@ -134,6 +134,7 @@ const mockResults = {
       ],
       lessons: 'All retry loops must implement circuit breaker pattern. Add retry queue monitoring alerts at 80% capacity.',
       prevention: 'Implement circuit breaker in all external service calls with max 3 retries and exponential backoff.',
+      confidence: 94,
     },
     {
       id: 'RCA-002', title: 'Billing Worker OOM Cascade', severity: 'critical',
@@ -151,6 +152,7 @@ const mockResults = {
       ],
       lessons: 'Set bounded retry queues with memory limits. Implement circuit breaker for database calls under load.',
       prevention: 'Add memory limit enforcement to all worker processes with pre-configured heap thresholds.',
+      confidence: 91,
     },
     {
       id: 'RCA-003', title: 'Webhook Idempotency Failure', severity: 'high',
@@ -168,14 +170,39 @@ const mockResults = {
       ],
       lessons: 'All webhook handlers must enforce idempotency. Add dedup validation to event pipeline.',
       prevention: 'Generate idempotency keys for all webhook deliveries with 24-hour deduplication window.',
+      confidence: 87,
     },
   ],
   recoveryTimeline: [
     { step: 'Detection', duration: '2min', detail: 'Monitoring alert triggered: payment success rate dropped below 95% threshold', owner: 'Monitoring' },
-    { step: 'Triage', duration: '3min', detail: 'On-call engineer identifies retry queue saturation as root cause', owner: 'SRE' },
-    { step: 'Mitigation', duration: '15min', detail: 'Deployed circuit breaker with exponential backoff to payment worker pool', owner: 'Payments Team' },
-    { step: 'Recovery', duration: '20min', detail: 'Cleared 50K queued retries, payment pipeline back to 100% success rate', owner: 'Payments Team' },
-    { step: 'Follow-up', duration: '5min', detail: 'Postmortem initiated, monitoring alerts configured for retry queue depth', owner: 'SRE' },
+    { step: 'Triage', duration: '5min', detail: 'On-call engineer identifies retry queue saturation as root cause', owner: 'SRE' },
+    { step: 'Diagnosis', duration: '10min', detail: 'Detailed analysis reveals missing circuit breaker in payment worker pool', owner: 'Payments Team' },
+    { step: 'Fix', duration: '20min', detail: 'Deployed circuit breaker with exponential backoff, cleared 50K queued retries', owner: 'Payments Team' },
+    { step: 'Verification', duration: '8min', detail: 'Pipeline at 100% success rate, monitoring confirms stability', owner: 'SRE' },
+  ],
+  comparisons: [
+    { metric: 'Error Rate', before: 0.1, during: 2.3, after: 0.05, unit: '%' },
+    { metric: 'Latency', before: 42, during: 350, after: 38, unit: 'ms' },
+    { metric: 'Throughput', before: 1200, during: 300, after: 1500, unit: 'rps' },
+  ],
+  predictions: [
+    { window: 'Next 24h', probability: 82, reasoning: 'Similar patterns detected — retry queue metrics show early signs of saturation', action: 'Review circuit breaker config and increase worker pool by 20%', severity: 'high' },
+    { window: 'Next 7 days', probability: 65, reasoning: 'Weekly billing cycle approaching — historical OOM pattern correlates with billing batch jobs', action: 'Pre-scale billing workers and enable memory limit enforcement', severity: 'medium' },
+    { window: 'Next Sprint', probability: 45, reasoning: 'Two risky merges pending in staging — both touch payment retry logic', action: 'Require engineering review for all retry-related changes this sprint', severity: 'low' },
+  ],
+  lessons: [
+    { lesson: 'All retry loops need circuit breakers', incident: 'Payment Pipeline Outage', category: 'technical', severity: 'critical', status: 'in_progress' },
+    { lesson: 'Bound all queues with memory limits', incident: 'Billing Worker OOM', category: 'technical', severity: 'critical', status: 'implemented' },
+    { lesson: 'Enforce idempotency on webhooks', incident: 'Webhook Delivery Failure', category: 'technical', severity: 'high', status: 'pending' },
+    { lesson: 'Add regression tests for timeout configs', incident: 'Payment Timeout Regression', category: 'process', severity: 'medium', status: 'in_progress' },
+    { lesson: 'Thread safety review for session handlers', incident: 'Auth Session Token Leak', category: 'process', severity: 'high', status: 'pending' },
+    { lesson: 'Monitoring coverage for all retry paths', incident: 'Rate Limiter Misconfig', category: 'cultural', severity: 'medium', status: 'implemented' },
+  ],
+  impactForecast: [
+    { service: 'Payment Service', risk: 92, impact: 'downtime' },
+    { service: 'Billing', risk: 78, impact: 'delay' },
+    { service: 'API Gateway', risk: 65, impact: 'overload' },
+    { service: 'Notification', risk: 45, impact: 'failure' },
   ],
   mrs: [
     { id: 'MR #142', author: '@alice', date: 'May 12', desc: 'Failed integration tests due to missing retry config', outcome: 'Incident', match: 87, rootCause: 'Missing backpressure mechanism in payment worker', lessons: 'Add circuit breaker pattern to all retry loops' },
@@ -603,6 +630,318 @@ function RiskChart() {
   )
 }
 
+function RecoveryTimelineCard({ steps }) {
+  const totalMinutes = steps.reduce((acc, s) => {
+    const mins = parseInt(s.duration)
+    return acc + (isNaN(mins) ? 0 : mins)
+  }, 0)
+
+  return (
+    <div className="space-y-4">
+      {steps.map((step, i) => {
+        const mins = parseInt(step.duration) || 1
+        const pct = totalMinutes > 0 ? (mins / totalMinutes) * 100 : 0
+        const stepColors = ['#a855f7', '#22d3ee', '#d946ef', '#f59e0b', '#22c55e']
+        return (
+          <motion.div
+            key={step.step}
+            initial={{ opacity: 0, x: -10 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ delay: i * 0.1 }}
+            className="relative"
+          >
+            <div className="flex items-center gap-3 mb-1">
+              <div className="w-8 h-8 rounded-full flex items-center justify-center text-[10px] font-bold font-mono" style={{ backgroundColor: `${stepColors[i]}20`, color: stepColors[i], border: `1px solid ${stepColors[i]}40` }}>
+                {i + 1}
+              </div>
+              <div className="flex-1 min-w-0">
+                <div className="flex items-center justify-between">
+                  <h4 className="text-xs font-semibold text-white">{step.step}</h4>
+                  <span className="text-[9px] font-mono text-cyan-400">{step.duration}</span>
+                </div>
+                <p className="text-[9px] text-slate-500 leading-tight truncate">{step.detail}</p>
+              </div>
+              <span className="text-[8px] font-mono text-slate-600 bg-white/[0.03] px-1.5 py-0.5 rounded shrink-0">{step.owner}</span>
+            </div>
+            <div className="ml-4 h-2 rounded-full bg-slate-800 overflow-hidden">
+              <motion.div
+                initial={{ width: 0 }}
+                animate={{ width: `${pct}%` }}
+                transition={{ duration: 0.8, delay: i * 0.15 }}
+                className="h-full rounded-full"
+                style={{ backgroundColor: stepColors[i], boxShadow: `0 0 6px ${stepColors[i]}40` }}
+              />
+            </div>
+            {i < steps.length - 1 && (
+              <div className="ml-[15px] w-0.5 h-4 bg-gradient-to-b from-slate-700 to-transparent" />
+            )}
+          </motion.div>
+        )
+      })}
+    </div>
+  )
+}
+
+function RootCauseChainCard({ rca, index }) {
+  const sev = severityColor[rca.severity] || severityColor.medium
+  const chainSteps = [
+    { label: 'Trigger', value: rca.trigger, color: '#ef4444' },
+    { label: 'Failure', value: rca.failure, color: '#f97316' },
+    { label: 'Impact', value: rca.impact, color: '#eab308' },
+    { label: 'Resolution', value: rca.resolution, color: '#22c55e' },
+  ]
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 15 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ delay: index * 0.12 }}
+      className="rounded-lg border border-white/[0.04] bg-white/[0.02] p-4 hover:border-purple-500/20 transition-all"
+    >
+      <div className="flex items-center justify-between mb-3">
+        <div className="flex items-center gap-2">
+          <span className={`rounded px-1.5 py-0.5 text-[8px] font-bold font-mono ${sev.badge}`}>{rca.id}</span>
+          <h4 className="text-xs font-semibold text-white">{rca.title}</h4>
+        </div>
+        <div className="flex items-center gap-2">
+          <span className={`rounded-full border px-1.5 py-0.5 text-[8px] font-semibold ${sev.badge}`}>{rca.severity}</span>
+          <span className="text-[8px] font-mono text-slate-600">{rca.confidence}% conf</span>
+        </div>
+      </div>
+
+      <div className="flex items-start gap-1 mb-4 overflow-x-auto pb-2">
+        {chainSteps.map((step, si) => (
+          <div key={step.label} className="flex items-start gap-1 shrink-0">
+            <div className="w-44 rounded-lg border p-2.5" style={{ borderColor: `${step.color}30`, backgroundColor: `${step.color}08` }}>
+              <span className="text-[8px] font-semibold uppercase tracking-wider block mb-1" style={{ color: step.color }}>{step.label}</span>
+              <p className="text-[9px] text-slate-400 leading-relaxed">{step.value}</p>
+            </div>
+            {si < chainSteps.length - 1 && (
+              <div className="flex items-center pt-6">
+                <svg className="w-5 h-5 text-slate-700 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
+                </svg>
+              </div>
+            )}
+          </div>
+        ))}
+      </div>
+
+      <div className="mb-3">
+        <span className="text-[9px] font-semibold text-slate-500 uppercase tracking-wider block mb-1.5">Event Timeline</span>
+        <div className="rounded-lg border border-white/[0.06] bg-white/[0.02] overflow-hidden">
+          {rca.eventTimeline.map((ev, j) => (
+            <div key={j} className={`flex items-center gap-3 px-3 py-1.5 ${j < rca.eventTimeline.length - 1 ? 'border-b border-white/[0.04]' : ''}`}>
+              <span className="text-[8px] font-mono font-semibold text-cyan-400 shrink-0 w-10">{ev.time}</span>
+              <span className="text-[9px] text-slate-400">{ev.event}</span>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+        <div className="rounded-lg border border-green-500/10 bg-green-500/[0.02] p-2.5">
+          <span className="text-[8px] font-semibold text-green-400 uppercase tracking-wider block mb-1">Lessons Learned</span>
+          <p className="text-[9px] text-slate-400 leading-relaxed">{rca.lessons}</p>
+        </div>
+        <div className="rounded-lg border border-cyan-500/10 bg-cyan-500/[0.02] p-2.5">
+          <span className="text-[8px] font-semibold text-cyan-400 uppercase tracking-wider block mb-1">Prevention</span>
+          <p className="text-[9px] text-slate-400 leading-relaxed">{rca.prevention}</p>
+        </div>
+      </div>
+    </motion.div>
+  )
+}
+
+function LessonCard({ lesson, index }) {
+  const categoryColors = {
+    technical: { bg: 'bg-purple-500/10 text-purple-400 border-purple-500/20' },
+    process: { bg: 'bg-blue-500/10 text-blue-400 border-blue-500/20' },
+    cultural: { bg: 'bg-amber-500/10 text-amber-400 border-amber-500/20' },
+  }
+  const catColor = categoryColors[lesson.category] || categoryColors.technical
+
+  const statusConfig = {
+    implemented: { dot: 'bg-green-400', text: 'text-green-400', bg: 'bg-green-500/10 border-green-500/20' },
+    in_progress: { dot: 'bg-amber-400', text: 'text-amber-400', bg: 'bg-amber-500/10 border-amber-500/20' },
+    pending: { dot: 'bg-red-400', text: 'text-red-400', bg: 'bg-red-500/10 border-red-500/20' },
+  }
+  const st = statusConfig[lesson.status] || statusConfig.pending
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ delay: index * 0.07 }}
+      className="rounded-lg border border-white/[0.04] bg-white/[0.02] p-3 hover:border-white/[0.1] transition-all"
+    >
+      <div className="flex items-start gap-3">
+        <div className={`w-2 h-2 rounded-full mt-1.5 shrink-0 ${st.dot}`} style={{ boxShadow: `0 0 6px ${st.dot.replace('bg-', '')}60` }} />
+        <div className="flex-1 min-w-0">
+          <h4 className="text-xs font-medium text-white mb-1">{lesson.lesson}</h4>
+          <div className="flex items-center gap-2 text-[8px] text-slate-600 mb-1.5">
+            <span>{lesson.incident}</span>
+            <span className="text-slate-700">|</span>
+            <span className={`rounded-full border px-1 py-0.5 text-[7px] ${catColor.bg}`}>{lesson.category}</span>
+            <span className={`rounded-full border px-1 py-0.5 text-[7px] ${sevBadge(lesson.severity)}`}>{lesson.severity}</span>
+          </div>
+          <span className={`inline-flex items-center gap-1 rounded-full border px-1.5 py-0.5 text-[7px] font-semibold ${st.bg}`}>
+            <span className={`w-1 h-1 rounded-full ${st.dot}`} />
+            {lesson.status === 'in_progress' ? 'In Progress' : lesson.status.charAt(0).toUpperCase() + lesson.status.slice(1)}
+          </span>
+        </div>
+      </div>
+    </motion.div>
+  )
+}
+
+function sevBadge(sev) {
+  const map = {
+    critical: 'bg-red-500/10 text-red-400 border-red-500/20',
+    high: 'bg-orange-500/10 text-orange-400 border-orange-500/20',
+    medium: 'bg-yellow-500/10 text-yellow-400 border-yellow-500/20',
+  }
+  return map[sev] || map.medium
+}
+
+function PredictionCard({ pred, index }) {
+  const severityColorMap = {
+    high: { border: 'border-red-500/30', bg: 'bg-red-500/[0.04]', text: 'text-red-400', glow: '#ef4444' },
+    medium: { border: 'border-amber-500/30', bg: 'bg-amber-500/[0.04]', text: 'text-amber-400', glow: '#f59e0b' },
+    low: { border: 'border-green-500/30', bg: 'bg-green-500/[0.04]', text: 'text-green-400', glow: '#22c55e' },
+  }
+  const sc = severityColorMap[pred.severity] || severityColorMap.medium
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ delay: index * 0.1 }}
+      className={`rounded-lg border ${sc.border} ${sc.bg} p-4 hover:border-white/[0.12] transition-all`}
+    >
+      <div className="flex items-center justify-between mb-3">
+        <span className="text-[9px] font-mono text-slate-500 uppercase tracking-wider">{pred.window}</span>
+        <span className={`text-[9px] font-semibold font-mono ${sc.text}`}>{pred.severity.toUpperCase()}</span>
+      </div>
+      <div className="flex items-center gap-3 mb-3">
+        <div className="relative">
+          <svg className="w-14 h-14 -rotate-90" viewBox="0 0 36 36">
+            <circle cx="18" cy="18" r="15.5" fill="none" stroke="#1e293b" strokeWidth="3" />
+            <motion.circle
+              cx="18" cy="18" r="15.5" fill="none"
+              stroke={sc.glow} strokeWidth="3" strokeLinecap="round"
+              strokeDasharray={`${pred.probability}, 100`}
+              initial={{ strokeDasharray: '0, 100' }}
+              animate={{ strokeDasharray: `${pred.probability}, 100` }}
+              transition={{ duration: 1, delay: 0.3 }}
+            />
+          </svg>
+          <span className="absolute inset-0 flex items-center justify-center text-xs font-bold font-mono" style={{ color: sc.glow }}>{pred.probability}%</span>
+        </div>
+        <div className="flex-1 min-w-0">
+          <p className="text-[9px] text-slate-400 leading-relaxed mb-1">{pred.reasoning}</p>
+          <div className="rounded-md bg-slate-800/60 border border-white/[0.04] px-2 py-1">
+            <span className="text-[7px] font-semibold text-cyan-400 uppercase tracking-wider block">Recommended Action</span>
+            <span className="text-[8px] text-slate-300">{pred.action}</span>
+          </div>
+        </div>
+      </div>
+    </motion.div>
+  )
+}
+
+function ImpactForecastCard({ forecasts }) {
+  const impactColors = {
+    downtime: { bar: 'from-red-500 to-red-600', text: 'text-red-400', bg: 'bg-red-500/10' },
+    delay: { bar: 'from-amber-500 to-amber-600', text: 'text-amber-400', bg: 'bg-amber-500/10' },
+    overload: { bar: 'from-purple-500 to-purple-600', text: 'text-purple-400', bg: 'bg-purple-500/10' },
+    failure: { bar: 'from-orange-500 to-orange-600', text: 'text-orange-400', bg: 'bg-orange-500/10' },
+  }
+
+  return (
+    <div className="space-y-3">
+      {forecasts.map((f, i) => {
+        const ic = impactColors[f.impact] || impactColors.failure
+        return (
+          <motion.div
+            key={f.service}
+            initial={{ opacity: 0, x: -10 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ delay: i * 0.08 }}
+            className="rounded-lg border border-white/[0.04] bg-white/[0.02] p-3 hover:border-white/[0.1] transition-all"
+          >
+            <div className="flex items-center justify-between mb-2">
+              <div className="flex items-center gap-2">
+                <span className="text-[10px] font-semibold text-white">{f.service}</span>
+                <span className={`rounded-full px-1.5 py-0.5 text-[7px] font-semibold ${ic.bg} ${ic.text} border border-transparent`}>{f.impact}</span>
+              </div>
+              <span className="text-[9px] font-mono font-bold" style={{ color: ic.text.replace('text-', '#') }}>{f.risk}%</span>
+            </div>
+            <div className="h-2 rounded-full bg-slate-800 overflow-hidden">
+              <motion.div
+                initial={{ width: 0 }}
+                animate={{ width: `${f.risk}%` }}
+                transition={{ duration: 1, delay: i * 0.1, ease: 'easeOut' }}
+                className={`h-full rounded-full bg-gradient-to-r ${ic.bar}`}
+                style={{ boxShadow: `0 0 8px ${ic.text === 'text-red-400' ? '#ef4444' : ic.text === 'text-amber-400' ? '#f59e0b' : ic.text === 'text-purple-400' ? '#a855f7' : '#f97316'}40` }}
+              />
+            </div>
+          </motion.div>
+        )
+      })}
+    </div>
+  )
+}
+
+function HistoricalComparisonCard({ metric }) {
+  const [phase, setPhase] = useState(0)
+  useEffect(() => {
+    const t = setInterval(() => setPhase(p => (p + 1) % 3), 2500)
+    return () => clearInterval(t)
+  }, [])
+
+  const states = [
+    { label: 'Before', value: metric.before, unit: metric.unit, color: '#22c55e' },
+    { label: 'During', value: metric.during, unit: metric.unit, color: '#ef4444' },
+    { label: 'After', value: metric.after, unit: metric.unit, color: '#22c55e' },
+  ]
+  const maxVal = Math.max(metric.before, metric.during, metric.after)
+
+  return (
+    <div className="rounded-lg border border-white/[0.06] bg-white/[0.02] p-4">
+      <h4 className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider mb-3">{metric.metric}</h4>
+      <AnimatePresence mode="wait">
+        <motion.div
+          key={phase}
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: -10 }}
+          transition={{ duration: 0.3 }}
+          className="text-center"
+        >
+          <span className="text-2xl font-bold tabular-nums" style={{ color: states[phase].color }}>
+            {states[phase].value}{states[phase].unit}
+          </span>
+          <div className="mt-2 flex justify-center gap-1">
+            {states.map((p, i) => (
+              <div key={p.label} className={`w-2 h-2 rounded-full transition-all ${i === phase ? 'bg-cyan-400 scale-125' : 'bg-slate-800'}`} />
+            ))}
+          </div>
+          <div className="mt-3 h-2 rounded-full bg-slate-800 overflow-hidden">
+            <motion.div
+              className="h-full rounded-full"
+              style={{ backgroundColor: states[phase].color }}
+              animate={{ width: `${(states[phase].value / maxVal) * 100}%` }}
+              transition={{ duration: 0.5 }}
+            />
+          </div>
+          <span className="text-[8px] text-slate-600 mt-1 block">{states[phase].label}</span>
+        </motion.div>
+      </AnimatePresence>
+    </div>
+  )
+}
+
 export default function IncidentTimeMachine() {
   const [input, setInput] = useState('')
   const [analyzing, setAnalyzing] = useState(false)
@@ -774,19 +1113,21 @@ export default function IncidentTimeMachine() {
               variants={container}
               className="space-y-8"
             >
+              {/* 1. Stats */}
               <motion.div variants={item} className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
                 {results.summaryStats.map((stat, i) => (
                   <AnimatedStatCard key={stat.label} {...stat} delay={200 + i * 150} />
                 ))}
               </motion.div>
 
+              {/* 2. Historical Timeline */}
               <motion.div variants={item} className="relative">
                 <div className="flex items-center justify-between mb-4">
                   <h3 className="text-xs font-semibold text-slate-300 uppercase tracking-wider flex items-center gap-2">
                     <svg className="w-3.5 h-3.5 text-purple-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
                       <path strokeLinecap="round" strokeLinejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z" />
                     </svg>
-                    Interactive Timeline Navigation
+                    Historical Timeline
                   </h3>
                   <div className="flex items-center gap-2">
                     <button
@@ -860,25 +1201,7 @@ export default function IncidentTimeMachine() {
 
               <WormholeAnimation />
 
-              <motion.div variants={item}>
-                <div className="rounded-xl border border-white/[0.06] bg-slate-900/50 p-5">
-                  <div className="flex items-center justify-between mb-4">
-                    <h3 className="text-xs font-semibold text-slate-300 uppercase tracking-wider flex items-center gap-2">
-                      <svg className="w-3.5 h-3.5 text-cyan-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 3v11.25A2.25 2.25 0 006 16.5h2.25M3.75 3h-1.5m1.5 0h16.5m0 0h1.5m-1.5 0v11.25A2.25 2.25 0 0118 16.5h-2.25m-7.5 0h7.5m-7.5 0l-1 3m8.5-3l1 3m0 0l.5 1.5m-.5-1.5h-9.5m0 0l-.5 1.5" />
-                      </svg>
-                      Historical Deployment Explorer
-                    </h3>
-                    <StatusBadge status="info" label={`${deployments.length} deployments`} />
-                  </div>
-                  <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-                    {deployments.map((d, i) => (
-                      <DeploymentCard key={d.service} deploy={d} index={i} />
-                    ))}
-                  </div>
-                </div>
-              </motion.div>
-
+              {/* 3. Incident Replay Engine */}
               <motion.div variants={item}>
                 <div className="rounded-xl border border-white/[0.06] bg-slate-900/50 p-5">
                   <div className="flex items-center justify-between mb-4">
@@ -886,7 +1209,7 @@ export default function IncidentTimeMachine() {
                       <svg className="w-3.5 h-3.5 text-fuchsia-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
                         <path strokeLinecap="round" strokeLinejoin="round" d="M5.25 5.653c0-.856.917-1.398 1.667-.986l11.54 6.348a1.125 1.125 0 010 1.971l-11.54 6.347a1.125 1.125 0 01-1.667-.985V5.653z" />
                       </svg>
-                      Incident Replay System
+                      Incident Replay Engine
                     </h3>
                     <StatusBadge status="warning" label={`${replays.length} replays`} />
                   </div>
@@ -898,66 +1221,83 @@ export default function IncidentTimeMachine() {
                 </div>
               </motion.div>
 
+              {/* 4. Root Cause Journey */}
               <motion.div variants={item}>
                 <div className="rounded-xl border border-white/[0.06] bg-slate-900/50 p-5">
-                  <div className="flex items-center justify-between mb-4">
+                  <div className="flex items-center justify-between mb-5">
                     <h3 className="text-xs font-semibold text-slate-300 uppercase tracking-wider flex items-center gap-2">
-                      <svg className="w-3.5 h-3.5 text-yellow-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 3v11.25A2.25 2.25 0 006 16.5h2.25M3.75 3h-1.5m1.5 0h16.5m0 0h1.5m-1.5 0v11.25A2.25 2.25 0 0118 16.5h-2.25m-7.5 0h7.5m-7.5 0l-1 3m8.5-3l1 3m0 0l.5 1.5m-.5-1.5h-9.5m0 0l-.5 1.5" />
+                      <svg className="w-3.5 h-3.5 text-violet-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m9-.75a9 9 0 11-18 0 9 9 0 0118 0zm-9 3.75h.008v.008H12v-.008z" />
                       </svg>
-                      Before vs After Comparison
+                      Root Cause Journey
                     </h3>
+                    <StatusBadge status="error" label={`${results.rootCauses.length} deep-dives`} />
                   </div>
-                  <div className="grid gap-4 sm:grid-cols-3">
-                    {[
-                      { label: 'Error Rate', states: ['0.1%', '2.3%', '0.05%'], colors: ['#22c55e', '#ef4444', '#22c55e'], before: 0.1, during: 2.3, after: 0.05, unit: '%' },
-                      { label: 'Latency', states: ['42ms', '350ms', '38ms'], colors: ['#22c55e', '#ef4444', '#22c55e'], before: 42, during: 350, after: 38, unit: 'ms' },
-                      { label: 'Throughput', states: ['1200/s', '300/s', '1500/s'], colors: ['#22c55e', '#ef4444', '#22c55e'], before: 1200, during: 300, after: 1500, unit: '/s' },
-                    ].map((metric) => {
-                      const [phase, setPhase] = useState(0)
-                      useEffect(() => {
-                        const t = setInterval(() => setPhase(p => (p + 1) % 3), 2500)
-                        return () => clearInterval(t)
-                      }, [])
-                      const maxVal = Math.max(metric.before, metric.during, metric.after)
-                      return (
-                        <div key={metric.label} className="rounded-lg border border-white/[0.06] bg-white/[0.02] p-4">
-                          <h4 className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider mb-3">{metric.label}</h4>
-                          <AnimatePresence mode="wait">
-                            <motion.div
-                              key={phase}
-                              initial={{ opacity: 0, y: 10 }}
-                              animate={{ opacity: 1, y: 0 }}
-                              exit={{ opacity: 0, y: -10 }}
-                              transition={{ duration: 0.3 }}
-                              className="text-center"
-                            >
-                              <span className="text-2xl font-bold tabular-nums" style={{ color: metric.colors[phase] }}>{metric.states[phase]}</span>
-                              <div className="mt-2 flex justify-center gap-1">
-                                {['Before', 'During', 'After'].map((p, i) => (
-                                  <div key={p} className={`w-2 h-2 rounded-full transition-all ${i === phase ? 'bg-cyan-400 scale-125' : 'bg-slate-800'}`} />
-                                ))}
-                              </div>
-                              <div className="mt-3 h-2 rounded-full bg-slate-800 overflow-hidden">
-                                <motion.div
-                                  className="h-full rounded-full"
-                                  style={{ backgroundColor: metric.colors[phase] }}
-                                  animate={{ width: `${([metric.before, metric.during, metric.after][phase] / maxVal) * 100}%` }}
-                                  transition={{ duration: 0.5 }}
-                                />
-                              </div>
-                              <span className="text-[8px] text-slate-600 mt-1 block">
-                                {['Before change', 'During incident', 'After fix'][phase]}
-                              </span>
-                            </motion.div>
-                          </AnimatePresence>
-                        </div>
-                      )
-                    })}
+                  <div className="space-y-5">
+                    {results.rootCauses.map((rca, i) => (
+                      <RootCauseChainCard key={rca.id} rca={rca} index={i} />
+                    ))}
                   </div>
                 </div>
               </motion.div>
 
+              {/* 5. Recovery Analysis */}
+              <motion.div variants={item}>
+                <div className="rounded-xl border border-white/[0.06] bg-slate-900/50 p-5">
+                  <div className="flex items-center justify-between mb-4">
+                    <h3 className="text-xs font-semibold text-slate-300 uppercase tracking-wider flex items-center gap-2">
+                      <svg className="w-3.5 h-3.5 text-emerald-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 3v11.25A2.25 2.25 0 006 16.5h2.25M3.75 3h-1.5m1.5 0h16.5m0 0h1.5m-1.5 0v11.25A2.25 2.25 0 0118 16.5h-2.25m-7.5 0h7.5m-7.5 0l-1 3m8.5-3l1 3m0 0l.5 1.5m-.5-1.5h-9.5m0 0l-.5 1.5" />
+                      </svg>
+                      Recovery Analysis — Payment Pipeline Outage
+                    </h3>
+                    <StatusBadge status="info" label="45min total" />
+                  </div>
+                  <RecoveryTimelineCard steps={results.recoveryTimeline} />
+                </div>
+              </motion.div>
+
+              {/* 6. Lessons Learned */}
+              <motion.div variants={item}>
+                <div className="rounded-xl border border-white/[0.06] bg-slate-900/50 p-5">
+                  <div className="flex items-center justify-between mb-4">
+                    <h3 className="text-xs font-semibold text-slate-300 uppercase tracking-wider flex items-center gap-2">
+                      <svg className="w-3.5 h-3.5 text-amber-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M12 18v-5.25m0 0a6.01 6.01 0 001.5-.189m-1.5.189a6.01 6.01 0 01-1.5-.189m3.75 7.478a12.06 12.06 0 01-4.5 0m3.75 2.383a14.406 14.406 0 01-3 0M14.25 18v-.192c0-.983.658-1.823 1.508-2.316a7.5 7.5 0 10-7.517 0c.85.493 1.509 1.333 1.509 2.316V18" />
+                      </svg>
+                      Lessons Learned
+                    </h3>
+                    <StatusBadge status="warning" label={`${results.lessons.length} lessons`} />
+                  </div>
+                  <div className="grid gap-2 sm:grid-cols-2">
+                    {results.lessons.map((l, i) => (
+                      <LessonCard key={i} lesson={l} index={i} />
+                    ))}
+                  </div>
+                </div>
+              </motion.div>
+
+              {/* 7. Historical Comparisons */}
+              <motion.div variants={item}>
+                <div className="rounded-xl border border-white/[0.06] bg-slate-900/50 p-5">
+                  <div className="flex items-center justify-between mb-4">
+                    <h3 className="text-xs font-semibold text-slate-300 uppercase tracking-wider flex items-center gap-2">
+                      <svg className="w-3.5 h-3.5 text-cyan-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 3v11.25A2.25 2.25 0 006 16.5h2.25M3.75 3h-1.5m1.5 0h16.5m0 0h1.5m-1.5 0v11.25A2.25 2.25 0 0118 16.5h-2.25m-7.5 0h7.5m-7.5 0l-1 3m8.5-3l1 3m0 0l.5 1.5m-.5-1.5h-9.5m0 0l-.5 1.5" />
+                      </svg>
+                      Historical Comparisons — Before vs After
+                    </h3>
+                    <StatusBadge status="info" label="Payment Pipeline Outage" />
+                  </div>
+                  <div className="grid gap-4 sm:grid-cols-3">
+                    {results.comparisons.map((m, i) => (
+                      <HistoricalComparisonCard key={m.metric} metric={m} />
+                    ))}
+                  </div>
+                </div>
+              </motion.div>
+
+              {/* 8. Pattern Detection */}
               <motion.div variants={item}>
                 <div className="rounded-xl border border-white/[0.06] bg-slate-900/50 p-5">
                   <div className="flex items-center justify-between mb-4">
@@ -965,7 +1305,7 @@ export default function IncidentTimeMachine() {
                       <svg className="w-3.5 h-3.5 text-purple-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
                         <path strokeLinecap="round" strokeLinejoin="round" d="M9.75 3.75v3.375m0 0l3-3m-3 3l-3-3M3.75 13.5h10.5m-10.5 0l3 3m-3-3l-3-3m12 3h3.375m-3.375 0l3 3m-3-3l3-3" />
                       </svg>
-                      Failure Pattern Detection
+                      Pattern Detection
                     </h3>
                     <StatusBadge status="warning" label={`${results.patterns.length} patterns`} />
                   </div>
@@ -978,7 +1318,7 @@ export default function IncidentTimeMachine() {
                       const statusColor = p.status === 'active' ? 'text-red-400 bg-red-500/10' :
                         p.status === 'monitoring' ? 'text-yellow-400 bg-yellow-500/10' :
                         'text-green-400 bg-green-500/10'
-                      const trendIcon = p.trend === 'up' ? '↑' : p.trend === 'down' ? '↓' : '→'
+                      const trendIcon = p.trend === 'up' ? '\u2191' : p.trend === 'down' ? '\u2193' : '\u2192'
                       const trendColor = p.trend === 'up' ? 'text-red-400' : p.trend === 'down' ? 'text-green-400' : 'text-yellow-400'
                       const sparkData = patternSparklines[p.name] || [1, 2, 3, 4, 5, 6]
                       return (
@@ -1039,91 +1379,27 @@ export default function IncidentTimeMachine() {
                 </div>
               </motion.div>
 
+              {/* 9. AI Future Prediction */}
               <motion.div variants={item}>
                 <div className="rounded-xl border border-white/[0.06] bg-slate-900/50 p-5">
                   <div className="flex items-center justify-between mb-4">
                     <h3 className="text-xs font-semibold text-slate-300 uppercase tracking-wider flex items-center gap-2">
                       <svg className="w-3.5 h-3.5 text-cyan-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v6.75C7.5 20.496 6.996 21 6.375 21h-2.25A1.125 1.125 0 013 19.875v-6.75zM9.75 8.625c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125v11.25c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V8.625zM16.5 4.125c0-.621.504-1.125 1.125-1.125h2.25C20.496 3 21 3.504 21 4.125v15.75c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V4.125z" />
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 13.125C3.75 12.504 4.254 12 4.875 12h2.25c.621 0 1.125.504 1.125 1.125v6.75C8.25 20.496 7.746 21 7.125 21h-2.25A1.125 1.125 0 013.75 19.875v-6.75zM10.5 8.625c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125v11.25c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V8.625zM17.25 4.125c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125v15.75c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V4.125z" />
                       </svg>
-                      Historical Risk Evolution
+                      AI Future Prediction
                     </h3>
-                    <StatusBadge status="info" label="Jan-Jun 2024" />
+                    <StatusBadge status="error" label={`${results.predictions.length} forecasts`} />
                   </div>
-                  <RiskChart />
-                </div>
-              </motion.div>
-
-              <motion.div variants={item}>
-                <div className="rounded-xl border border-white/[0.06] bg-slate-900/50 p-5">
-                  <div className="flex items-center justify-between mb-5">
-                    <h3 className="text-xs font-semibold text-slate-300 uppercase tracking-wider flex items-center gap-2">
-                      <svg className="w-3.5 h-3.5 text-violet-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m9-.75a9 9 0 11-18 0 9 9 0 0118 0zm-9 3.75h.008v.008H12v-.008z" />
-                      </svg>
-                      Root Cause Analysis
-                    </h3>
-                    <StatusBadge status="error" label={`${results.rootCauses.length} deep-dives`} />
-                  </div>
-                  <div className="space-y-5">
-                    {results.rootCauses.map((rca, i) => {
-                      const sev = severityColor[rca.severity] || severityColor.medium
-                      return (
-                        <motion.div
-                          key={rca.id}
-                          initial={{ opacity: 0, y: 15 }}
-                          animate={{ opacity: 1, y: 0 }}
-                          transition={{ delay: i * 0.12 }}
-                          className="rounded-lg border border-white/[0.04] bg-white/[0.02] p-4 hover:border-purple-500/20 transition-all"
-                        >
-                          <div className="flex items-center justify-between mb-3">
-                            <div className="flex items-center gap-2">
-                              <span className={`rounded px-1.5 py-0.5 text-[8px] font-bold font-mono ${sev.badge}`}>{rca.id}</span>
-                              <h4 className="text-xs font-semibold text-white">{rca.title}</h4>
-                            </div>
-                            <span className={`rounded-full border px-1.5 py-0.5 text-[8px] font-semibold ${sev.badge}`}>{rca.severity}</span>
-                          </div>
-                          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 mb-3">
-                            {[
-                              { label: 'Trigger', value: rca.trigger, color: 'border-red-500/20 bg-red-500/[0.03]' },
-                              { label: 'Failure', value: rca.failure, color: 'border-orange-500/20 bg-orange-500/[0.03]' },
-                              { label: 'Impact', value: rca.impact, color: 'border-yellow-500/20 bg-yellow-500/[0.03]' },
-                              { label: 'Resolution', value: rca.resolution, color: 'border-green-500/20 bg-green-500/[0.03]' },
-                            ].map((item) => (
-                              <div key={item.label} className={`rounded-lg border ${item.color} p-2.5`}>
-                                <span className="text-[8px] font-semibold text-slate-500 uppercase tracking-wider block mb-1">{item.label}</span>
-                                <p className="text-[9px] text-slate-400 leading-relaxed">{item.value}</p>
-                              </div>
-                            ))}
-                          </div>
-                          <div className="mb-3">
-                            <span className="text-[9px] font-semibold text-slate-500 uppercase tracking-wider block mb-1.5">Timeline of Events</span>
-                            <div className="rounded-lg border border-white/[0.06] bg-white/[0.02] overflow-hidden">
-                              {rca.eventTimeline.map((ev, j) => (
-                                <div key={j} className={`flex items-center gap-3 px-3 py-1.5 ${j < rca.eventTimeline.length - 1 ? 'border-b border-white/[0.04]' : ''}`}>
-                                  <span className="text-[8px] font-mono font-semibold text-cyan-400 shrink-0 w-10">{ev.time}</span>
-                                  <span className="text-[9px] text-slate-400">{ev.event}</span>
-                                </div>
-                              ))}
-                            </div>
-                          </div>
-                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                            <div className="rounded-lg border border-green-500/10 bg-green-500/[0.02] p-2.5">
-                              <span className="text-[8px] font-semibold text-green-400 uppercase tracking-wider block mb-1">Lessons Learned</span>
-                              <p className="text-[9px] text-slate-400 leading-relaxed">{rca.lessons}</p>
-                            </div>
-                            <div className="rounded-lg border border-cyan-500/10 bg-cyan-500/[0.02] p-2.5">
-                              <span className="text-[8px] font-semibold text-cyan-400 uppercase tracking-wider block mb-1">Prevention</span>
-                              <p className="text-[9px] text-slate-400 leading-relaxed">{rca.prevention}</p>
-                            </div>
-                          </div>
-                        </motion.div>
-                      )
-                    })}
+                  <div className="grid gap-4 sm:grid-cols-3">
+                    {results.predictions.map((p, i) => (
+                      <PredictionCard key={p.window} pred={p} index={i} />
+                    ))}
                   </div>
                 </div>
               </motion.div>
 
+              {/* 10. Prevention Suggestions */}
               <motion.div variants={item}>
                 <div className="rounded-xl border border-white/[0.06] bg-slate-900/50 p-5">
                   <div className="flex items-center justify-between mb-4">
@@ -1131,9 +1407,9 @@ export default function IncidentTimeMachine() {
                       <svg className="w-3.5 h-3.5 text-green-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
                         <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                       </svg>
-                      Prevention Recommendations
+                      Prevention Suggestions
                     </h3>
-                    <StatusBadge status="success" label={`${results.recommendations.length} actions`} />
+                    <StatusBadge status="success" label={`${results.recommendations.length} recommendations`} />
                   </div>
                   <div className="space-y-2">
                     {results.recommendations.map((r, i) => {
@@ -1189,6 +1465,91 @@ export default function IncidentTimeMachine() {
                 </div>
               </motion.div>
 
+              {/* 11. Impact Forecast */}
+              <motion.div variants={item}>
+                <div className="rounded-xl border border-white/[0.06] bg-slate-900/50 p-5">
+                  <div className="flex items-center justify-between mb-4">
+                    <h3 className="text-xs font-semibold text-slate-300 uppercase tracking-wider flex items-center gap-2">
+                      <svg className="w-3.5 h-3.5 text-red-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" />
+                      </svg>
+                      Impact Forecast
+                    </h3>
+                    <StatusBadge status="error" label="If no action taken" />
+                  </div>
+                  <div className="grid gap-4 sm:grid-cols-2">
+                    <ImpactForecastCard forecasts={results.impactForecast} />
+                    <div className="rounded-lg border border-white/[0.04] bg-white/[0.02] p-4">
+                      <h4 className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider mb-3">Risk Distribution</h4>
+                      <div className="flex flex-col justify-center h-full">
+                        <div className="flex items-center gap-4 justify-center mb-4">
+                          {results.impactForecast.map((f) => {
+                            const colors = {
+                              downtime: '#ef4444',
+                              delay: '#f59e0b',
+                              overload: '#a855f7',
+                              failure: '#f97316',
+                            }
+                            return (
+                              <div key={f.service} className="flex flex-col items-center">
+                                <div
+                                  className="w-12 h-12 rounded-full flex items-center justify-center text-xs font-bold font-mono text-white"
+                                  style={{ backgroundColor: `${colors[f.impact]}30`, border: `2px solid ${colors[f.impact]}` }}
+                                >
+                                  {f.risk}%
+                                </div>
+                                <span className="text-[7px] text-slate-600 mt-1 whitespace-nowrap">{f.service.split(' ')[0]}</span>
+                              </div>
+                            )
+                          })}
+                        </div>
+                        <p className="text-[9px] text-slate-500 text-center leading-relaxed">
+                          Combined risk score: <span className="text-red-400 font-semibold font-mono">
+                            {Math.round(results.impactForecast.reduce((a, f) => a + f.risk, 0) / results.impactForecast.length)}%
+                          </span> — High priority intervention recommended
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </motion.div>
+
+              {/* Historical Risk Evolution */}
+              <motion.div variants={item}>
+                <div className="rounded-xl border border-white/[0.06] bg-slate-900/50 p-5">
+                  <div className="flex items-center justify-between mb-4">
+                    <h3 className="text-xs font-semibold text-slate-300 uppercase tracking-wider flex items-center gap-2">
+                      <svg className="w-3.5 h-3.5 text-cyan-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v6.75C7.5 20.496 6.996 21 6.375 21h-2.25A1.125 1.125 0 013 19.875v-6.75zM9.75 8.625c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125v11.25c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V8.625zM16.5 4.125c0-.621.504-1.125 1.125-1.125h2.25C20.496 3 21 3.504 21 4.125v15.75c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V4.125z" />
+                      </svg>
+                      Historical Risk Evolution
+                    </h3>
+                    <StatusBadge status="info" label="Jan-Jun 2024" />
+                  </div>
+                  <RiskChart />
+                </div>
+              </motion.div>
+
+              {/* Historical Deployment Explorer */}
+              <motion.div variants={item}>
+                <div className="rounded-xl border border-white/[0.06] bg-slate-900/50 p-5">
+                  <div className="flex items-center justify-between mb-4">
+                    <h3 className="text-xs font-semibold text-slate-300 uppercase tracking-wider flex items-center gap-2">
+                      <svg className="w-3.5 h-3.5 text-cyan-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 3v11.25A2.25 2.25 0 006 16.5h2.25M3.75 3h-1.5m1.5 0h16.5m0 0h1.5m-1.5 0v11.25A2.25 2.25 0 0118 16.5h-2.25m-7.5 0h7.5m-7.5 0l-1 3m8.5-3l1 3m0 0l.5 1.5m-.5-1.5h-9.5m0 0l-.5 1.5" />
+                      </svg>
+                    </h3>
+                    <StatusBadge status="info" label={`${deployments.length} deployments`} />
+                  </div>
+                  <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+                    {deployments.map((d, i) => (
+                      <DeploymentCard key={d.service} deploy={d} index={i} />
+                    ))}
+                  </div>
+                </div>
+              </motion.div>
+
+              {/* Time Navigation Controls */}
               <motion.div variants={item}>
                 <div className="rounded-xl border border-white/[0.06] bg-slate-900/50 p-5">
                   <div className="flex items-center justify-between mb-4">
