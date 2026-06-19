@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import Layout from '../components/Layout'
 import StatusBadge from '../components/StatusBadge'
@@ -26,6 +26,7 @@ const investigationData = {
   lowFailures: 1,
   mrsAnalyzed: 847,
   incidentsPrevented: 124,
+  impactScore: 87,
   riskTimeline: [
     { phase: 'Design Phase', risk: 25, color: 'green' },
     { phase: 'Implementation', risk: 65, color: 'yellow' },
@@ -119,15 +120,55 @@ const investigationData = {
     depth: '3 levels deep',
     totalServices: 7,
     zones: [
-      { name: 'Payment Service', radius: 1, risk: 87, critical: true },
-      { name: 'Billing Service', radius: 2, risk: 65, critical: false },
-      { name: 'API Gateway', radius: 2, risk: 72, critical: true },
-      { name: 'Notification Service', radius: 2, risk: 45, critical: false },
-      { name: 'Auth Service', radius: 3, risk: 38, critical: false },
-      { name: 'Redis Cache', radius: 3, risk: 25, critical: false },
-      { name: 'Database', radius: 3, risk: 55, critical: true },
+      { name: 'Payment Service', radius: 1, risk: 87, critical: true, files: 12 },
+      { name: 'Billing Service', radius: 2, risk: 65, critical: false, files: 8 },
+      { name: 'API Gateway', radius: 2, risk: 72, critical: true, files: 5 },
+      { name: 'Notification Service', radius: 2, risk: 45, critical: false, files: 3 },
     ],
   },
+  investigationTimeline: [
+    { date: '2024-05-28', type: 'Detection', title: 'Monitoring alert triggered', description: 'Error rate spike detected on payment endpoint — PagerDuty alert fired automatically', team: 'Platform', duration: '2min' },
+    { date: '2024-05-30', type: 'Analysis', title: 'Root cause identification', description: 'Engineering team traced error to missing circuit breaker in retry loop implementation', team: '@alice, @bob', duration: '45min' },
+    { date: '2024-06-01', type: 'Escalation', title: 'Incident escalated to P0', description: 'Payment pipeline fully blocked — executive notified, cross-team incident bridge established', team: 'SRE, Platform', duration: '15min' },
+    { date: '2024-06-10', type: 'Resolution', title: 'Hotfix deployed to production', description: 'Circuit breaker threshold override pushed to all payment worker instances', team: '@alice, Platform', duration: '30min' },
+    { date: '2024-06-15', type: 'Review', title: 'Post-mortem analysis complete', description: 'Full RCA documented with 8 failure modes identified and mitigation plan drafted', team: 'Engineering', duration: '2hr' },
+    { date: '2024-06-22', type: 'Closed', title: 'Case closed with recommendations', description: 'All findings documented. 5 recommendations pushed to backlog with P0/P1 prioritization', team: 'Platform', duration: '1hr' },
+  ],
+  liveFeed: [
+    { time: '14:23:15', type: 'alert', message: 'Error rate spike >5% on payment endpoint — automated rollback triggered', severity: 'critical' },
+    { time: '14:22:48', type: 'event', message: 'Circuit breaker opened on Payment Service after 15 consecutive failures', severity: 'high' },
+    { time: '14:22:12', type: 'investigation', message: 'AI analysis completed — 8 failure modes identified across 4 services', severity: 'info' },
+    { time: '14:21:30', type: 'risk', message: 'Risk propagation probability updated: Payment → Billing now at 87%', severity: 'warning' },
+    { time: '14:20:55', type: 'alert', message: 'Billing worker memory threshold at 92% — potential OOM risk detected', severity: 'high' },
+    { time: '14:20:10', type: 'event', message: 'New correlation found: MR #198 matches 92% with current incident signature', severity: 'info' },
+    { time: '14:19:25', type: 'investigation', message: 'Blast radius analysis expanded — Notification Service added to impact zone', severity: 'warning' },
+    { time: '14:18:40', type: 'risk', message: 'Webhook Gateway identified as downstream risk — propagation likelihood 78%', severity: 'medium' },
+    { time: '14:18:00', type: 'event', message: 'Incident timeline updated — 6 forensic artifacts collected for evidence chain', severity: 'info' },
+    { time: '14:17:20', type: 'alert', message: 'Database connection pool utilization at 85% — approaching critical threshold', severity: 'medium' },
+  ],
+  decisions: [
+    { action: 'Deploy Now', confidence: 92, reasoning: 'Circuit breaker fix ready for production with automated rollback protection', team: '@alice', urgency: 'immediate' },
+    { action: 'Monitor Closely', confidence: 85, reasoning: 'Retry queue still within safe limits — observe for 2 hours before escalation', team: '@bob', urgency: 'short' },
+    { action: 'Rollback Changes', confidence: 78, reasoning: 'Revert last 3 MRs to restore stable state — 78% confidence in regression cause', team: '@carol', urgency: 'medium' },
+    { action: 'Investigate Further', confidence: 94, reasoning: 'Additional correlation data needed — deep-dive into billing worker memory patterns', team: '@dave', urgency: 'long' },
+  ],
+  riskReduction: [
+    { phase: 'Immediate', reduction: 65 },
+    { phase: 'Short-Term', reduction: 85 },
+    { phase: 'Long-Term', reduction: 95 },
+  ],
+  recommendationConfidence: [92, 88, 85, 78, 90],
+  keyFindingsData: [
+    { id: 'F-001', title: 'Missing Circuit Breaker', description: 'Payment retry loop lacks any circuit breaker pattern — all failures retry infinitely causing cascading collapse', severity: 'critical', icon: 'shield' },
+    { id: 'F-002', title: 'Unbounded Retry Queue', description: 'Billing worker retry queue has no depth limit — memory exhaustion triggered under sustained load', severity: 'high', icon: 'chart' },
+    { id: 'F-003', title: 'No Idempotency Keys', description: 'Webhook endpoints lack idempotency validation — duplicate events delivered during retry storms', severity: 'high', icon: 'link' },
+  ],
+  affectedSystems: [
+    { name: 'Payment Service', impact: 'Critical', status: 'Degraded' },
+    { name: 'Billing Service', impact: 'High', status: 'At Risk' },
+    { name: 'API Gateway', impact: 'High', status: 'Degraded' },
+    { name: 'Notification Service', impact: 'Medium', status: 'Stable' },
+  ],
 }
 
 const severityColors = {
@@ -200,7 +241,7 @@ function RiskGauge({ score }) {
   )
 }
 
-function ConfidenceMeter({ confidence }) {
+function ConfidenceMeter({ confidence, label = 'INVESTIGATION CONFIDENCE' }) {
   const [animVal, setAnimVal] = useState(0)
   useEffect(() => {
     let start = 0
@@ -216,19 +257,11 @@ function ConfidenceMeter({ confidence }) {
   return (
     <div className="space-y-2">
       <div className="flex items-center justify-between">
-        <span className="text-xs text-slate-500 font-mono tracking-wide">INVESTIGATION CONFIDENCE</span>
+        <span className="text-xs text-slate-500 font-mono tracking-wide">{label}</span>
         <span className="text-sm font-bold text-white">{animVal}%</span>
       </div>
       <div className="relative h-3 rounded-full bg-white/[0.06] overflow-hidden">
         <div className={`h-full rounded-full transition-all duration-[1500ms] ease-out ${barColor}`} style={{ width: `${animVal}%` }} />
-        <div className="absolute top-0 left-[60%] h-full w-px bg-white/20" />
-        <div className="absolute top-0 left-[80%] h-full w-px bg-white/20" />
-      </div>
-      <div className="flex justify-between text-[9px] text-slate-600 font-mono">
-        <span>0%</span>
-        <span>60% Threshold</span>
-        <span>80% Threshold</span>
-        <span>100%</span>
       </div>
     </div>
   )
@@ -247,27 +280,40 @@ function AnimatedBar({ value, height = 'h-1.5', color = 'bg-cyan-500' }) {
 export default function IntelligenceCenter() {
   const [input, setInput] = useState('')
   const [loading, setLoading] = useState(false)
-  const [data, setData] = useState(null)
+  const [data] = useState(investigationData)
   const [expandedFailure, setExpandedFailure] = useState(null)
   const [expandedChain, setExpandedChain] = useState(null)
   const [expandedMitigation, setExpandedMitigation] = useState(null)
+  const [expandedPhase, setExpandedPhase] = useState(null)
   const [selectedEvidence, setSelectedEvidence] = useState(null)
   const [hoveredDep, setHoveredDep] = useState(null)
   const [showPresets, setShowPresets] = useState(false)
   const [selectedPreset, setSelectedPreset] = useState(-1)
+  const [timeAgo, setTimeAgo] = useState('2 min ago')
+  const feedRef = useRef(null)
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      const mins = Math.floor(Math.random() * 3) + 1
+      setTimeAgo(`${mins} min ago`)
+    }, 30000)
+    return () => clearInterval(interval)
+  }, [])
+
+  useEffect(() => {
+    if (!feedRef.current) return
+    const interval = setInterval(() => {
+      feedRef.current.scrollTop = 0
+    }, 5000)
+    return () => clearInterval(interval)
+  }, [])
 
   const filtered = input.trim() ? presets.filter(p => p.toLowerCase().includes(input.toLowerCase())) : presets
 
   const investigate = (text) => {
     if (!text.trim()) return
     setLoading(true)
-    setData(null)
-    setExpandedFailure(null)
-    setExpandedChain(null)
-    setExpandedMitigation(null)
-    setSelectedEvidence(null)
-    setHoveredDep(null)
-    setTimeout(() => { setData(investigationData); setLoading(false) }, 2000)
+    setTimeout(() => { setLoading(false) }, 2000)
   }
 
   const handleKey = (e) => {
@@ -280,39 +326,174 @@ export default function IntelligenceCenter() {
 
   useEffect(() => { setSelectedPreset(-1) }, [input])
 
+  const timelineEventIcons = {
+    Detection: (
+      <svg className="h-3.5 w-3.5 text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+        <path strokeLinecap="round" strokeLinejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09z" />
+      </svg>
+    ),
+    Analysis: (
+      <svg className="h-3.5 w-3.5 text-cyan-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+        <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m9-.75a9 9 0 11-18 0 9 9 0 0118 0zm-9 3.75h.008v.008H12v-.008z" />
+      </svg>
+    ),
+    Escalation: (
+      <svg className="h-3.5 w-3.5 text-orange-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+        <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" />
+      </svg>
+    ),
+    Resolution: (
+      <svg className="h-3.5 w-3.5 text-green-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+        <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+      </svg>
+    ),
+    Review: (
+      <svg className="h-3.5 w-3.5 text-purple-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+        <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z" />
+      </svg>
+    ),
+    Closed: (
+      <svg className="h-3.5 w-3.5 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+        <path strokeLinecap="round" strokeLinejoin="round" d="M16.712 4.33a9.027 9.027 0 011.652 1.306c.51.51.944 1.064 1.306 1.652M16.712 4.33l-3.448 4.138m3.448-4.138a9.014 9.014 0 00-9.424 0M19.67 7.288l-4.138 3.448m4.138-3.448a9.014 9.014 0 010 9.424m-4.138-5.976a3.736 3.736 0 00-.88-1.388 3.737 3.737 0 00-1.388-.88m2.268 2.268a3.765 3.765 0 010 2.528m-2.268-4.796l-3.448 4.138m0 0a3.736 3.736 0 00-.88 1.388 3.765 3.765 0 000 2.528m.88-3.916l-4.138 3.448m0 0a9.027 9.027 0 01-1.306 1.652 9.027 9.027 0 01-1.652 1.306m2.958-2.958l-3.448 4.138m3.448-4.138a9.014 9.014 0 010 9.424" />
+      </svg>
+    ),
+  }
+
+  const feedTypeStyles = {
+    alert: 'border-l-red-500 bg-red-500/[0.03]',
+    event: 'border-l-cyan-500 bg-cyan-500/[0.02]',
+    investigation: 'border-l-blue-500 bg-blue-500/[0.02]',
+    risk: 'border-l-orange-500 bg-orange-500/[0.02]',
+  }
+
+  const decisionGlows = {
+    'Deploy Now': 'shadow-green-500/20 border-green-500/30',
+    'Monitor Closely': 'shadow-amber-500/20 border-amber-500/30',
+    'Rollback Changes': 'shadow-orange-500/20 border-orange-500/30',
+    'Investigate Further': 'shadow-red-500/20 border-red-500/30',
+  }
+
+  const decisionButtons = {
+    'Deploy Now': 'bg-green-600 hover:bg-green-500',
+    'Monitor Closely': 'bg-amber-600 hover:bg-amber-500',
+    'Rollback Changes': 'bg-orange-600 hover:bg-orange-500',
+    'Investigate Further': 'bg-red-600 hover:bg-red-500',
+  }
+
+  const decisionConfidenceColors = {
+    'Deploy Now': 'text-green-400',
+    'Monitor Closely': 'text-amber-400',
+    'Rollback Changes': 'text-orange-400',
+    'Investigate Further': 'text-red-400',
+  }
+
   return (
     <Layout>
-      <motion.div variants={container} initial="hidden" animate="show" className="space-y-6">
+      <motion.div variants={container} initial="hidden" animate="show" className="space-y-6 pb-12">
 
-        {/* ===== SECTION 1: Investigation Summary ===== */}
+        {/* ===== SECTION 1: FORENSIC INVESTIGATION HERO ===== */}
         <motion.div variants={item} className="glass-card overflow-hidden">
           <div className="relative p-5 sm:p-6">
-            <div className="absolute inset-0 bg-gradient-to-br from-cyan-500/[0.03] to-blue-500/[0.02] pointer-events-none" />
-            <div className="relative flex items-start justify-between flex-wrap gap-4">
-              <div className="flex items-center gap-3">
-                <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-gradient-to-br from-cyan-500/20 to-blue-500/20 shadow-lg shadow-cyan-500/10">
-                  <svg className="h-5 w-5 text-cyan-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09zM18.259 8.715L18 9.75l-.259-1.035a3.375 3.375 0 00-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 002.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 002.455 2.456L21.75 6l-1.036.259a3.375 3.375 0 00-2.455 2.456z" />
-                  </svg>
+            <div className="absolute inset-0 bg-gradient-to-br from-cyan-500/[0.04] to-blue-500/[0.02] pointer-events-none" />
+            <div className="relative">
+              <div className="flex items-start justify-between flex-wrap gap-4 mb-4">
+                <div className="flex items-center gap-3">
+                  <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-gradient-to-br from-cyan-500/20 to-blue-500/20 shadow-lg shadow-cyan-500/10">
+                    <svg className="h-5 w-5 text-cyan-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09z" />
+                    </svg>
+                  </div>
+                  <div>
+                    <h1 className="font-mono text-xl font-bold tracking-widest text-white uppercase">Forensic Investigation Console</h1>
+                    <p className="text-xs text-slate-500 font-mono tracking-wide">AI-Powered Risk Intelligence & Root Cause Analysis Platform</p>
+                  </div>
                 </div>
-                <div>
-                  <h1 className="font-mono text-xl font-bold tracking-widest text-white uppercase">Investigation Console</h1>
-                  <p className="text-xs text-slate-500 font-mono tracking-wide">AI-Powered Forensic Intelligence Engine</p>
+                <div className="flex items-center gap-3 flex-wrap">
+                  <button onClick={() => navigator.clipboard.writeText(data.caseId)} className="group flex items-center gap-1.5 font-mono text-[10px] text-slate-500 border border-white/[0.08] rounded-md px-2.5 py-1 tracking-wider hover:border-cyan-500/30 hover:text-cyan-400 transition-all">
+                    {data.caseId}
+                    <svg className="h-3 w-3 text-slate-600 group-hover:text-cyan-400 transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M16.5 8.25V6a2.25 2.25 0 00-2.25-2.25H6A2.25 2.25 0 003.75 6v8.25A2.25 2.25 0 006 16.5h2.25m8.25-8.25H18a2.25 2.25 0 012.25 2.25V18A2.25 2.25 0 0118 20.25h-7.5A2.25 2.25 0 018.25 18v-1.5m8.25-8.25h-3a4.5 4.5 0 01-4.5-4.5v-3" />
+                    </svg>
+                  </button>
+                  <span className="flex items-center gap-1.5 text-[10px] text-green-400 font-mono tracking-wider border border-green-500/20 rounded-md px-2.5 py-1">
+                    <span className="h-2 w-2 rounded-full bg-green-400 animate-pulse shadow-[0_0_6px_rgba(74,222,128,0.5)]" />
+                    {data.status}
+                  </span>
+                  <span className="text-[10px] text-slate-600 font-mono border border-white/[0.06] rounded-md px-2.5 py-1">
+                    Updated {timeAgo}
+                  </span>
                 </div>
               </div>
-              <div className="flex items-center gap-3">
-                <span className="font-mono text-[10px] text-slate-500 border border-white/[0.08] rounded-md px-2.5 py-1 tracking-wider">{data ? data.caseId : '#OV-2024-0847'}</span>
-                <span className="flex items-center gap-1.5 text-[10px] text-green-400 font-mono tracking-wider border border-green-500/20 rounded-md px-2.5 py-1">
-                  <span className="h-2 w-2 rounded-full bg-green-400 animate-pulse" />
-                  Active
-                </span>
+              <h2 className="text-sm text-slate-300 font-mono mb-5 leading-relaxed">{data.title}</h2>
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-4">
+                <div className="glass-card p-3 text-center hover:border-cyan-500/20 transition-all relative overflow-hidden group">
+                  <div className="absolute inset-0 bg-gradient-to-br from-cyan-500/[0.02] to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+                  <div className="relative">
+                    <div className="text-2xl font-bold text-cyan-400"><AnimatedCounter value={data.totalFailures} /></div>
+                    <div className="text-[10px] text-slate-500 mt-1 font-mono tracking-wide">Total Failures</div>
+                    <div className="flex justify-center gap-2 mt-1 text-[8px] text-slate-600">
+                      <span className="text-red-400">{data.criticalFailures}C</span>
+                      <span className="text-orange-400">{data.highFailures}H</span>
+                      <span className="text-yellow-400">{data.mediumFailures}M</span>
+                      <span className="text-green-400">{data.lowFailures}L</span>
+                    </div>
+                  </div>
+                </div>
+                <div className="glass-card p-3 text-center hover:border-red-500/20 transition-all relative overflow-hidden group">
+                  <div className="absolute inset-0 bg-gradient-to-br from-red-500/[0.02] to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+                  <div className="relative">
+                    <div className="text-2xl font-bold text-red-400"><AnimatedCounter value={data.criticalFailures} /></div>
+                    <div className="text-[10px] text-slate-500 mt-1 font-mono tracking-wide">Critical Threats</div>
+                    <div className="text-[8px] text-red-400/60 mt-1">Requires immediate action</div>
+                  </div>
+                </div>
+                <div className="glass-card p-3 text-center hover:border-blue-500/20 transition-all relative overflow-hidden group">
+                  <div className="absolute inset-0 bg-gradient-to-br from-blue-500/[0.02] to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+                  <div className="relative">
+                    <div className="text-2xl font-bold text-blue-400"><AnimatedCounter value={data.mrsAnalyzed} /></div>
+                    <div className="text-[10px] text-slate-500 mt-1 font-mono tracking-wide">MRs Analyzed</div>
+                    <div className="text-[8px] text-blue-400/60 mt-1">Historical correlation</div>
+                  </div>
+                </div>
+                <div className="glass-card p-3 text-center hover:border-green-500/20 transition-all relative overflow-hidden group">
+                  <div className="absolute inset-0 bg-gradient-to-br from-green-500/[0.02] to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+                  <div className="relative">
+                    <div className="text-2xl font-bold text-green-400"><AnimatedCounter value={data.incidentsPrevented} /></div>
+                    <div className="text-[10px] text-slate-500 mt-1 font-mono tracking-wide">Incidents Prevented</div>
+                    <div className="text-[8px] text-green-400/60 mt-1">Proactive detection</div>
+                  </div>
+                </div>
+              </div>
+              <div className="flex items-center gap-4 flex-wrap pt-3 border-t border-white/[0.04]">
+                <div className="flex items-center gap-2">
+                  <div className="w-16 h-16 relative">
+                    <svg width="64" height="64" viewBox="0 0 64 64" className="-rotate-90">
+                      <circle cx="32" cy="32" r="26" fill="none" stroke="rgba(255,255,255,0.04)" strokeWidth="4" />
+                      <circle cx="32" cy="32" r="26" fill="none" stroke="#22d3ee" strokeWidth="4" strokeLinecap="round" strokeDasharray={2 * Math.PI * 26} strokeDashoffset={2 * Math.PI * 26 * (1 - data.confidence / 100)} style={{ transition: 'stroke-dashoffset 2s ease-out' }} />
+                    </svg>
+                    <div className="absolute inset-0 flex items-center justify-center">
+                      <span className="text-xs font-bold text-cyan-400 font-mono">{data.confidence}%</span>
+                    </div>
+                  </div>
+                  <div>
+                    <div className="text-[9px] text-slate-600 font-mono uppercase tracking-wider">Confidence</div>
+                    <div className="text-[10px] text-cyan-400 font-mono">AI Certainty Level</div>
+                  </div>
+                </div>
+                <div className="h-8 w-px bg-white/[0.06]" />
+                <div className="flex items-center gap-2">
+                  <span className="text-[10px] text-slate-600 font-mono uppercase tracking-wider">Risk Score</span>
+                  <span className="text-lg font-bold text-orange-400 font-mono">{data.riskScore}</span>
+                </div>
+                <div className="h-8 w-px bg-white/[0.06]" />
+                <div className="flex items-center gap-2">
+                  <span className="text-[10px] text-slate-600 font-mono uppercase tracking-wider">Impact Score</span>
+                  <span className="text-lg font-bold text-amber-400 font-mono">{data.impactScore}</span>
+                </div>
+                <div className="h-8 w-px bg-white/[0.06]" />
+                <StatusBadge status="critical" label="HIGH RISK" />
               </div>
             </div>
-            {data && (
-              <div className="mt-4 pt-4 border-t border-white/[0.04]">
-                <h2 className="text-sm text-slate-300 font-mono">{data.title}</h2>
-              </div>
-            )}
           </div>
         </motion.div>
 
@@ -324,7 +505,7 @@ export default function IntelligenceCenter() {
                 <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
               </svg>
               <input ref={el => { if (el) el.focus() }} type="text" value={input} onChange={e => { setInput(e.target.value); setShowPresets(true) }} onFocus={() => setShowPresets(true)} onKeyDown={handleKey}
-                placeholder="Enter feature or incident to investigate..."
+                placeholder="Run a new investigation — enter feature, incident, or MR ID..."
                 className="w-full rounded-xl border border-white/[0.06] bg-slate-800/60 py-3.5 pl-11 pr-44 text-sm text-white placeholder-slate-600 outline-none focus:border-cyan-500/50 focus:bg-slate-800/80 focus:shadow-[0_0_15px_rgba(6,182,212,0.1)] transition-all font-mono tracking-wide"
                 disabled={loading} />
               <div className="absolute inset-y-1.5 right-1.5 flex items-center gap-1">
@@ -355,7 +536,6 @@ export default function IntelligenceCenter() {
           </AnimatePresence>
         </motion.div>
 
-        {/* ===== Loading State ===== */}
         {loading && (
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-4">
             <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
@@ -375,737 +555,625 @@ export default function IntelligenceCenter() {
           </motion.div>
         )}
 
-        {/* ===== Results ===== */}
-        <AnimatePresence>
-          {data && !loading && (
-            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="space-y-6">
+        {!loading && (
+          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-6">
 
-              {/* ===== 4 Animated Stat Cards ===== */}
-              <motion.div variants={item} className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-                <div className="glass-card p-4 text-center hover:border-cyan-500/20 transition-all relative overflow-hidden group">
-                  <div className="absolute inset-0 bg-gradient-to-br from-cyan-500/[0.02] to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
-                  <div className="relative">
-                    <div className="text-2xl font-bold text-cyan-400"><AnimatedCounter value={data.totalFailures} /></div>
-                    <div className="text-[10px] text-slate-500 mt-1 font-mono tracking-wide">Failure Modes</div>
-                    <div className="flex justify-center gap-2 mt-1 text-[8px] text-slate-600">
-                      <span className="text-red-400">{data.criticalFailures}C</span>
-                      <span className="text-orange-400">{data.highFailures}H</span>
-                      <span className="text-yellow-400">{data.mediumFailures}M</span>
-                      <span className="text-green-400">{data.lowFailures}L</span>
-                    </div>
-                  </div>
-                </div>
-                <div className="glass-card p-4 text-center hover:border-red-500/20 transition-all relative overflow-hidden group">
-                  <div className="absolute inset-0 bg-gradient-to-br from-red-500/[0.02] to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
-                  <div className="relative">
-                    <div className="text-2xl font-bold text-red-400"><AnimatedCounter value={data.criticalFailures} /></div>
-                    <div className="text-[10px] text-slate-500 mt-1 font-mono tracking-wide">Critical Threats</div>
-                    <div className="text-[8px] text-red-400/60 mt-1">Requires immediate action</div>
-                  </div>
-                </div>
-                <div className="glass-card p-4 text-center hover:border-blue-500/20 transition-all relative overflow-hidden group">
-                  <div className="absolute inset-0 bg-gradient-to-br from-blue-500/[0.02] to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
-                  <div className="relative">
-                    <div className="text-2xl font-bold text-blue-400"><AnimatedCounter value={data.mrsAnalyzed} /></div>
-                    <div className="text-[10px] text-slate-500 mt-1 font-mono tracking-wide">MRs Correlated</div>
-                    <div className="text-[8px] text-blue-400/60 mt-1">Historical analysis</div>
-                  </div>
-                </div>
-                <div className="glass-card p-4 text-center hover:border-green-500/20 transition-all relative overflow-hidden group">
-                  <div className="absolute inset-0 bg-gradient-to-br from-green-500/[0.02] to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
-                  <div className="relative">
-                    <div className="text-2xl font-bold text-green-400"><AnimatedCounter value={data.confidence} suffix="%" /></div>
-                    <div className="text-[10px] text-slate-500 mt-1 font-mono tracking-wide">Confidence</div>
-                    <div className="text-[8px] text-green-400/60 mt-1">AI certainty level</div>
-                  </div>
-                </div>
-              </motion.div>
-
-              {/* ===== SECTION 2: Root Cause Explorer ===== */}
-              <motion.div variants={item} className="glass-card p-5">
-                <div className="flex items-center gap-2 mb-5">
-                  <div className="flex h-5 w-5 items-center justify-center rounded-md bg-gradient-to-br from-purple-500/20 to-pink-500/20">
-                    <svg className="h-3 w-3 text-purple-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" />
-                    </svg>
-                  </div>
-                  <h3 className="text-sm font-semibold text-white">Root Cause Explorer</h3>
-                  <span className="text-[10px] text-slate-600 font-mono">3 causal chains identified</span>
-                </div>
-                <div className="grid gap-6 lg:grid-cols-3">
-                  {data.rootCauseChains.map((chain, ci) => (
-                    <div key={ci} className="relative">
-                      <h4 className="text-[10px] text-slate-500 font-mono tracking-wider mb-3 uppercase">{chain.title}</h4>
-                      <div className="relative flex flex-col items-center">
-                        <svg className="absolute top-0 left-1/2 w-full h-full -translate-x-1/2 pointer-events-none" style={{ zIndex: 0 }}>
-                          <line x1="50%" y1="0" x2="50%" y2="100%" stroke="rgba(6,182,212,0.12)" strokeWidth="1.5" strokeDasharray="4 4" />
-                        </svg>
-                        {chain.chain.map((cause, ni) => (
-                          <div key={ni} className="relative z-10 w-full flex flex-col items-center">
-                            {ni > 0 && (
-                              <div className="flex flex-col items-center my-1">
-                                <svg width="16" height="16" viewBox="0 0 16 16" className="text-cyan-500/40"><path d="M8 12L3 4h10z" fill="currentColor" /></svg>
-                              </div>
-                            )}
-                            <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: ni * 0.15 + ci * 0.1 }}
-                              className={`w-full rounded-lg border p-3 transition-all hover:border-cyan-500/30 cursor-pointer ${ni === 0 ? 'border-orange-500/20 bg-orange-500/[0.03]' : ni === 1 ? 'border-yellow-500/20 bg-yellow-500/[0.02]' : 'border-red-500/20 bg-red-500/[0.03]'}`}
-                              onClick={() => setExpandedChain(expandedChain === `${ci}-${ni}` ? null : `${ci}-${ni}`)}>
-                              <div className="flex items-start justify-between gap-2">
-                                <p className={`text-[10px] font-medium ${ni === 2 ? 'text-red-300' : 'text-slate-300'}`}>{cause}</p>
-                                <span className="shrink-0 rounded bg-white/[0.04] px-1.5 py-0.5 text-[8px] font-mono text-slate-500">E:{chain.evidence[ni]}</span>
-                              </div>
-                              <div className="flex items-center gap-2 mt-1.5">
-                                <div className="flex-1 h-1 rounded-full bg-white/[0.06] overflow-hidden">
-                                  <div className={`h-full rounded-full ${chain.confidences[ni] >= 90 ? 'bg-green-500' : chain.confidences[ni] >= 80 ? 'bg-yellow-500' : 'bg-orange-500'}`} style={{ width: `${chain.confidences[ni]}%` }} />
-                                </div>
-                                <span className="text-[8px] font-mono text-slate-600">{chain.confidences[ni]}%</span>
-                              </div>
-                            </motion.div>
-                            <AnimatePresence>
-                              {expandedChain === `${ci}-${ni}` && (
-                                <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} exit={{ opacity: 0, height: 0 }} className="w-full overflow-hidden">
-                                  <div className="mt-2 rounded-lg border border-white/[0.04] bg-white/[0.01] p-2.5 text-[9px] text-slate-500 leading-relaxed">
-                                    {chain.descriptions[ni]}
-                                  </div>
-                                </motion.div>
-                              )}
-                            </AnimatePresence>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </motion.div>
-
-              {/* ===== SECTION 3: Dependency Intelligence ===== */}
-              <motion.div variants={item} className="glass-card p-5">
-                <div className="flex items-center gap-2 mb-4">
-                  <div className="flex h-5 w-5 items-center justify-center rounded-md bg-gradient-to-br from-cyan-500/20 to-blue-500/20">
-                    <svg className="h-3 w-3 text-cyan-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 12.75V12A2.25 2.25 0 014.5 9.75h15A2.25 2.25 0 0121.75 12v.75m-8.69-6.44l-2.12-2.12a1.5 1.5 0 00-1.061-.44H4.5A2.25 2.25 0 002.25 6v12a2.25 2.25 0 002.25 2.25h15A2.25 2.25 0 0021.75 18V9a2.25 2.25 0 00-2.25-2.25h-5.379a1.5 1.5 0 01-1.06-.44z" />
-                    </svg>
-                  </div>
-                  <h3 className="text-sm font-semibold text-white">Dependency Intelligence</h3>
-                  <span className="text-[10px] text-slate-600 font-mono">4 services · 7 dependency edges</span>
-                </div>
-                <div className="relative w-full overflow-x-auto">
-                  <svg viewBox="0 0 700 350" className="w-full max-w-4xl mx-auto" style={{ minWidth: 600 }}>
-                    <defs>
-                      <marker id="arrowCyan" markerWidth="10" markerHeight="7" refX="10" refY="3.5" orient="auto"><polygon points="0 0, 10 3.5, 0 7" fill="rgba(6,182,212,0.5)" /></marker>
-                      <marker id="arrowRed" markerWidth="10" markerHeight="7" refX="10" refY="3.5" orient="auto"><polygon points="0 0, 10 3.5, 0 7" fill="rgba(239,68,68,0.5)" /></marker>
-                      <filter id="glow"><feGaussianBlur stdDeviation="2" result="blur" /><feMerge><feMergeNode in="blur" /><feMergeNode in="SourceGraphic" /></feMerge></filter>
-                    </defs>
-                    <pattern id="grid" width="20" height="20" patternUnits="userSpaceOnUse">
-                      <path d="M 20 0 L 0 0 0 20" fill="none" stroke="rgba(255,255,255,0.02)" strokeWidth="0.5" />
-                    </pattern>
-                    <rect width="700" height="350" fill="url(#grid)" />
-                    <path d="M 105 80 C 105 140, 200 140, 200 200" fill="none" stroke="rgba(239,68,68,0.35)" strokeWidth="2" markerEnd="url(#arrowRed)" strokeDasharray="6 3" />
-                    <text x="120" y="130" fill="#ef4444" fontSize="7" fontFamily="monospace" opacity="0.7">depends-on</text>
-                    <path d="M 105 80 C 105 140, 300 140, 300 200" fill="none" stroke="rgba(6,182,212,0.25)" strokeWidth="1.5" markerEnd="url(#arrowCyan)" />
-                    <text x="160" y="150" fill="#64748b" fontSize="7" fontFamily="monospace" opacity="0.6">route-to</text>
-                    <path d="M 330 80 C 330 140, 440 140, 440 200" fill="none" stroke="rgba(6,182,212,0.25)" strokeWidth="1.5" markerEnd="url(#arrowCyan)" />
-                    <text x="370" y="150" fill="#64748b" fontSize="7" fontFamily="monospace" opacity="0.6">reads/writes</text>
-                    <path d="M 330 80 C 330 140, 530 140, 530 200" fill="none" stroke="rgba(6,182,212,0.25)" strokeWidth="1.5" markerEnd="url(#arrowCyan)" />
-                    <text x="400" y="160" fill="#64748b" fontSize="7" fontFamily="monospace" opacity="0.6">auth-check</text>
-                    <path d="M 540 80 C 540 140, 620 140, 620 200" fill="none" stroke="rgba(6,182,212,0.2)" strokeWidth="1" markerEnd="url(#arrowCyan)" />
-                    <text x="560" y="150" fill="#64748b" fontSize="7" fontFamily="monospace" opacity="0.6">event</text>
-                    <path d="M 540 80 C 500 130, 380 130, 330 200" fill="none" stroke="rgba(6,182,212,0.2)" strokeWidth="1" markerEnd="url(#arrowCyan)" strokeDasharray="3 3" />
-                    <text x="460" y="130" fill="#64748b" fontSize="7" fontFamily="monospace" opacity="0.5">sync</text>
-                    <path d="M 105 280 L 220 280" fill="none" stroke="rgba(6,182,212,0.2)" strokeWidth="1" markerEnd="url(#arrowCyan)" />
-                    <text x="130" y="275" fill="#64748b" fontSize="7" fontFamily="monospace" opacity="0.5">deliver</text>
-                    <path d="M 330 200 L 330 280" fill="none" stroke="rgba(6,182,212,0.2)" strokeWidth="1" markerEnd="url(#arrowCyan)" />
-                    <text x="340" y="245" fill="#64748b" fontSize="7" fontFamily="monospace" opacity="0.5">cache</text>
-                    <path d="M 540 200 L 540 280" fill="none" stroke="rgba(6,182,212,0.2)" strokeWidth="1" markerEnd="url(#arrowCyan)" />
-                    <text x="550" y="245" fill="#64748b" fontSize="7" fontFamily="monospace" opacity="0.5">verify</text>
-                    <rect x="45" y="50" width="120" height="48" rx="8" fill="rgba(6,182,212,0.08)" stroke={hoveredDep === 'API Gateway' ? 'rgba(6,182,212,0.7)' : 'rgba(6,182,212,0.3)'} strokeWidth="1.5" className="transition-all cursor-pointer" onMouseEnter={() => setHoveredDep('API Gateway')} onMouseLeave={() => setHoveredDep(null)} />
-                    <text x="105" y="73" textAnchor="middle" fill="#22d3ee" fontSize="10" fontWeight="600" fontFamily="monospace">API Gateway</text>
-                    <text x="105" y="88" textAnchor="middle" fill="#64748b" fontSize="8" fontFamily="monospace">Risk: 72</text>
-                    <rect x="270" y="50" width="120" height="48" rx="8" fill="rgba(239,68,68,0.12)" stroke={hoveredDep === 'Payment Service' ? 'rgba(239,68,68,0.8)' : 'rgba(239,68,68,0.5)'} strokeWidth="2" filter="url(#glow)" className="transition-all cursor-pointer" onMouseEnter={() => setHoveredDep('Payment Service')} onMouseLeave={() => setHoveredDep(null)} />
-                    <text x="330" y="73" textAnchor="middle" fill="#ef4444" fontSize="10" fontWeight="600" fontFamily="monospace">Payment Service</text>
-                    <text x="330" y="88" textAnchor="middle" fill="#fca5a5" fontSize="8" fontFamily="monospace">Risk: 87 ⚠</text>
-                    <rect x="480" y="50" width="120" height="48" rx="8" fill="rgba(6,182,212,0.06)" stroke={hoveredDep === 'Billing Service' ? 'rgba(6,182,212,0.6)' : 'rgba(6,182,212,0.3)'} strokeWidth="1.5" className="transition-all cursor-pointer" onMouseEnter={() => setHoveredDep('Billing Service')} onMouseLeave={() => setHoveredDep(null)} />
-                    <text x="540" y="73" textAnchor="middle" fill="#22d3ee" fontSize="10" fontWeight="600" fontFamily="monospace">Billing Service</text>
-                    <text x="540" y="88" textAnchor="middle" fill="#64748b" fontSize="8" fontFamily="monospace">Risk: 65</text>
-                    <rect x="270" y="200" width="120" height="48" rx="8" fill="rgba(239,68,68,0.08)" stroke={hoveredDep === 'Database' ? 'rgba(239,68,68,0.6)' : 'rgba(239,68,68,0.4)'} strokeWidth="1.5" className="transition-all cursor-pointer" onMouseEnter={() => setHoveredDep('Database')} onMouseLeave={() => setHoveredDep(null)} />
-                    <text x="330" y="223" textAnchor="middle" fill="#fca5a5" fontSize="10" fontWeight="600" fontFamily="monospace">Database</text>
-                    <text x="330" y="238" textAnchor="middle" fill="#64748b" fontSize="8" fontFamily="monospace">Risk: 55</text>
-                    <rect x="480" y="200" width="120" height="48" rx="8" fill="rgba(6,182,212,0.04)" stroke={hoveredDep === 'Auth Service' ? 'rgba(6,182,212,0.5)' : 'rgba(6,182,212,0.2)'} strokeWidth="1" className="transition-all cursor-pointer" onMouseEnter={() => setHoveredDep('Auth Service')} onMouseLeave={() => setHoveredDep(null)} />
-                    <text x="540" y="223" textAnchor="middle" fill="#94a3b8" fontSize="10" fontWeight="600" fontFamily="monospace">Auth Service</text>
-                    <text x="540" y="238" textAnchor="middle" fill="#64748b" fontSize="8" fontFamily="monospace">Risk: 38</text>
-                    <rect x="45" y="250" width="120" height="40" rx="8" fill="rgba(6,182,212,0.04)" stroke={hoveredDep === 'Notification Service' ? 'rgba(6,182,212,0.5)' : 'rgba(6,182,212,0.2)'} strokeWidth="1" className="transition-all cursor-pointer" onMouseEnter={() => setHoveredDep('Notification Service')} onMouseLeave={() => setHoveredDep(null)} />
-                    <text x="105" y="270" textAnchor="middle" fill="#94a3b8" fontSize="9" fontWeight="600" fontFamily="monospace">Notification</text>
-                    <text x="105" y="282" textAnchor="middle" fill="#64748b" fontSize="7" fontFamily="monospace">Risk: 45</text>
-                    <rect x="230" y="250" width="100" height="40" rx="8" fill="rgba(6,182,212,0.03)" stroke="rgba(6,182,212,0.15)" strokeWidth="1" />
-                    <text x="280" y="270" textAnchor="middle" fill="#94a3b8" fontSize="8" fontWeight="600" fontFamily="monospace">Webhook GW</text>
-                    <text x="280" y="282" textAnchor="middle" fill="#64748b" fontSize="7" fontFamily="monospace">Risk: 42</text>
-                    <rect x="480" y="250" width="100" height="40" rx="8" fill="rgba(6,182,212,0.03)" stroke="rgba(6,182,212,0.15)" strokeWidth="1" />
-                    <text x="530" y="270" textAnchor="middle" fill="#94a3b8" fontSize="9" fontWeight="600" fontFamily="monospace">Redis Cache</text>
-                    <text x="530" y="282" textAnchor="middle" fill="#64748b" fontSize="7" fontFamily="monospace">Risk: 25</text>
-                    <rect x="590" y="290" width="12" height="6" rx="2" fill="rgba(239,68,68,0.3)" stroke="rgba(239,68,68,0.5)" strokeWidth="1" />
-                    <text x="606" y="296" fill="#64748b" fontSize="7" fontFamily="monospace">Critical</text>
-                    <rect x="650" y="290" width="12" height="6" rx="2" fill="rgba(6,182,212,0.2)" stroke="rgba(6,182,212,0.3)" strokeWidth="1" />
-                    <text x="666" y="296" fill="#64748b" fontSize="7" fontFamily="monospace">Normal</text>
-                    <text x="350" y="340" textAnchor="middle" fill="#64748b" fontSize="7" fontFamily="monospace">Hover service nodes to highlight · Red = critical risk path</text>
+            {/* ===== SECTION 2: AI INVESTIGATION SUMMARY ===== */}
+            <motion.div variants={item} className="glass-card p-5">
+              <div className="flex items-center gap-2 mb-4">
+                <div className="flex h-5 w-5 items-center justify-center rounded-md bg-gradient-to-br from-cyan-500/20 to-blue-500/20">
+                  <svg className="h-3 w-3 text-cyan-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 3v11.25A2.25 2.25 0 006 16.5h2.25M3.75 3h-1.5m1.5 0h16.5m0 0h1.5m-1.5 0v11.25A2.25 2.25 0 0118 16.5h-2.25m-7.5 0h7.5m-7.5 0l-1 3m8.5-3l1 3m0 0l.5 1.5m-.5-1.5h-9.5m0 0l-.5 1.5" />
                   </svg>
                 </div>
-              </motion.div>
-
-              {/* ===== SECTION 4: Historical Incident Matches ===== */}
-              <motion.div variants={item} className="glass-card p-5">
-                <div className="flex items-center gap-2 mb-4">
-                  <div className="flex h-5 w-5 items-center justify-center rounded-md bg-gradient-to-br from-blue-500/20 to-indigo-500/20">
-                    <svg className="h-3 w-3 text-blue-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z" />
-                    </svg>
+                <h3 className="text-sm font-semibold text-white">AI Investigation Summary</h3>
+                <StatusBadge status="info" label="Live Analysis" />
+              </div>
+              <div className="rounded-lg border border-white/[0.06] bg-white/[0.02] p-4 mb-4">
+                <span className="text-[9px] text-slate-600 font-mono tracking-wider uppercase block mb-2">Executive Summary</span>
+                <p className="text-xs text-slate-400 leading-relaxed">
+                  Forensic analysis of the Payment Pipeline failure identified a critical circuit breaker gap in the payment worker retry loop, which caused a cascading system failure affecting 4 services. The investigation analyzed 847 MRs across the platform, correlating 5 historical incidents with 92% confidence. Three distinct root cause chains were identified — circuit breaker cascade (primary), memory exhaustion (secondary), and idempotency gap (tertiary). Immediate remediation of the circuit breaker configuration is recommended to prevent recurrence of the P0 outage that blocked all payment flows for 45 minutes.
+                </p>
+              </div>
+              <div className="grid gap-4 sm:grid-cols-3 mb-4">
+                {data.keyFindingsData.map((kf, i) => (
+                  <motion.div key={kf.id} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.06 }}
+                    className={`rounded-lg border p-3 ${kf.severity === 'critical' ? 'border-red-500/20 bg-red-500/[0.03]' : 'border-orange-500/20 bg-orange-500/[0.02]'}`}>
+                    <div className="flex items-center justify-between mb-2">
+                      <span className="font-mono text-[9px] text-slate-600">{kf.id}</span>
+                      <StatusBadge status={kf.severity} label={kf.severity} />
+                    </div>
+                    <h4 className="text-xs font-semibold text-slate-200 mb-1">{kf.title}</h4>
+                    <p className="text-[10px] text-slate-500 leading-relaxed">{kf.description}</p>
+                  </motion.div>
+                ))}
+              </div>
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-4">
+                <div className="rounded-lg border border-white/[0.06] bg-white/[0.02] p-3 text-center">
+                  <div className="text-[9px] text-slate-600 font-mono uppercase tracking-wider mb-1">Risk Score</div>
+                  <div className="text-xl font-bold text-orange-400 font-mono">{data.riskScore}%</div>
+                </div>
+                <div className="rounded-lg border border-white/[0.06] bg-white/[0.02] p-3 text-center">
+                  <div className="text-[9px] text-slate-600 font-mono uppercase tracking-wider mb-1">Confidence</div>
+                  <div className="text-xl font-bold text-cyan-400 font-mono">{data.confidence}%</div>
+                </div>
+                <div className="rounded-lg border border-white/[0.06] bg-white/[0.02] p-3 text-center">
+                  <div className="text-[9px] text-slate-600 font-mono uppercase tracking-wider mb-1">Impact</div>
+                  <div className="text-xl font-bold text-red-400 font-mono">HIGH</div>
+                </div>
+                <div className="rounded-lg border border-white/[0.06] bg-white/[0.02] p-3 text-center">
+                  <div className="text-[9px] text-slate-600 font-mono uppercase tracking-wider mb-1">Urgency</div>
+                  <div className="text-xl font-bold text-red-400 font-mono animate-pulse">CRITICAL</div>
+                </div>
+              </div>
+              <div className="flex flex-wrap gap-2">
+                {data.affectedSystems.map((sys, i) => (
+                  <div key={i} className={`inline-flex items-center gap-2 rounded-lg border px-3 py-1.5 text-[10px] ${sys.impact === 'Critical' ? 'border-red-500/20 bg-red-500/[0.05]' : sys.impact === 'High' ? 'border-orange-500/20 bg-orange-500/[0.04]' : 'border-yellow-500/15 bg-yellow-500/[0.03]'}`}>
+                    <span className={`h-1.5 w-1.5 rounded-full ${sys.impact === 'Critical' ? 'bg-red-500' : sys.impact === 'High' ? 'bg-orange-500' : 'bg-yellow-500'}`} />
+                    <span className="text-slate-300 font-mono">{sys.name}</span>
+                    <span className={`font-mono ${sys.impact === 'Critical' ? 'text-red-400' : sys.impact === 'High' ? 'text-orange-400' : 'text-yellow-400'}`}>{sys.impact}</span>
+                    <span className="text-slate-600">·</span>
+                    <span className="text-slate-500">{sys.status}</span>
                   </div>
-                  <h3 className="text-sm font-semibold text-white">Historical Incident Matches</h3>
-                  <span className="text-[10px] text-slate-600 font-mono">{data.mrs.length} correlated MRs</span>
-                </div>
-                <div className="space-y-2">
-                  {data.mrs.map((mr, i) => (
-                    <motion.div key={i} initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: i * 0.06 }}
-                      className="rounded-lg border border-white/[0.06] bg-white/[0.02] p-3 hover:border-cyan-500/20 transition-all">
-                      <div className="flex items-start justify-between gap-3 mb-2">
-                        <div className="flex items-center gap-2">
-                          <span className="font-mono text-[10px] text-cyan-400 font-bold">{mr.id}</span>
-                          <span className="text-[10px] text-slate-600 font-mono">{mr.author}</span>
-                          <span className="text-[10px] text-slate-600">·</span>
-                          <span className="text-[10px] text-slate-600">{mr.date}</span>
-                        </div>
-                        <div className="flex items-center gap-2">
-                          <span className={`rounded px-1.5 py-0.5 text-[8px] font-bold ${riskBadgeColors[mr.risk] || 'bg-slate-500/10 text-slate-400'}`}>{mr.outcome}</span>
-                          <span className="rounded px-1.5 py-0.5 text-[8px] font-bold bg-white/[0.04] text-slate-500">{mr.risk.toUpperCase()}</span>
-                        </div>
-                      </div>
-                      <p className="text-[11px] text-slate-400 mb-2">{mr.desc}</p>
-                      <div className="flex items-center gap-3">
-                        <div className="flex-1">
-                          <div className="flex items-center justify-between mb-0.5">
-                            <span className="text-[8px] text-slate-600 font-mono">Match Score</span>
-                            <span className={`text-[9px] font-mono ${mr.match >= 85 ? 'text-green-400' : mr.match >= 70 ? 'text-yellow-400' : 'text-slate-500'}`}>{mr.match}%</span>
-                          </div>
-                          <AnimatedBar value={mr.match} color={mr.match >= 85 ? 'bg-green-500' : mr.match >= 70 ? 'bg-yellow-500' : 'bg-slate-500'} />
-                        </div>
-                        <span className="text-[8px] text-slate-700 font-mono whitespace-nowrap">{mr.files} files</span>
-                      </div>
-                    </motion.div>
-                  ))}
-                </div>
-              </motion.div>
+                ))}
+              </div>
+            </motion.div>
 
-              {/* ===== SECTION 5: Blast Radius Analysis ===== */}
-              <motion.div variants={item} className="glass-card p-5">
-                <div className="flex items-center gap-2 mb-4">
-                  <div className="flex h-5 w-5 items-center justify-center rounded-md bg-gradient-to-br from-orange-500/20 to-red-500/20">
-                    <svg className="h-3 w-3 text-orange-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" />
-                    </svg>
-                  </div>
-                  <h3 className="text-sm font-semibold text-white">Blast Radius Analysis</h3>
-                  <StatusBadge status="critical" label={`${data.blastRadius.totalServices} services affected`} />
-                </div>
-                <div className="flex flex-col lg:flex-row items-center justify-center gap-6">
-                  <svg viewBox="0 0 480 380" className="w-full max-w-md shrink-0">
-                    <defs>
-                      <radialGradient id="ring0" cx="50%" cy="50%" r="50%"><stop offset="0%" stopColor="rgba(239,68,68,0.25)" /><stop offset="100%" stopColor="rgba(239,68,68,0.05)" /></radialGradient>
-                      <radialGradient id="ring1" cx="50%" cy="50%" r="50%"><stop offset="0%" stopColor="rgba(239,68,68,0.12)" /><stop offset="100%" stopColor="rgba(239,68,68,0.02)" /></radialGradient>
-                      <radialGradient id="ring2" cx="50%" cy="50%" r="50%"><stop offset="0%" stopColor="rgba(245,158,11,0.08)" /><stop offset="100%" stopColor="rgba(245,158,11,0.02)" /></radialGradient>
-                      <radialGradient id="ring3" cx="50%" cy="50%" r="50%"><stop offset="0%" stopColor="rgba(6,182,212,0.05)" /><stop offset="100%" stopColor="rgba(6,182,212,0.01)" /></radialGradient>
-                    </defs>
-                    <circle cx="240" cy="190" r="170" fill="url(#ring3)" stroke="rgba(6,182,212,0.1)" strokeWidth="1" strokeDasharray="4 6" />
-                    <text x="370" y="70" fill="#67e8f9" fontSize="8" fontFamily="monospace" opacity="0.7">Downstream Impact</text>
-                    <text x="380" y="85" fill="#64748b" fontSize="7" fontFamily="monospace">Database, Webhook GW</text>
-                    <circle cx="240" cy="190" r="125" fill="url(#ring2)" stroke="rgba(245,158,11,0.15)" strokeWidth="1.5" strokeDasharray="4 4" />
-                    <text x="50" y="130" fill="#fbbf24" fontSize="8" fontFamily="monospace" opacity="0.8">Transitive Dependencies</text>
-                    <text x="50" y="145" fill="#64748b" fontSize="7" fontFamily="monospace">Billing, Auth Service</text>
-                    <circle cx="240" cy="190" r="80" fill="url(#ring1)" stroke="rgba(239,68,68,0.25)" strokeWidth="2" strokeDasharray="3 3" />
-                    <text x="240" y="130" textAnchor="middle" fill="#fca5a5" fontSize="8" fontFamily="monospace" opacity="0.9">Direct Dependencies</text>
-                    <text x="240" y="142" textAnchor="middle" fill="#64748b" fontSize="7" fontFamily="monospace">Payment, API Gateway</text>
-                    <circle cx="240" cy="190" r="40" fill="url(#ring0)" stroke="rgba(239,68,68,0.4)" strokeWidth="2" />
-                    <text x="240" y="186" textAnchor="middle" fill="#fca5a5" fontSize="9" fontWeight="700" fontFamily="monospace">CHANGE</text>
-                    <text x="240" y="200" textAnchor="middle" fill="#ef4444" fontSize="7" fontFamily="monospace">Retry Logic</text>
-                    <text x="240" y="340" textAnchor="middle" fill="#64748b" fontSize="8" fontFamily="monospace">Blast depth: {data.blastRadius.depth}</text>
-                    <text x="240" y="355" textAnchor="middle" fill="#64748b" fontSize="7" fontFamily="monospace">Inner: CRITICAL · Middle: ELEVATED · Outer: MODERATE</text>
+            {/* ===== SECTION 3: ROOT CAUSE EXPLORER ===== */}
+            <motion.div variants={item} className="glass-card p-5">
+              <div className="flex items-center gap-2 mb-5">
+                <div className="flex h-5 w-5 items-center justify-center rounded-md bg-gradient-to-br from-purple-500/20 to-pink-500/20">
+                  <svg className="h-3 w-3 text-purple-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" />
                   </svg>
-                  <div className="w-full lg:w-64 space-y-2">
-                    {data.blastRadius.zones.map((z, i) => (
-                      <motion.div key={z.name} initial={{ opacity: 0, x: 10 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: i * 0.05 }}
-                        className={`flex items-center justify-between rounded-lg border p-2.5 text-[10px] transition-all hover:border-cyan-500/20 ${z.critical ? 'border-red-500/20 bg-red-500/[0.03]' : 'border-white/[0.06] bg-white/[0.02]'}`}>
-                        <div className="flex items-center gap-2">
-                          <span className={`h-2 w-2 rounded-full ${z.radius === 1 ? 'bg-red-500' : z.radius === 2 ? 'bg-orange-500' : 'bg-cyan-500'}`} />
-                          <span className="text-slate-300 font-mono">{z.name}</span>
-                        </div>
-                        <div className="flex items-center gap-2">
-                          <span className={`text-[9px] font-mono ${z.risk >= 80 ? 'text-red-400' : z.risk >= 50 ? 'text-orange-400' : 'text-cyan-400'}`}>R:{z.risk}</span>
-                          <span className="text-[8px] text-slate-600">r={z.radius}</span>
-                        </div>
-                      </motion.div>
-                    ))}
-                  </div>
                 </div>
-              </motion.div>
-
-              {/* ===== SECTION 6: Risk Propagation Graph ===== */}
-              <motion.div variants={item} className="glass-card p-5">
-                <div className="flex items-center gap-2 mb-4">
-                  <div className="flex h-5 w-5 items-center justify-center rounded-md bg-gradient-to-br from-red-500/20 to-orange-500/20">
-                    <svg className="h-3 w-3 text-red-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 3v11.25A2.25 2.25 0 006 16.5h2.25M3.75 3h-1.5m1.5 0h16.5m0 0h1.5m-1.5 0v11.25A2.25 2.25 0 0118 16.5h-2.25m-7.5 0h7.5m-7.5 0l-1 3m8.5-3l1 3m0 0l.5 1.5m-.5-1.5h-9.5m0 0l-.5 1.5" />
-                    </svg>
-                  </div>
-                  <h3 className="text-sm font-semibold text-white">Risk Propagation Graph</h3>
-                  <span className="text-[10px] text-slate-600 font-mono">{data.propagation.length} propagation paths</span>
-                </div>
-                <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-                  {data.propagation.map((p, i) => (
-                    <motion.div key={i} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.08 }}
-                      className="relative rounded-lg border border-white/[0.06] bg-white/[0.02] p-3 hover:border-cyan-500/20 transition-all group">
-                      <div className="absolute -top-2 -right-2 w-3 h-3 rounded-full bg-red-500/30 animate-pulse" />
-                      <div className="flex items-center justify-between mb-2">
-                        <div className="flex items-center gap-1.5">
-                          <span className="h-2 w-2 rounded-full bg-red-500" />
-                          <span className="text-[10px] font-mono text-slate-300 font-medium">{p.from}</span>
-                        </div>
-                        <svg className="h-4 w-4 text-cyan-500/40" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                          <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
-                        </svg>
-                        <div className="flex items-center gap-1.5">
-                          <span className="text-[10px] font-mono text-slate-300 font-medium">{p.to}</span>
-                          <span className="h-2 w-2 rounded-full bg-orange-500" />
-                        </div>
-                      </div>
-                      <AnimatedBar value={p.risk} color={p.risk >= 80 ? 'bg-red-500' : p.risk >= 60 ? 'bg-orange-500' : 'bg-yellow-500'} />
-                      <div className="flex items-center justify-between mt-1">
-                        <span className="text-[8px] text-slate-700 font-mono">Propagation Risk</span>
-                        <span className="text-[10px] font-mono text-red-400">{p.risk}%</span>
-                      </div>
-                      <div className="mt-2 rounded bg-white/[0.02] p-1.5 text-[8px] text-slate-600 leading-relaxed">
-                        {p.from} failure → <span className="text-red-400">{p.risk}%</span> likely to affect {p.to}
-                      </div>
-                    </motion.div>
-                  ))}
-                </div>
-              </motion.div>
-
-              {/* ===== SECTION 7: Similar Failure Database ===== */}
-              <motion.div variants={item} className="glass-card overflow-hidden">
-                <div className="flex items-center gap-2 p-5 pb-3">
-                  <div className="flex h-5 w-5 items-center justify-center rounded-md bg-gradient-to-br from-red-500/20 to-orange-500/20">
-                    <svg className="h-3 w-3 text-red-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m9-.75a9 9 0 11-18 0 9 9 0 0118 0zm-9 3.75h.008v.008H12v-.008z" />
-                    </svg>
-                  </div>
-                  <h3 className="text-sm font-semibold text-white">Similar Failure Database</h3>
-                  <span className="text-[10px] text-slate-600 font-mono ml-1">{data.failureModes.length} known failure modes</span>
-                </div>
-                <div className="px-5 pb-5 space-y-2">
-                  {data.failureModes.map((f, i) => {
-                    const isOpen = expandedFailure === i
-                    return (
-                      <motion.div key={i} initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.04 }}
-                        className="rounded-lg border border-white/[0.06] bg-white/[0.02] overflow-hidden hover:border-cyan-500/20 transition-all">
-                        <button onClick={() => setExpandedFailure(isOpen ? null : i)}
-                          className="flex w-full items-center justify-between p-3 text-left">
-                          <div className="flex items-center gap-2 flex-1 min-w-0">
-                            <span className={`rounded px-1.5 py-0.5 text-[8px] font-bold shrink-0 ${severityColors[f.severity]}`}>{f.severity}</span>
-                            <span className="text-xs text-slate-300">{f.mode}</span>
-                          </div>
-                          <div className="flex items-center gap-2 shrink-0 ml-2">
-                            <StatusBadge status={f.probability === 'High' ? 'critical' : f.probability === 'Medium' ? 'warning' : 'info'} label={f.probability} />
-                            <svg className={`h-3.5 w-3.5 text-slate-600 transition-transform ${isOpen ? 'rotate-180' : ''}`} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                              <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
-                            </svg>
-                          </div>
-                        </button>
-                        <AnimatePresence>
-                          {isOpen && (
-                            <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} exit={{ opacity: 0, height: 0 }} className="border-t border-white/[0.04]">
-                              <div className="p-3 grid grid-cols-1 sm:grid-cols-2 gap-2 text-[10px]">
-                                <div className="rounded bg-white/[0.02] p-2"><span className="text-slate-600 block mb-0.5 font-mono text-[9px] uppercase tracking-wider">Impact</span><span className="text-slate-400">{f.impact}</span></div>
-                                <div className="rounded bg-white/[0.02] p-2"><span className="text-slate-600 block mb-0.5 font-mono text-[9px] uppercase tracking-wider">Detection</span><span className="text-slate-400">{f.detection}</span></div>
-                                <div className="rounded bg-white/[0.02] p-2 sm:col-span-2"><span className="text-slate-600 block mb-0.5 font-mono text-[9px] uppercase tracking-wider">Mitigation</span><span className="text-cyan-400">{f.mitigation}</span></div>
-                              </div>
-                            </motion.div>
+                <h3 className="text-sm font-semibold text-white">Root Cause Explorer</h3>
+                <span className="text-[10px] text-slate-600 font-mono">3 causal chains identified</span>
+              </div>
+              <div className="grid gap-6 lg:grid-cols-3">
+                {data.rootCauseChains.map((chain, ci) => (
+                  <div key={ci} className="relative">
+                    <h4 className="text-[10px] text-slate-500 font-mono tracking-wider mb-3 uppercase">{chain.title}</h4>
+                    <div className="relative flex flex-col items-center">
+                      <svg className="absolute top-0 left-1/2 w-full h-full -translate-x-1/2 pointer-events-none" style={{ zIndex: 0 }}>
+                        <line x1="50%" y1="0" x2="50%" y2="100%" stroke="rgba(6,182,212,0.12)" strokeWidth="1.5" strokeDasharray="4 4" />
+                      </svg>
+                      {chain.chain.map((cause, ni) => (
+                        <div key={ni} className="relative z-10 w-full flex flex-col items-center">
+                          {ni > 0 && (
+                            <div className="flex flex-col items-center my-1">
+                              <svg width="16" height="16" viewBox="0 0 16 16" className="text-cyan-500/40"><path d="M8 12L3 4h10z" fill="currentColor" /></svg>
+                            </div>
                           )}
-                        </AnimatePresence>
-                      </motion.div>
-                    )
-                  })}
-                </div>
-              </motion.div>
-
-              {/* ===== SECTION 8: AI Recommendations ===== */}
-              <motion.div variants={item} className="glass-card overflow-hidden">
-                <div className="flex items-center gap-2 p-5 pb-3">
-                  <div className="flex h-5 w-5 items-center justify-center rounded-md bg-gradient-to-br from-green-500/20 to-emerald-500/20">
-                    <svg className="h-3 w-3 text-green-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09z" />
-                    </svg>
-                  </div>
-                  <h3 className="text-sm font-semibold text-white">AI Recommendations</h3>
-                  <span className="text-[10px] text-slate-600 font-mono ml-1">{data.recommendations.length} prioritized actions</span>
-                </div>
-                <div className="px-5 pb-5 space-y-2">
-                  {data.recommendations.map((r, i) => (
-                    <motion.div key={i} initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: i * 0.06 }}
-                      className="flex items-start gap-3 rounded-lg border border-white/[0.06] bg-white/[0.02] p-3 hover:border-cyan-500/20 transition-all group">
-                      <div className="flex items-center gap-1.5 shrink-0 mt-0.5">
-                        <span className={`rounded px-1.5 py-0.5 text-[8px] font-bold ${r.priority === 'P0' ? 'bg-red-500/15 text-red-400 border border-red-500/25' : r.priority === 'P1' ? 'bg-yellow-500/10 text-yellow-400 border border-yellow-500/20' : 'bg-blue-500/10 text-blue-400 border border-blue-500/20'}`}>{r.priority}</span>
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <p className="text-xs text-slate-300 font-medium">{r.action}</p>
-                        <div className="flex flex-wrap gap-3 mt-0.5 text-[9px] text-slate-600">
-                          <span className="flex items-center gap-1">
-                            <svg className="h-3 w-3 text-green-400/60" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}><path strokeLinecap="round" strokeLinejoin="round" d="M13.5 10.5V6.75a4.5 4.5 0 119 0v3.75M3.75 21.75h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H3.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z" /></svg>
-                            {r.impact}
-                          </span>
-                          <span className="flex items-center gap-1">
-                            <svg className="h-3 w-3 text-blue-400/60" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}><path strokeLinecap="round" strokeLinejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
-                            {r.effort}
-                          </span>
-                          <span className="flex items-center gap-1">
-                            <svg className="h-3 w-3 text-purple-400/60" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}><path strokeLinecap="round" strokeLinejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" /></svg>
-                            {r.owner}
-                          </span>
+                          <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: ni * 0.15 + ci * 0.1 }}
+                            className={`w-full rounded-lg border p-3 transition-all hover:border-cyan-500/30 cursor-pointer ${ni === 0 ? 'border-orange-500/20 bg-orange-500/[0.03]' : ni === 1 ? 'border-yellow-500/20 bg-yellow-500/[0.02]' : 'border-red-500/20 bg-red-500/[0.03]'}`}
+                            onClick={() => setExpandedChain(expandedChain === `${ci}-${ni}` ? null : `${ci}-${ni}`)}>
+                            <div className="flex items-start justify-between gap-2">
+                              <p className={`text-[10px] font-medium ${ni === 2 ? 'text-red-300' : 'text-slate-300'}`}>{cause}</p>
+                              <span className="shrink-0 rounded bg-white/[0.04] px-1.5 py-0.5 text-[8px] font-mono text-slate-500">E:{chain.evidence[ni]}</span>
+                            </div>
+                            <div className="flex items-center gap-2 mt-1.5">
+                              <div className="flex-1 h-1 rounded-full bg-white/[0.06] overflow-hidden">
+                                <div className={`h-full rounded-full ${chain.confidences[ni] >= 90 ? 'bg-green-500' : chain.confidences[ni] >= 80 ? 'bg-yellow-500' : 'bg-orange-500'}`} style={{ width: `${chain.confidences[ni]}%` }} />
+                              </div>
+                              <span className="text-[8px] font-mono text-slate-600">{chain.confidences[ni]}%</span>
+                            </div>
+                          </motion.div>
+                          <AnimatePresence>
+                            {expandedChain === `${ci}-${ni}` && (
+                              <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} exit={{ opacity: 0, height: 0 }} className="w-full overflow-hidden">
+                                <div className="mt-2 rounded-lg border border-white/[0.04] bg-white/[0.01] p-2.5 text-[9px] text-slate-500 leading-relaxed">
+                                  {chain.descriptions[ni]}
+                                </div>
+                              </motion.div>
+                            )}
+                          </AnimatePresence>
                         </div>
-                      </div>
-                    </motion.div>
-                  ))}
-                </div>
-              </motion.div>
-
-              {/* ===== SECTION 9: Mitigation Strategy ===== */}
-              <motion.div variants={item} className="glass-card overflow-hidden">
-                <div className="flex items-center gap-2 p-5 pb-3">
-                  <div className="flex h-5 w-5 items-center justify-center rounded-md bg-gradient-to-br from-blue-500/20 to-cyan-500/20">
-                    <svg className="h-3 w-3 text-blue-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75m-3-7.036A11.959 11.959 0 013.598 6 11.99 11.99 0 003 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285z" />
-                    </svg>
+                      ))}
+                    </div>
                   </div>
-                  <h3 className="text-sm font-semibold text-white">Mitigation Strategy</h3>
-                  <span className="text-[10px] text-slate-600 font-mono ml-1">{data.mitigations.length} phases</span>
+                ))}
+              </div>
+            </motion.div>
+
+            {/* ===== SECTION 4: HISTORICAL INCIDENT INTELLIGENCE ===== */}
+            <motion.div variants={item} className="glass-card p-5">
+              <div className="flex items-center gap-2 mb-4">
+                <div className="flex h-5 w-5 items-center justify-center rounded-md bg-gradient-to-br from-blue-500/20 to-indigo-500/20">
+                  <svg className="h-3 w-3 text-blue-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
                 </div>
-                <div className="px-5 pb-5 grid gap-4 sm:grid-cols-3">
-                  {data.mitigations.map((m, i) => {
-                    const isOpen = expandedMitigation === i
-                    const phaseColors = ['from-red-500/5 to-orange-500/5 border-red-500/15', 'from-yellow-500/5 to-orange-500/5 border-yellow-500/15', 'from-green-500/5 to-cyan-500/5 border-green-500/15']
-                    const phaseBadgeColors = ['bg-red-500/15 text-red-400', 'bg-yellow-500/10 text-yellow-400', 'bg-green-500/10 text-green-400']
-                    const timelineIcons = [
-                      <svg key="ti0" className="h-3 w-3 text-red-400/60" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}><path strokeLinecap="round" strokeLinejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>,
-                      <svg key="ti1" className="h-3 w-3 text-yellow-400/60" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}><path strokeLinecap="round" strokeLinejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>,
-                      <svg key="ti2" className="h-3 w-3 text-green-400/60" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}><path strokeLinecap="round" strokeLinejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>,
-                    ]
-                    return (
-                      <motion.div key={i} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.08 }}
-                        className={`rounded-lg border bg-gradient-to-br ${phaseColors[i]} overflow-hidden hover:border-cyan-500/30 transition-all`}>
-                        <button onClick={() => setExpandedMitigation(isOpen ? null : i)} className="w-full text-left p-3">
-                          <div className="flex items-center justify-between mb-2">
-                            <h4 className="text-[11px] font-mono text-white font-semibold">{m.phase}</h4>
-                            <span className={`rounded px-1.5 py-0.5 text-[8px] font-bold ${phaseBadgeColors[i]}`}>{m.timeline}</span>
+                <h3 className="text-sm font-semibold text-white">Historical Incident Intelligence</h3>
+                <span className="text-[10px] text-slate-600 font-mono">{data.mrs.length} correlated MRs</span>
+              </div>
+              <div className="space-y-2">
+                {data.mrs.map((mr, i) => (
+                  <motion.div key={i} initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: i * 0.06 }}
+                    className="rounded-lg border border-white/[0.06] bg-white/[0.02] p-3 hover:border-cyan-500/20 transition-all">
+                    <div className="flex items-start justify-between gap-3 mb-2">
+                      <div className="flex items-center gap-2">
+                        <span className="font-mono text-[10px] text-cyan-400 font-bold">{mr.id}</span>
+                        <span className="text-[10px] text-slate-600 font-mono">{mr.author}</span>
+                        <span className="text-[10px] text-slate-600">·</span>
+                        <span className="text-[10px] text-slate-600">{mr.date}</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <span className={`rounded px-1.5 py-0.5 text-[8px] font-bold ${mr.outcome === 'Incident' ? 'bg-red-500/15 text-red-400' : 'bg-yellow-500/10 text-yellow-400'}`}>{mr.outcome}</span>
+                        <span className={`rounded px-1.5 py-0.5 text-[8px] font-bold ${riskBadgeColors[mr.risk] || 'bg-slate-500/10 text-slate-400'}`}>{mr.risk.toUpperCase()}</span>
+                      </div>
+                    </div>
+                    <p className="text-[11px] text-slate-400 mb-2">{mr.desc}</p>
+                    <div className="flex items-center gap-3">
+                      <div className="flex-1">
+                        <div className="flex items-center justify-between mb-0.5">
+                          <span className="text-[8px] text-slate-600 font-mono">Match Score</span>
+                          <span className={`text-[9px] font-mono ${mr.match >= 85 ? 'text-green-400' : mr.match >= 70 ? 'text-yellow-400' : 'text-slate-500'}`}>{mr.match}%</span>
+                        </div>
+                        <AnimatedBar value={mr.match} color={mr.match >= 85 ? 'bg-green-500' : mr.match >= 70 ? 'bg-yellow-500' : 'bg-slate-500'} />
+                      </div>
+                      <span className="text-[8px] text-slate-700 font-mono whitespace-nowrap">{mr.files} files</span>
+                    </div>
+                  </motion.div>
+                ))}
+              </div>
+            </motion.div>
+
+            {/* ===== SECTION 5: BLAST RADIUS ANALYSIS ===== */}
+            <motion.div variants={item} className="glass-card p-5">
+              <div className="flex items-center gap-2 mb-4">
+                <div className="flex h-5 w-5 items-center justify-center rounded-md bg-gradient-to-br from-orange-500/20 to-red-500/20">
+                  <svg className="h-3 w-3 text-orange-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" />
+                  </svg>
+                </div>
+                <h3 className="text-sm font-semibold text-white">Blast Radius Analysis</h3>
+                <StatusBadge status="critical" label={`${data.blastRadius.totalServices} services affected`} />
+              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-4">
+                {data.blastRadius.zones.map((z, i) => (
+                  <motion.div key={z.name} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.06 }}
+                    className={`rounded-lg border p-4 transition-all hover:border-cyan-500/30 ${z.critical ? 'border-red-500/20 bg-red-500/[0.03]' : 'border-white/[0.06] bg-white/[0.02]'}`}>
+                    <div className="flex items-center justify-between mb-3">
+                      <div className="flex items-center gap-2">
+                        <span className={`h-2.5 w-2.5 rounded-full ${z.radius === 1 ? 'bg-red-500 animate-pulse' : z.radius === 2 ? 'bg-orange-500' : 'bg-cyan-500'}`} />
+                        <span className="text-xs font-mono text-slate-200 font-semibold">{z.name}</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        {z.critical && <span className="rounded bg-red-500/15 px-1.5 py-0.5 text-[8px] font-bold text-red-400">CRITICAL</span>}
+                        <span className={`text-[11px] font-mono font-bold ${z.risk >= 80 ? 'text-red-400' : z.risk >= 60 ? 'text-orange-400' : 'text-cyan-400'}`}>R:{z.risk}</span>
+                      </div>
+                    </div>
+                    <div className="mb-2">
+                      <div className="flex items-center justify-between mb-1">
+                        <span className="text-[8px] text-slate-600 font-mono">Risk Level</span>
+                        <span className={`text-[9px] font-mono ${z.risk >= 80 ? 'text-red-400' : z.risk >= 60 ? 'text-orange-400' : 'text-cyan-400'}`}>{z.risk}%</span>
+                      </div>
+                      <AnimatedBar value={z.risk} color={z.risk >= 80 ? 'bg-red-500' : z.risk >= 60 ? 'bg-orange-500' : 'bg-cyan-500'} />
+                    </div>
+                    <div className="flex items-center justify-between text-[9px] text-slate-600">
+                      <span className="font-mono">Files Changed: {z.files || 4}</span>
+                      <span className="font-mono">Status: {z.critical ? 'Degraded' : 'Stable'}</span>
+                    </div>
+                  </motion.div>
+                ))}
+              </div>
+              <div className="rounded-lg border border-amber-500/15 bg-amber-500/[0.03] p-3">
+                <div className="flex items-center flex-wrap gap-4">
+                  <div className="flex items-center gap-2">
+                    <svg className="h-4 w-4 text-amber-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M12 6v12m-3-2.818l.879.659c1.171.879 3.07.879 4.242 0 1.172-.879 1.172-2.303 0-3.182C13.536 12.219 12.768 12 12 12c-.725 0-1.45-.22-2.003-.659-1.106-.879-1.106-2.303 0-3.182s2.9-.879 4.006 0l.415.33M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    <span className="text-[10px] text-amber-300 font-mono font-semibold">Business Impact</span>
+                  </div>
+                  <div className="flex items-center gap-4 text-[10px]">
+                    <span className="text-slate-400"><span className="text-amber-400 font-mono font-bold">Revenue at Risk:</span> $202K</span>
+                    <span className="text-slate-400"><span className="text-amber-400 font-mono font-bold">Customer Impact:</span> 15K users</span>
+                    <span className="text-slate-400"><span className="text-amber-400 font-mono font-bold">SLA Exposure:</span> $12K</span>
+                  </div>
+                </div>
+              </div>
+            </motion.div>
+
+            {/* ===== SECTION 6: DEPENDENCY INTELLIGENCE ===== */}
+            <motion.div variants={item} className="glass-card p-5">
+              <div className="flex items-center gap-2 mb-4">
+                <div className="flex h-5 w-5 items-center justify-center rounded-md bg-gradient-to-br from-cyan-500/20 to-blue-500/20">
+                  <svg className="h-3 w-3 text-cyan-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 12.75V12A2.25 2.25 0 014.5 9.75h15A2.25 2.25 0 0121.75 12v.75m-8.69-6.44l-2.12-2.12a1.5 1.5 0 00-1.061-.44H4.5A2.25 2.25 0 002.25 6v12a2.25 2.25 0 002.25 2.25h15A2.25 2.25 0 0021.75 18V9a2.25 2.25 0 00-2.25-2.25h-5.379a1.5 1.5 0 01-1.06-.44z" />
+                  </svg>
+                </div>
+                <h3 className="text-sm font-semibold text-white">Dependency Intelligence</h3>
+                <span className="text-[10px] text-slate-600 font-mono">4 services · 7 dependency edges</span>
+              </div>
+              <div className="grid gap-3 sm:grid-cols-2 mb-4">
+                {data.deps.map((dep, i) => (
+                  <motion.div key={i} initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.05 }}
+                    onMouseEnter={() => setHoveredDep(dep.service)} onMouseLeave={() => setHoveredDep(null)}
+                    className={`rounded-lg border p-3 transition-all ${dep.critical ? 'border-red-500/20 bg-red-500/[0.03]' : 'border-white/[0.06] bg-white/[0.02]'} ${hoveredDep === dep.service ? 'border-cyan-500/40' : ''}`}>
+                    <div className="flex items-center justify-between mb-2">
+                      <div className="flex items-center gap-2">
+                        <span className={`h-2 w-2 rounded-full ${dep.critical ? 'bg-red-500 animate-pulse' : 'bg-cyan-500'}`} />
+                        <span className="text-xs font-mono text-slate-200 font-semibold">{dep.service}</span>
+                        {dep.critical && <span className="rounded bg-red-500/15 px-1.5 py-0.5 text-[7px] font-bold text-red-400">CRITICAL</span>}
+                      </div>
+                      <span className={`text-[10px] font-mono font-bold ${dep.risk >= 80 ? 'text-red-400' : dep.risk >= 60 ? 'text-orange-400' : 'text-cyan-400'}`}>{dep.risk}%</span>
+                    </div>
+                    <div className="flex flex-wrap gap-1">
+                      {dep.deps.map((d, di) => (
+                        <span key={di} className="inline-flex items-center gap-1 rounded bg-white/[0.03] px-2 py-0.5 text-[8px] font-mono text-slate-500 border border-white/[0.04]">
+                          <svg className="h-2 w-2 text-slate-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
+                          </svg>
+                          {d}
+                        </span>
+                      ))}
+                    </div>
+                    <div className="mt-2 pt-2 border-t border-white/[0.04] flex items-center justify-between text-[8px] text-slate-700 font-mono">
+                      <span>Upstream: {dep.deps.length} dep{dep.deps.length > 1 ? 's' : ''}</span>
+                      <span>Propagation: {dep.risk}%</span>
+                    </div>
+                  </motion.div>
+                ))}
+              </div>
+              <div className="relative w-full overflow-x-auto">
+                <svg viewBox="0 0 700 350" className="w-full max-w-4xl mx-auto" style={{ minWidth: 600 }}>
+                  <defs>
+                    <marker id="arrowCyan" markerWidth="10" markerHeight="7" refX="10" refY="3.5" orient="auto"><polygon points="0 0, 10 3.5, 0 7" fill="rgba(6,182,212,0.5)" /></marker>
+                    <marker id="arrowRed" markerWidth="10" markerHeight="7" refX="10" refY="3.5" orient="auto"><polygon points="0 0, 10 3.5, 0 7" fill="rgba(239,68,68,0.5)" /></marker>
+                    <filter id="glow"><feGaussianBlur stdDeviation="2" result="blur" /><feMerge><feMergeNode in="blur" /><feMergeNode in="SourceGraphic" /></feMerge></filter>
+                  </defs>
+                  <pattern id="gridDep" width="20" height="20" patternUnits="userSpaceOnUse">
+                    <path d="M 20 0 L 0 0 0 20" fill="none" stroke="rgba(255,255,255,0.02)" strokeWidth="0.5" />
+                  </pattern>
+                  <rect width="700" height="350" fill="url(#gridDep)" />
+                  <path d="M 105 80 C 105 140, 200 140, 200 200" fill="none" stroke="rgba(239,68,68,0.35)" strokeWidth="2" markerEnd="url(#arrowRed)" strokeDasharray="6 3" />
+                  <text x="120" y="130" fill="#ef4444" fontSize="7" fontFamily="monospace" opacity="0.7">depends-on</text>
+                  <path d="M 105 80 C 105 140, 300 140, 300 200" fill="none" stroke="rgba(6,182,212,0.25)" strokeWidth="1.5" markerEnd="url(#arrowCyan)" />
+                  <text x="160" y="150" fill="#64748b" fontSize="7" fontFamily="monospace" opacity="0.6">route-to</text>
+                  <path d="M 330 80 C 330 140, 440 140, 440 200" fill="none" stroke="rgba(6,182,212,0.25)" strokeWidth="1.5" markerEnd="url(#arrowCyan)" />
+                  <text x="370" y="150" fill="#64748b" fontSize="7" fontFamily="monospace" opacity="0.6">reads/writes</text>
+                  <path d="M 330 80 C 330 140, 530 140, 530 200" fill="none" stroke="rgba(6,182,212,0.25)" strokeWidth="1.5" markerEnd="url(#arrowCyan)" />
+                  <text x="400" y="160" fill="#64748b" fontSize="7" fontFamily="monospace" opacity="0.6">auth-check</text>
+                  <path d="M 540 80 C 540 140, 620 140, 620 200" fill="none" stroke="rgba(6,182,212,0.2)" strokeWidth="1" markerEnd="url(#arrowCyan)" />
+                  <text x="560" y="150" fill="#64748b" fontSize="7" fontFamily="monospace" opacity="0.6">event</text>
+                  <path d="M 540 80 C 500 130, 380 130, 330 200" fill="none" stroke="rgba(6,182,212,0.2)" strokeWidth="1" markerEnd="url(#arrowCyan)" strokeDasharray="3 3" />
+                  <text x="460" y="130" fill="#64748b" fontSize="7" fontFamily="monospace" opacity="0.5">sync</text>
+                  <path d="M 105 280 L 220 280" fill="none" stroke="rgba(6,182,212,0.2)" strokeWidth="1" markerEnd="url(#arrowCyan)" />
+                  <text x="130" y="275" fill="#64748b" fontSize="7" fontFamily="monospace" opacity="0.5">deliver</text>
+                  <path d="M 330 200 L 330 280" fill="none" stroke="rgba(6,182,212,0.2)" strokeWidth="1" markerEnd="url(#arrowCyan)" />
+                  <text x="340" y="245" fill="#64748b" fontSize="7" fontFamily="monospace" opacity="0.5">cache</text>
+                  <path d="M 540 200 L 540 280" fill="none" stroke="rgba(6,182,212,0.2)" strokeWidth="1" markerEnd="url(#arrowCyan)" />
+                  <text x="550" y="245" fill="#64748b" fontSize="7" fontFamily="monospace" opacity="0.5">verify</text>
+                  <rect x="45" y="50" width="120" height="48" rx="8" fill="rgba(6,182,212,0.08)" stroke={hoveredDep === 'API Gateway' ? 'rgba(6,182,212,0.7)' : 'rgba(6,182,212,0.3)'} strokeWidth="1.5" className="transition-all cursor-pointer" onMouseEnter={() => setHoveredDep('API Gateway')} onMouseLeave={() => setHoveredDep(null)} />
+                  <text x="105" y="73" textAnchor="middle" fill="#22d3ee" fontSize="10" fontWeight="600" fontFamily="monospace">API Gateway</text>
+                  <text x="105" y="88" textAnchor="middle" fill="#64748b" fontSize="8" fontFamily="monospace">Risk: 72</text>
+                  <rect x="270" y="50" width="120" height="48" rx="8" fill="rgba(239,68,68,0.12)" stroke={hoveredDep === 'Payment Service' ? 'rgba(239,68,68,0.8)' : 'rgba(239,68,68,0.5)'} strokeWidth="2" filter="url(#glow)" className="transition-all cursor-pointer" onMouseEnter={() => setHoveredDep('Payment Service')} onMouseLeave={() => setHoveredDep(null)} />
+                  <text x="330" y="73" textAnchor="middle" fill="#ef4444" fontSize="10" fontWeight="600" fontFamily="monospace">Payment Service</text>
+                  <text x="330" y="88" textAnchor="middle" fill="#fca5a5" fontSize="8" fontFamily="monospace">Risk: 87</text>
+                  <rect x="480" y="50" width="120" height="48" rx="8" fill="rgba(6,182,212,0.06)" stroke={hoveredDep === 'Billing Service' ? 'rgba(6,182,212,0.6)' : 'rgba(6,182,212,0.3)'} strokeWidth="1.5" className="transition-all cursor-pointer" onMouseEnter={() => setHoveredDep('Billing Service')} onMouseLeave={() => setHoveredDep(null)} />
+                  <text x="540" y="73" textAnchor="middle" fill="#22d3ee" fontSize="10" fontWeight="600" fontFamily="monospace">Billing Service</text>
+                  <text x="540" y="88" textAnchor="middle" fill="#64748b" fontSize="8" fontFamily="monospace">Risk: 65</text>
+                  <rect x="270" y="200" width="120" height="48" rx="8" fill="rgba(239,68,68,0.08)" stroke={hoveredDep === 'Database' ? 'rgba(239,68,68,0.6)' : 'rgba(239,68,68,0.4)'} strokeWidth="1.5" className="transition-all cursor-pointer" onMouseEnter={() => setHoveredDep('Database')} onMouseLeave={() => setHoveredDep(null)} />
+                  <text x="330" y="223" textAnchor="middle" fill="#fca5a5" fontSize="10" fontWeight="600" fontFamily="monospace">Database</text>
+                  <text x="330" y="238" textAnchor="middle" fill="#64748b" fontSize="8" fontFamily="monospace">Risk: 55</text>
+                  <rect x="480" y="200" width="120" height="48" rx="8" fill="rgba(6,182,212,0.04)" stroke={hoveredDep === 'Auth Service' ? 'rgba(6,182,212,0.5)' : 'rgba(6,182,212,0.2)'} strokeWidth="1" className="transition-all cursor-pointer" onMouseEnter={() => setHoveredDep('Auth Service')} onMouseLeave={() => setHoveredDep(null)} />
+                  <text x="540" y="223" textAnchor="middle" fill="#94a3b8" fontSize="10" fontWeight="600" fontFamily="monospace">Auth Service</text>
+                  <text x="540" y="238" textAnchor="middle" fill="#64748b" fontSize="8" fontFamily="monospace">Risk: 38</text>
+                  <rect x="45" y="250" width="120" height="40" rx="8" fill="rgba(6,182,212,0.04)" stroke={hoveredDep === 'Notification Service' ? 'rgba(6,182,212,0.5)' : 'rgba(6,182,212,0.2)'} strokeWidth="1" className="transition-all cursor-pointer" onMouseEnter={() => setHoveredDep('Notification Service')} onMouseLeave={() => setHoveredDep(null)} />
+                  <text x="105" y="270" textAnchor="middle" fill="#94a3b8" fontSize="9" fontWeight="600" fontFamily="monospace">Notification</text>
+                  <text x="105" y="282" textAnchor="middle" fill="#64748b" fontSize="7" fontFamily="monospace">Risk: 45</text>
+                  <rect x="230" y="250" width="100" height="40" rx="8" fill="rgba(6,182,212,0.03)" stroke="rgba(6,182,212,0.15)" strokeWidth="1" />
+                  <text x="280" y="270" textAnchor="middle" fill="#94a3b8" fontSize="8" fontWeight="600" fontFamily="monospace">Webhook GW</text>
+                  <text x="280" y="282" textAnchor="middle" fill="#64748b" fontSize="7" fontFamily="monospace">Risk: 42</text>
+                  <rect x="480" y="250" width="100" height="40" rx="8" fill="rgba(6,182,212,0.03)" stroke="rgba(6,182,212,0.15)" strokeWidth="1" />
+                  <text x="530" y="270" textAnchor="middle" fill="#94a3b8" fontSize="9" fontWeight="600" fontFamily="monospace">Redis Cache</text>
+                  <text x="530" y="282" textAnchor="middle" fill="#64748b" fontSize="7" fontFamily="monospace">Risk: 25</text>
+                </svg>
+              </div>
+            </motion.div>
+
+            {/* ===== SECTION 7: RISK PROPAGATION ENGINE ===== */}
+            <motion.div variants={item} className="glass-card p-5">
+              <div className="flex items-center gap-2 mb-4">
+                <div className="flex h-5 w-5 items-center justify-center rounded-md bg-gradient-to-br from-red-500/20 to-orange-500/20">
+                  <svg className="h-3 w-3 text-red-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 3v11.25A2.25 2.25 0 006 16.5h2.25M3.75 3h-1.5m1.5 0h16.5m0 0h1.5m-1.5 0v11.25A2.25 2.25 0 0118 16.5h-2.25m-7.5 0h7.5m-7.5 0l-1 3m8.5-3l1 3m0 0l.5 1.5m-.5-1.5h-9.5m0 0l-.5 1.5" />
+                  </svg>
+                </div>
+                <h3 className="text-sm font-semibold text-white">Risk Propagation Engine</h3>
+                <span className="text-[10px] text-slate-600 font-mono">{data.propagation.length} propagation paths</span>
+              </div>
+              <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+                {data.propagation.map((p, i) => (
+                  <motion.div key={i} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.08 }}
+                    className="relative rounded-lg border border-white/[0.06] bg-white/[0.02] p-3 hover:border-cyan-500/20 transition-all group">
+                    <div className="flex items-center justify-between mb-2">
+                      <div className="flex items-center gap-1.5">
+                        <span className="h-2 w-2 rounded-full bg-red-500" />
+                        <span className="text-[10px] font-mono text-slate-300 font-medium">{p.from}</span>
+                      </div>
+                      <svg className="h-4 w-4 text-cyan-500/40" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
+                      </svg>
+                      <div className="flex items-center gap-1.5">
+                        <span className="text-[10px] font-mono text-slate-300 font-medium">{p.to}</span>
+                        <span className="h-2 w-2 rounded-full bg-orange-500" />
+                      </div>
+                    </div>
+                    <AnimatedBar value={p.risk} color={p.risk >= 80 ? 'bg-red-500' : p.risk >= 60 ? 'bg-orange-500' : 'bg-yellow-500'} />
+                    <div className="flex items-center justify-between mt-1">
+                      <span className="text-[8px] text-slate-700 font-mono">Propagation Likelihood</span>
+                      <span className="text-[10px] font-mono text-red-400">{p.risk}%</span>
+                    </div>
+                    <div className="mt-2 rounded bg-white/[0.02] p-1.5 text-[8px] text-slate-600 leading-relaxed">
+                      {p.from} failure → <span className="text-red-400">{p.risk}%</span> likely to affect {p.to}
+                    </div>
+                  </motion.div>
+                ))}
+              </div>
+              <div className="mt-4 rounded-lg border border-cyan-500/10 bg-cyan-500/[0.03] p-3">
+                <div className="flex items-center gap-2 text-[9px] text-cyan-400 font-mono mb-2">
+                  <svg className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
+                  </svg>
+                  Escalation Route
+                </div>
+                <div className="flex items-center gap-1 text-[9px] font-mono flex-wrap">
+                  <span className="text-red-400">Payment</span>
+                  <svg className="h-3 w-3 text-slate-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" /></svg>
+                  <span className="text-orange-400">Billing</span>
+                  <span className="text-slate-700">(87%)</span>
+                  <svg className="h-3 w-3 text-slate-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" /></svg>
+                  <span className="text-orange-300">Notification</span>
+                  <span className="text-slate-700">(65%)</span>
+                  <svg className="h-3 w-3 text-slate-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" /></svg>
+                  <span className="text-yellow-300">Webhook</span>
+                  <span className="text-slate-700">(78%)</span>
+                </div>
+              </div>
+            </motion.div>
+
+            {/* ===== SECTION 8: AI RECOMMENDATIONS ===== */}
+            <motion.div variants={item} className="glass-card overflow-hidden">
+              <div className="flex items-center gap-2 p-5 pb-3">
+                <div className="flex h-5 w-5 items-center justify-center rounded-md bg-gradient-to-br from-green-500/20 to-emerald-500/20">
+                  <svg className="h-3 w-3 text-green-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09z" />
+                  </svg>
+                </div>
+                <h3 className="text-sm font-semibold text-white">AI Recommendations</h3>
+                <span className="text-[10px] text-slate-600 font-mono ml-1">{data.recommendations.length} prioritized actions</span>
+              </div>
+              <div className="px-5 pb-5 space-y-2">
+                {data.recommendations.map((r, i) => (
+                  <motion.div key={i} initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: i * 0.06 }}
+                    className="flex items-start gap-3 rounded-lg border border-white/[0.06] bg-white/[0.02] p-3 hover:border-cyan-500/20 transition-all group">
+                    <div className="flex items-center gap-1.5 shrink-0 mt-0.5">
+                      <span className={`rounded px-1.5 py-0.5 text-[8px] font-bold ${r.priority === 'P0' ? 'bg-red-500/15 text-red-400 border border-red-500/25' : r.priority === 'P1' ? 'bg-yellow-500/10 text-yellow-400 border border-yellow-500/20' : 'bg-blue-500/10 text-blue-400 border border-blue-500/20'}`}>{r.priority}</span>
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-xs text-slate-300 font-medium">{r.action}</p>
+                      <div className="flex flex-wrap gap-3 mt-0.5 text-[9px] text-slate-600">
+                        <span className="flex items-center gap-1">
+                          <svg className="h-3 w-3 text-green-400/60" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}><path strokeLinecap="round" strokeLinejoin="round" d="M13.5 10.5V6.75a4.5 4.5 0 119 0v3.75M3.75 21.75h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H3.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z" /></svg>
+                          {r.impact}
+                        </span>
+                        <span className="flex items-center gap-1">
+                          <svg className="h-3 w-3 text-blue-400/60" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}><path strokeLinecap="round" strokeLinejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                          {r.effort}
+                        </span>
+                        <span className="flex items-center gap-1">
+                          <svg className="h-3 w-3 text-purple-400/60" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}><path strokeLinecap="round" strokeLinejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" /></svg>
+                          {r.owner}
+                        </span>
+                        <span className="flex items-center gap-1">
+                          <svg className="h-3 w-3 text-cyan-400/60" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}><path strokeLinecap="round" strokeLinejoin="round" d="M3.75 13.5l10.5-11.25L12 10.5h8.25L9.75 21.75 12 13.5H3.75z" /></svg>
+                          {data.recommendationConfidence[i]}% confidence
+                        </span>
+                      </div>
+                    </div>
+                  </motion.div>
+                ))}
+              </div>
+            </motion.div>
+
+            {/* ===== SECTION 9: MITIGATION STRATEGY ===== */}
+            <motion.div variants={item} className="glass-card overflow-hidden">
+              <div className="flex items-center gap-2 p-5 pb-3">
+                <div className="flex h-5 w-5 items-center justify-center rounded-md bg-gradient-to-br from-blue-500/20 to-cyan-500/20">
+                  <svg className="h-3 w-3 text-blue-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75m-3-7.036A11.959 11.959 0 013.598 6 11.99 11.99 0 003 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285z" />
+                  </svg>
+                </div>
+                <h3 className="text-sm font-semibold text-white">Mitigation Strategy</h3>
+                <span className="text-[10px] text-slate-600 font-mono ml-1">{data.mitigations.length} phases</span>
+              </div>
+              <div className="px-5 pb-5 space-y-3">
+                {data.mitigations.map((m, i) => {
+                  const isOpen = expandedMitigation === i
+                  const phaseColors = ['from-red-500/5 to-orange-500/5 border-red-500/15', 'from-yellow-500/5 to-orange-500/5 border-yellow-500/15', 'from-green-500/5 to-cyan-500/5 border-green-500/15']
+                  const phaseBadgeColors = ['bg-red-500/15 text-red-400', 'bg-yellow-500/10 text-yellow-400', 'bg-green-500/10 text-green-400']
+                  return (
+                    <motion.div key={i} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.08 }}
+                      className={`rounded-lg border bg-gradient-to-br ${phaseColors[i]} overflow-hidden hover:border-cyan-500/30 transition-all`}>
+                      <button onClick={() => setExpandedMitigation(isOpen ? null : i)} className="w-full text-left p-4">
+                        <div className="flex items-center justify-between mb-2">
+                          <h4 className="text-xs font-mono text-white font-semibold">{m.phase}</h4>
+                          <span className={`rounded px-2 py-0.5 text-[8px] font-bold ${phaseBadgeColors[i]}`}>{m.timeline}</span>
+                        </div>
+                        <div className="flex items-center gap-3 text-[9px] text-slate-500">
+                          <span className="font-mono">Owner: {m.owner}</span>
+                          <span className="font-mono">{m.actions.length} action items</span>
+                          <svg className={`h-3 w-3 ml-auto transition-transform ${isOpen ? 'rotate-180' : ''}`} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
+                          </svg>
+                        </div>
+                        <div className="mt-2">
+                          <div className="flex items-center justify-between text-[8px] text-slate-600 font-mono mb-1">
+                            <span>Expected Risk Reduction</span>
+                            <span className={i === 0 ? 'text-red-400' : i === 1 ? 'text-yellow-400' : 'text-green-400'}>{data.riskReduction[i].reduction}%</span>
                           </div>
-                          <div className="flex items-center gap-1.5 text-[9px] text-slate-500">
-                            {timelineIcons[i]}
-                            <span className="font-mono">Owner: {m.owner}</span>
-                          </div>
-                          <div className="mt-2 flex items-center gap-1 text-[9px] text-slate-600">
-                            <span className="font-mono">{m.actions.length} action items</span>
-                            <svg className={`h-3 w-3 ml-auto transition-transform ${isOpen ? 'rotate-180' : ''}`} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                              <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
-                            </svg>
-                          </div>
-                        </button>
-                        <AnimatePresence>
-                          {isOpen && (
-                            <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} exit={{ opacity: 0, height: 0 }} className="border-t border-white/[0.04]">
-                              <div className="p-3 space-y-1.5">
-                                {m.actions.map((a, ai) => (
-                                  <div key={ai} className="flex items-start gap-2 group">
-                                    <svg className="h-3.5 w-3.5 mt-0.5 shrink-0 text-cyan-500/40 group-hover:text-cyan-400 transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                          <AnimatedBar value={data.riskReduction[i].reduction} color={i === 0 ? 'bg-red-500' : i === 1 ? 'bg-yellow-500' : 'bg-green-500'} />
+                        </div>
+                      </button>
+                      <AnimatePresence>
+                        {isOpen && (
+                          <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} exit={{ opacity: 0, height: 0 }} className="border-t border-white/[0.04]">
+                            <div className="p-4 space-y-2">
+                              {m.actions.map((a, ai) => (
+                                <div key={ai} className="flex items-start gap-2 group">
+                                  <div className="h-4 w-4 mt-0.5 shrink-0 rounded-full border border-cyan-500/30 flex items-center justify-center group-hover:bg-cyan-500/10 transition-colors">
+                                    <svg className="h-2.5 w-2.5 text-cyan-400/60 group-hover:text-cyan-400 transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
                                       <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" />
                                     </svg>
-                                    <span className="text-[10px] text-slate-400 group-hover:text-slate-300 transition-colors">{a}</span>
                                   </div>
-                                ))}
-                              </div>
-                            </motion.div>
-                          )}
-                        </AnimatePresence>
-                      </motion.div>
-                    )
-                  })}
-                </div>
-              </motion.div>
+                                  <span className="text-[10px] text-slate-400 group-hover:text-slate-300 transition-colors leading-relaxed">{a}</span>
+                                </div>
+                              ))}
+                            </div>
+                          </motion.div>
+                        )}
+                      </AnimatePresence>
+                    </motion.div>
+                  )
+                })}
+              </div>
+            </motion.div>
 
-              {/* ===== SECTION 10: Executive Verdict ===== */}
-              <motion.div variants={item} className="glass-card overflow-hidden">
-                <div className="relative p-5">
-                  <div className="absolute inset-0 bg-gradient-to-br from-red-500/[0.03] via-transparent to-cyan-500/[0.02] pointer-events-none" />
-                  <div className="relative">
-                    <div className="flex items-center gap-2 mb-4">
-                      <div className="flex h-5 w-5 items-center justify-center rounded-md bg-gradient-to-br from-red-500/20 to-rose-500/20">
-                        <svg className="h-3 w-3 text-red-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                          <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 3v11.25A2.25 2.25 0 006 16.5h2.25M3.75 3h-1.5m1.5 0h16.5m0 0h1.5m-1.5 0v11.25A2.25 2.25 0 0118 16.5h-2.25m-7.5 0h7.5m-7.5 0l-1 3m8.5-3l1 3m0 0l.5 1.5m-.5-1.5h-9.5m0 0l-.5 1.5" />
-                        </svg>
-                      </div>
-                      <h3 className="text-sm font-semibold text-white">Executive Verdict</h3>
-                    </div>
-                    <div className="grid gap-4 lg:grid-cols-3">
-                      <div className="flex flex-col items-center justify-center p-4 rounded-lg border border-white/[0.06] bg-white/[0.02]">
-                        <span className="text-[10px] text-slate-600 font-mono tracking-wider uppercase mb-2">Overall Risk Verdict</span>
-                        <span className={`text-3xl font-bold font-mono ${data.verdict.risk === 'High' ? 'text-red-400' : data.verdict.risk === 'Medium' ? 'text-yellow-400' : 'text-green-400'}`}>
-                          {data.verdict.risk}
-                        </span>
-                        <div className="mt-3 w-full max-w-[120px]">
-                          <RiskGauge score={data.verdict.confidence} />
-                        </div>
-                        <span className="text-[9px] text-slate-600 font-mono mt-2">Confidence: {data.verdict.confidence}%</span>
-                      </div>
-                      <div className="lg:col-span-2 space-y-3">
-                        <div className="rounded-lg border border-white/[0.06] bg-white/[0.02] p-3">
-                          <span className="text-[9px] text-slate-600 font-mono tracking-wider uppercase block mb-2">Key Findings</span>
-                          <ul className="space-y-2">
-                            {data.verdict.findings.map((f, fi) => (
-                              <li key={fi} className="flex items-start gap-2 text-[11px] text-slate-400">
-                                <svg className="h-4 w-4 mt-0.5 shrink-0 text-red-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                                  <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                </svg>
-                                {f}
-                              </li>
-                            ))}
-                          </ul>
-                        </div>
-                        <div className="rounded-lg border border-cyan-500/15 bg-cyan-500/[0.03] p-3">
-                          <span className="text-[9px] text-cyan-400 font-mono tracking-wider uppercase block mb-1.5">Recommended Action</span>
-                          <p className="text-[11px] text-slate-400 leading-relaxed">{data.verdict.action}</p>
-                        </div>
-                      </div>
-                    </div>
-                    <div className="mt-4 pt-3 border-t border-white/[0.04] flex items-center justify-between flex-wrap gap-2">
-                      <div className="flex items-center gap-2 text-[9px] text-slate-600 font-mono">
-                        <span>Severity Gauge:</span>
-                        <div className="flex items-center gap-0.5">
-                          <div className="h-2 w-6 rounded-sm bg-red-500" />
-                          <div className="h-2 w-6 rounded-sm bg-red-500/60" />
-                          <div className="h-2 w-6 rounded-sm bg-orange-500/40" />
-                          <div className="h-2 w-6 rounded-sm bg-yellow-500/30" />
-                          <div className="h-2 w-6 rounded-sm bg-green-500/20" />
-                        </div>
-                        <span className="text-red-400 font-semibold text-[10px]">HIGH</span>
-                      </div>
-                      <span className="text-[8px] text-slate-700 font-mono">Case {data.caseId} · Investigated by AI Forensic Engine v2.4</span>
-                    </div>
-                  </div>
-                </div>
-              </motion.div>
-
-              {/* ===== Evidence Timeline (supplementary) ===== */}
-              <motion.div variants={item} className="glass-card p-5">
-                <div className="flex items-center gap-2 mb-4">
-                  <div className="flex h-5 w-5 items-center justify-center rounded-md bg-gradient-to-br from-cyan-500/20 to-blue-500/20">
-                    <svg className="h-3 w-3 text-cyan-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z" />
-                    </svg>
-                  </div>
-                  <h3 className="text-sm font-semibold text-white">Evidence Timeline</h3>
-                  <span className="text-[10px] text-slate-600 font-mono">6 forensic artifacts</span>
-                </div>
-                <div className="relative">
-                  <div className="absolute left-[15px] top-2 bottom-2 w-px bg-gradient-to-b from-cyan-500/30 via-blue-500/20 to-transparent" />
-                  <div className="space-y-0">
-                    {data.evidenceTimeline.map((ev, i) => {
-                      const typeColors = {
-                        'Code Change': 'bg-blue-500/10 text-blue-400 border-blue-500/20',
-                        'Incident': 'bg-red-500/10 text-red-400 border-red-500/20',
-                        'Config Change': 'bg-yellow-500/10 text-yellow-400 border-yellow-500/20',
-                        'Alert': 'bg-orange-500/10 text-orange-400 border-orange-500/20',
-                      }
-                      const dotColors = {
-                        'Code Change': 'bg-blue-500 border-blue-500/30',
-                        'Incident': 'bg-red-500 border-red-500/30',
-                        'Config Change': 'bg-yellow-500 border-yellow-500/30',
-                        'Alert': 'bg-orange-500 border-orange-500/30',
-                      }
-                      return (
-                        <motion.div key={i} initial={{ opacity: 0, x: -15 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: i * 0.08 }}
-                          className={`relative flex items-start gap-4 py-3 group cursor-pointer transition-all ${selectedEvidence === `ev-${i}` ? 'opacity-100' : 'hover:opacity-90'}`}
-                          onClick={() => setSelectedEvidence(selectedEvidence === `ev-${i}` ? null : `ev-${i}`)}>
-                          <div className={`relative z-10 mt-1 h-3.5 w-3.5 shrink-0 rounded-full border-2 ${dotColors[ev.type] || 'bg-slate-500 border-slate-500/30'} transition-all group-hover:scale-125`}>
-                            <div className="absolute inset-0.5 rounded-full bg-current opacity-30 animate-pulse" />
-                          </div>
-                          <div className="flex-1 min-w-0 bg-white/[0.01] rounded-lg p-3 border border-white/[0.04] group-hover:border-cyan-500/15 transition-all">
-                            <div className="flex items-center justify-between flex-wrap gap-2 mb-1">
-                              <div className="flex items-center gap-2">
-                                <span className={`rounded px-1.5 py-0.5 text-[8px] font-bold ${typeColors[ev.type] || 'bg-slate-500/10 text-slate-400'}`}>{ev.type}</span>
-                                <span className="text-[10px] font-mono text-slate-500">{ev.date}</span>
-                              </div>
-                              <span className="text-[10px] font-mono text-cyan-400">{ev.relevance}% relevance</span>
-                            </div>
-                            <p className="text-xs text-slate-300">{ev.description}</p>
-                            <div className="flex items-center gap-2 mt-1.5">
-                              <svg className="h-3 w-3 text-slate-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-                                <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 17.25v3.375c0 .621-.504 1.125-1.125 1.125h-9.75a1.125 1.125 0 01-1.125-1.125V7.875c0-.621.504-1.125 1.125-1.125H6.75a9.06 9.06 0 013.75.808m.75 5.742a1.125 1.125 0 010 2.25m-2.25 0a1.125 1.125 0 010-2.25m9.75-7.5a1.125 1.125 0 010 2.25m0-2.25a1.125 1.125 0 010 2.25m-5.25 3.75h6.75" />
-                              </svg>
-                              <span className="text-[9px] font-mono text-slate-600">{ev.source}</span>
-                            </div>
-                          </div>
-                        </motion.div>
-                      )
-                    })}
-                  </div>
-                </div>
-              </motion.div>
-
-              {/* ===== Incident Correlation Engine ===== */}
-              <motion.div variants={item} className="glass-card p-5">
-                <div className="flex items-center gap-2 mb-4">
-                  <div className="flex h-5 w-5 items-center justify-center rounded-md bg-gradient-to-br from-purple-500/20 to-indigo-500/20">
-                    <svg className="h-3 w-3 text-purple-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M13.19 8.688a4.5 4.5 0 011.242 7.244l-4.5 4.5a4.5 4.5 0 01-6.364-6.364l1.757-1.757m13.35-.622l1.757-1.757a4.5 4.5 0 00-6.364-6.364l-4.5 4.5a4.5 4.5 0 001.242 7.244" />
-                    </svg>
-                  </div>
-                  <h3 className="text-sm font-semibold text-white">Incident Correlation Engine</h3>
-                  <span className="text-[10px] text-slate-600 font-mono">{data.correlations.length} correlations found</span>
-                </div>
-                <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-                  {data.correlations.map((corr, i) => {
-                    const corrColors = ['from-red-500/10 to-orange-500/5', 'from-orange-500/10 to-yellow-500/5', 'from-yellow-500/10 to-green-500/5', 'from-blue-500/10 to-cyan-500/5', 'from-purple-500/10 to-pink-500/5']
-                    const borderColors = ['border-red-500/20', 'border-orange-500/20', 'border-yellow-500/20', 'border-blue-500/20', 'border-purple-500/20']
-                    return (
-                      <motion.div key={i} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.07 }}
-                        className={`rounded-lg border ${borderColors[i]} bg-gradient-to-br ${corrColors[i]} p-3 hover:border-cyan-500/30 transition-all relative overflow-hidden group`}>
-                        <div className="absolute inset-0 bg-gradient-to-br from-cyan-500/[0.02] to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
-                        <div className="relative">
-                          <div className="flex items-center justify-between mb-2">
-                            <h4 className="text-xs font-semibold text-slate-200">{corr.incident}</h4>
-                            <span className="flex items-center gap-1 text-[10px] font-mono text-cyan-400">{corr.score}%</span>
-                          </div>
-                          <div className="h-1.5 rounded-full bg-white/[0.06] overflow-hidden mb-2">
-                            <div className={`h-full rounded-full ${corr.score >= 85 ? 'bg-red-500' : corr.score >= 75 ? 'bg-orange-500' : 'bg-yellow-500'}`} style={{ width: `${corr.score}%`, transition: 'width 1s ease-out' }} />
-                          </div>
-                          <div className="space-y-1 text-[9px]">
-                            <div className="flex items-center gap-1.5">
-                              <span className="text-slate-600 w-16 shrink-0">Root Cause:</span>
-                              <span className="text-slate-400 font-mono">{corr.commonCause}</span>
-                            </div>
-                            <div className="flex items-center gap-1.5">
-                              <span className="text-slate-600 w-16 shrink-0">Services:</span>
-                              <span className="text-slate-400">{corr.services.join(', ')}</span>
-                            </div>
-                            <div className="flex items-center gap-1.5">
-                              <span className="text-slate-600 w-16 shrink-0">Timeline Gap:</span>
-                              <span className="text-slate-400 font-mono">{corr.gap}</span>
-                            </div>
-                          </div>
-                          <div className={`absolute -top-1 -right-1 w-2 h-2 rounded-full ${corr.score >= 85 ? 'bg-red-500' : corr.score >= 75 ? 'bg-orange-500' : 'bg-yellow-500'} opacity-40`} />
-                        </div>
-                      </motion.div>
-                    )
-                  })}
-                </div>
-                <div className="mt-3 rounded-lg bg-cyan-500/[0.03] border border-cyan-500/10 p-2.5">
-                  <div className="flex items-center gap-2 text-[9px] text-cyan-400 font-mono">
-                    <svg className="h-3 w-3 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09z" />
-                    </svg>
-                    5 correlated incidents share {data.rootCauses.length} common root causes
-                  </div>
-                </div>
-              </motion.div>
-
-              {/* ===== Risk Heatmap ===== */}
-              <motion.div variants={item} className="glass-card p-5">
-                <div className="flex items-center gap-2 mb-4">
-                  <div className="flex h-5 w-5 items-center justify-center rounded-md bg-gradient-to-br from-orange-500/20 to-red-500/20">
-                    <svg className="h-3 w-3 text-orange-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 3v11.25A2.25 2.25 0 006 16.5h2.25M3.75 3h-1.5m1.5 0h16.5m0 0h1.5m-1.5 0v11.25A2.25 2.25 0 0118 16.5h-2.25m-7.5 0h7.5m-7.5 0l-1 3m8.5-3l1 3m0 0l.5 1.5m-.5-1.5h-9.5m0 0l-.5 1.5m.75-9l3-3 2.148 2.148A12.061 12.061 0 0116.5 7.605" />
-                    </svg>
-                  </div>
-                  <h3 className="text-sm font-semibold text-white">Risk Heatmap</h3>
-                  <span className="text-[10px] text-slate-600 font-mono">Phase vs. Severity</span>
-                </div>
-                <div className="overflow-x-auto">
-                  <svg viewBox="0 0 600 380" className="w-full max-w-2xl mx-auto" style={{ minWidth: 500 }}>
-                    <defs>
-                      <linearGradient id="heatRed" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stopColor="rgba(239,68,68,0.4)" /><stop offset="100%" stopColor="rgba(239,68,68,0.15)" /></linearGradient>
-                      <linearGradient id="heatAmber" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stopColor="rgba(245,158,11,0.35)" /><stop offset="100%" stopColor="rgba(245,158,11,0.1)" /></linearGradient>
-                      <linearGradient id="heatYellow" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stopColor="rgba(234,179,8,0.25)" /><stop offset="100%" stopColor="rgba(234,179,8,0.08)" /></linearGradient>
-                      <linearGradient id="heatGreen" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stopColor="rgba(34,197,94,0.2)" /><stop offset="100%" stopColor="rgba(34,197,94,0.05)" /></linearGradient>
-                    </defs>
-                    <rect width="600" height="380" fill="transparent" />
-                    <text x="140" y="40" textAnchor="middle" fill="#64748b" fontSize="9" fontFamily="monospace">Critical</text>
-                    <text x="245" y="40" textAnchor="middle" fill="#64748b" fontSize="9" fontFamily="monospace">High</text>
-                    <text x="350" y="40" textAnchor="middle" fill="#64748b" fontSize="9" fontFamily="monospace">Medium</text>
-                    <text x="455" y="40" textAnchor="middle" fill="#64748b" fontSize="9" fontFamily="monospace">Low</text>
-                    {['Design', 'Implementation', 'Testing', 'Deployment', 'Post-Release'].map((phase, i) => (
-                      <text key={phase} x="75" y={85 + i * 60} textAnchor="end" fill="#94a3b8" fontSize="9" fontFamily="monospace">{phase}</text>
-                    ))}
-                    {data.heatmap.map((row, ri) => {
-                      const cells = [
-                        { label: row.critical, grad: 'heatRed', val: row.critical },
-                        { label: row.high, grad: 'heatAmber', val: row.high },
-                        { label: row.medium, grad: 'heatYellow', val: row.medium },
-                        { label: row.low, grad: 'heatGreen', val: row.low },
-                      ]
-                      return cells.map((cell, ci) => {
-                        const x = 110 + ci * 105
-                        const y = 55 + ri * 60
-                        return (
-                          <motion.g key={`${ri}-${ci}`}
-                            initial={{ opacity: 0 }}
-                            animate={{ opacity: 1 }}
-                            transition={{ delay: (ri * 4 + ci) * 0.04 }}>
-                            <rect x={x} y={y} width="90" height="40" rx="6"
-                              fill={`url(#${cell.grad})`}
-                              stroke={cell.val >= 70 ? 'rgba(239,68,68,0.3)' : cell.val >= 40 ? 'rgba(245,158,11,0.2)' : 'rgba(255,255,255,0.05)'}
-                              strokeWidth="1" className="transition-all hover:stroke-cyan-500/40 hover:stroke-2 cursor-pointer" />
-                            <text x={x + 45} y={y + 24} textAnchor="middle"
-                              fill={cell.val >= 70 ? '#fca5a5' : cell.val >= 40 ? '#fbbf24' : '#86efac'}
-                              fontSize="14" fontWeight="700" fontFamily="monospace">{cell.val}</text>
-                          </motion.g>
-                        )
-                      })
-                    })}
-                    <rect x="50" y="330" width="14" height="10" rx="2" fill="url(#heatRed)" stroke="rgba(239,68,68,0.3)" strokeWidth="1" />
-                    <text x="70" y="339" fill="#64748b" fontSize="8" fontFamily="monospace">Critical (70+)</text>
-                    <rect x="170" y="330" width="14" height="10" rx="2" fill="url(#heatAmber)" stroke="rgba(245,158,11,0.2)" strokeWidth="1" />
-                    <text x="190" y="339" fill="#64748b" fontSize="8" fontFamily="monospace">High (40-69)</text>
-                    <rect x="280" y="330" width="14" height="10" rx="2" fill="url(#heatYellow)" stroke="rgba(234,179,8,0.15)" strokeWidth="1" />
-                    <text x="300" y="339" fill="#64748b" fontSize="8" fontFamily="monospace">Medium (20-39)</text>
-                    <rect x="400" y="330" width="14" height="10" rx="2" fill="url(#heatGreen)" stroke="rgba(34,197,94,0.1)" strokeWidth="1" />
-                    <text x="420" y="339" fill="#64748b" fontSize="8" fontFamily="monospace">Low (0-19)</text>
-                    <text x="300" y="368" textAnchor="middle" fill="#64748b" fontSize="8" fontFamily="monospace">Risk escalates through phases — highest at Deployment</text>
+            {/* ===== SECTION 10: EXECUTIVE DECISION CENTER ===== */}
+            <motion.div variants={item} className="glass-card p-5">
+              <div className="flex items-center gap-2 mb-4">
+                <div className="flex h-5 w-5 items-center justify-center rounded-md bg-gradient-to-br from-cyan-500/20 to-blue-500/20">
+                  <svg className="h-3 w-3 text-cyan-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 13.5l10.5-11.25L12 10.5h8.25L9.75 21.75 12 13.5H3.75z" />
                   </svg>
                 </div>
-              </motion.div>
+                <h3 className="text-sm font-semibold text-white">Executive Decision Center</h3>
+                <StatusBadge status="info" label="Action Required" />
+              </div>
+              <div className="grid gap-3 sm:grid-cols-2">
+                {data.decisions.map((dec, i) => (
+                  <motion.div key={dec.action} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.06 }}
+                    className={`rounded-lg border p-4 transition-all hover:scale-[1.01] ${decisionGlows[dec.action]} bg-white/[0.02]`}>
+                    <div className="flex items-center justify-between mb-3">
+                      <h4 className="text-xs font-bold text-white font-mono">{dec.action}</h4>
+                      <span className={`text-lg font-bold font-mono ${decisionConfidenceColors[dec.action]}`}>{dec.confidence}%</span>
+                    </div>
+                    <div className="h-2 rounded-full bg-white/[0.06] overflow-hidden mb-3">
+                      <div className={`h-full rounded-full transition-all duration-1000 ${dec.action === 'Deploy Now' ? 'bg-green-500 shadow-[0_0_8px_rgba(34,197,94,0.5)]' : dec.action === 'Monitor Closely' ? 'bg-amber-500' : dec.action === 'Rollback Changes' ? 'bg-orange-500' : 'bg-red-500'}`}
+                        style={{ width: `${dec.confidence}%` }} />
+                    </div>
+                    <p className="text-[10px] text-slate-400 mb-3 leading-relaxed">{dec.reasoning}</p>
+                    <div className="flex items-center justify-between">
+                      <span className="text-[9px] text-slate-600 font-mono">Assigned: {dec.team}</span>
+                      <button className={`rounded-lg px-3 py-1 text-[9px] font-bold text-white transition-all hover:opacity-80 ${decisionButtons[dec.action]}`}>
+                        {dec.action === 'Deploy Now' ? 'Execute' : dec.action === 'Monitor Closely' ? 'Observe' : dec.action === 'Rollback Changes' ? 'Rollback' : 'Deep Dive'}
+                      </button>
+                    </div>
+                  </motion.div>
+                ))}
+              </div>
+            </motion.div>
 
-              {/* ===== Confidence Meter ===== */}
-              <motion.div variants={item} className="glass-card p-5">
-                <div className="flex items-center gap-2 mb-3">
+            {/* ===== SECTION 11: INVESTIGATION TIMELINE ===== */}
+            <motion.div variants={item} className="glass-card p-5">
+              <div className="flex items-center gap-2 mb-4">
+                <div className="flex h-5 w-5 items-center justify-center rounded-md bg-gradient-to-br from-purple-500/20 to-indigo-500/20">
+                  <svg className="h-3 w-3 text-purple-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                </div>
+                <h3 className="text-sm font-semibold text-white">Investigation Timeline</h3>
+                <span className="text-[10px] text-slate-600 font-mono">{data.investigationTimeline.length} phases</span>
+              </div>
+              <div className="relative">
+                <div className="absolute left-[15px] top-0 bottom-0 w-px bg-gradient-to-b from-blue-500/40 via-cyan-500/30 via-orange-500/20 via-green-500/20 via-purple-500/15 to-slate-500/10" />
+                <div className="space-y-0">
+                  {data.investigationTimeline.map((ev, i) => {
+                    const dotColors = {
+                      Detection: 'bg-blue-500 border-blue-500/30',
+                      Analysis: 'bg-cyan-500 border-cyan-500/30',
+                      Escalation: 'bg-orange-500 border-orange-500/30',
+                      Resolution: 'bg-green-500 border-green-500/30',
+                      Review: 'bg-purple-500 border-purple-500/30',
+                      Closed: 'bg-slate-500 border-slate-500/30',
+                    }
+                    const typeBadgeColors = {
+                      Detection: 'bg-blue-500/10 text-blue-400 border-blue-500/20',
+                      Analysis: 'bg-cyan-500/10 text-cyan-400 border-cyan-500/20',
+                      Escalation: 'bg-orange-500/10 text-orange-400 border-orange-500/20',
+                      Resolution: 'bg-green-500/10 text-green-400 border-green-500/20',
+                      Review: 'bg-purple-500/10 text-purple-400 border-purple-500/20',
+                      Closed: 'bg-slate-500/10 text-slate-400 border-slate-500/20',
+                    }
+                    return (
+                      <motion.div key={i} initial={{ opacity: 0, x: -15 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: i * 0.08 }}
+                        className="relative flex items-start gap-4 py-4 group">
+                        <div className={`relative z-10 mt-0.5 h-3.5 w-3.5 shrink-0 rounded-full border-2 ${dotColors[ev.type] || 'bg-slate-500 border-slate-500/30'} transition-all group-hover:scale-125`}>
+                          <div className="absolute inset-0.5 rounded-full bg-current opacity-30 animate-pulse" />
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center justify-between flex-wrap gap-2 mb-1">
+                            <div className="flex items-center gap-2">
+                              <span className={`rounded px-1.5 py-0.5 text-[8px] font-bold ${typeBadgeColors[ev.type] || 'bg-slate-500/10 text-slate-400'}`}>{ev.type}</span>
+                              <span className="text-[10px] font-mono text-slate-500">{ev.date}</span>
+                            </div>
+                            <span className="text-[9px] text-slate-600 font-mono">{ev.duration}</span>
+                          </div>
+                          <h4 className="text-xs font-semibold text-slate-200 mb-0.5">{ev.title}</h4>
+                          <p className="text-[10px] text-slate-500 leading-relaxed">{ev.description}</p>
+                          <div className="flex items-center gap-2 mt-1.5 text-[9px] text-slate-600 font-mono">
+                            <svg className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                              <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" />
+                            </svg>
+                            {ev.team}
+                          </div>
+                        </div>
+                      </motion.div>
+                    )
+                  })}
+                </div>
+              </div>
+            </motion.div>
+
+            {/* ===== SECTION 12: LIVE INTELLIGENCE FEED ===== */}
+            <motion.div variants={item} className="glass-card overflow-hidden">
+              <div className="flex items-center justify-between p-5 pb-3">
+                <div className="flex items-center gap-2">
                   <div className="flex h-5 w-5 items-center justify-center rounded-md bg-gradient-to-br from-cyan-500/20 to-blue-500/20">
                     <svg className="h-3 w-3 text-cyan-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 13.5l10.5-11.25L12 10.5h8.25L9.75 21.75 12 13.5H3.75z" />
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09z" />
                     </svg>
                   </div>
-                  <h3 className="text-sm font-semibold text-white">Investigation Quality</h3>
+                  <h3 className="text-sm font-semibold text-white">Live Intelligence Feed</h3>
                 </div>
-                <ConfidenceMeter confidence={data.confidence} />
-              </motion.div>
-
+                <div className="flex items-center gap-1.5 text-[9px] text-green-400 font-mono border border-green-500/20 rounded-md px-2 py-1">
+                  <span className="h-1.5 w-1.5 rounded-full bg-green-400 animate-pulse shadow-[0_0_6px_rgba(74,222,128,0.5)]" />
+                  LIVE
+                </div>
+              </div>
+              <div ref={feedRef} className="relative max-h-[480px] overflow-y-auto scroll-smooth">
+                <div className="absolute inset-0 pointer-events-none bg-gradient-to-b from-slate-950/20 to-transparent h-6 top-0 z-10" />
+                {data.liveFeed.map((item, i) => (
+                  <motion.div key={i} initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: i * 0.03 }}
+                    className={`border-l-2 pl-4 pr-5 py-3 ${feedTypeStyles[item.type] || 'border-l-slate-600 bg-white/[0.01]'} hover:bg-white/[0.03] transition-all`}>
+                    <div className="flex items-start justify-between gap-2">
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-2 mb-0.5">
+                          <span className="text-[9px] font-mono text-slate-600">{item.time}</span>
+                          <span className={`rounded px-1.5 py-0.5 text-[7px] font-bold uppercase ${item.severity === 'critical' ? 'bg-red-500/15 text-red-400' : item.severity === 'high' ? 'bg-orange-500/10 text-orange-400' : item.severity === 'warning' ? 'bg-yellow-500/10 text-yellow-400' : 'bg-blue-500/10 text-blue-400'}`}>{item.severity}</span>
+                          <span className="text-[8px] text-slate-700 font-mono uppercase">{item.type}</span>
+                        </div>
+                        <p className="text-[10px] text-slate-400 leading-relaxed">{item.message}</p>
+                      </div>
+                    </div>
+                  </motion.div>
+                ))}
+                <div className="sticky bottom-0 h-6 bg-gradient-to-t from-slate-950/30 to-transparent pointer-events-none" />
+              </div>
             </motion.div>
-          )}
-        </AnimatePresence>
 
-        {/* ===== Empty State ===== */}
-        {!data && !loading && (
-          <motion.div variants={item} className="text-center py-16">
-            <div className="mx-auto mb-5 flex h-16 w-16 items-center justify-center rounded-2xl border border-white/[0.06] bg-gradient-to-br from-cyan-500/5 to-blue-500/5">
-              <svg className="h-8 w-8 text-slate-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1}>
-                <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
-              </svg>
-            </div>
-            <h3 className="text-lg font-semibold text-white mb-1 font-mono tracking-wide">INITIALIZE INVESTIGATION</h3>
-            <p className="text-sm text-slate-600 max-w-md mx-auto font-mono text-[11px]">Enter a feature request or incident description above to run a full forensic analysis — failure modes, historical correlations, dependency chains, blast radius, and AI-powered mitigation intelligence.</p>
           </motion.div>
         )}
 

@@ -694,25 +694,25 @@ function BusinessImpactCalculator() {
           </div>
         </div>
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-          {mockData.businessImpact.map((item, idx) => {
-            const val = useCounter(item.value, idx * 100, 1800, item.format)
+          {mockData.businessImpact.map((biz, idx) => {
+            const val = useCounter(biz.value, idx * 100, 1800, biz.format)
             const displayVal = typeof val === 'string' ? val : val.toLocaleString()
-            const barPct = Math.min((item.value / item.barMax) * 100, 100)
+            const barPct = Math.min((biz.value / biz.barMax) * 100, 100)
             return (
-              <motion.div key={item.label} variants={item} className="rounded-lg border border-white/[0.04] bg-white/[0.01] p-3 sm:p-4 hover:bg-white/[0.03] transition-all group">
+              <motion.div key={biz.label} variants={item} className="rounded-lg border border-white/[0.04] bg-white/[0.01] p-3 sm:p-4 hover:bg-white/[0.03] transition-all group">
                 <div className="flex items-center gap-2 mb-2">
-                  <svg className={`h-3.5 w-3.5 ${item.color}`} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}><path strokeLinecap="round" strokeLinejoin="round" d={item.icon} /></svg>
-                  <span className="text-[9px] font-mono text-slate-500 uppercase tracking-wider truncate">{item.label}</span>
+                  <svg className={`h-3.5 w-3.5 ${biz.color}`} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}><path strokeLinecap="round" strokeLinejoin="round" d={biz.icon} /></svg>
+                  <span className="text-[9px] font-mono text-slate-500 uppercase tracking-wider truncate">{biz.label}</span>
                 </div>
-                <div className={`text-lg sm:text-xl font-bold font-mono ${item.color} truncate`}>
-                  {item.prefix}{displayVal}{item.suffix}
+                <div className={`text-lg sm:text-xl font-bold font-mono ${biz.color} truncate`}>
+                  {biz.prefix}{displayVal}{biz.suffix}
                 </div>
                 <div className="mt-2 h-1.5 rounded-full bg-slate-800 overflow-hidden">
                   <motion.div
                     initial={{ width: 0 }}
                     animate={{ width: `${barPct}%` }}
                     transition={{ duration: 1.2, delay: idx * 0.1 + 0.3, ease: 'easeOut' }}
-                    className={`h-full rounded-full ${item.color.replace('text-', 'bg-').replace('400', '500/80')}`}
+                    className={`h-full rounded-full ${biz.color.replace('text-', 'bg-').replace('400', '500/80')}`}
                   />
                 </div>
               </motion.div>
@@ -864,7 +864,7 @@ function ChangeFailureRate() {
               <span className={`text-[8px] font-mono font-bold ${d.rate < 10 ? 'text-emerald-400' : d.rate < 15 ? 'text-amber-400' : 'text-red-400'}`}>{d.rate}%</span>
               <motion.div
                 initial={{ height: 0 }}
-                animate={anim ? { height } : {}}
+                animate={anim ? { height: h } : {}}
                 transition={{ duration: 0.8, delay: i * 0.08, ease: 'easeOut' }}
                 className="w-full rounded-t-md"
                 style={{ backgroundColor: color, height: anim ? h : 0, minHeight: anim ? h : 0 }}
