@@ -19,6 +19,7 @@ import AICTOReport from './pages/AICTOReport'
 import DeploymentSimulator from './pages/DeploymentSimulator'
 import IncidentTimeMachine from './pages/IncidentTimeMachine'
 import AIEngineeringPlanner from './pages/AIEngineeringPlanner'
+import OrbitExecutionPlanner from './pages/OrbitExecutionPlanner'
 import Settings from './pages/Settings'
 import Help from './pages/Help'
 
@@ -55,6 +56,7 @@ export default function App() {
       <Route path="/analytics" element={<Suspense fallback={<PageSkeleton />}><FadeIn><Analytics /></FadeIn></Suspense>} />
       <Route path="/time-machine" element={<FadeIn><IncidentTimeMachine /></FadeIn>} />
       <Route path="/ai-planner" element={<FadeIn><AIEngineeringPlanner /></FadeIn>} />
+      <Route path="/execution-planner" element={<FadeIn><OrbitExecutionPlanner /></FadeIn>} />
       <Route path="/settings" element={<FadeIn><Settings /></FadeIn>} />
       <Route path="/help" element={<FadeIn><Help /></FadeIn>} />
     </Routes>
