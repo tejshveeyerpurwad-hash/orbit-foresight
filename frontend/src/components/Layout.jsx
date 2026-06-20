@@ -3,6 +3,7 @@ import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import { JourneyNav } from './NarrativeCTA'
 import QuickActionBar from './QuickActionBar'
+import Footer from './Footer'
 
 const centerNav = [
   { to: '/dashboard', label: 'Dashboard', shortcut: '⌘1' },
@@ -371,31 +372,7 @@ export default function Layout({ children }) {
         {!presentMode && <QuickActionBar currentPage={pathname} />}
 
         {/* Footer — hidden in present mode */}
-        {!presentMode && (
-          <footer className="border-t border-white/[0.04] px-4 sm:px-6 lg:px-8 py-4">
-            <div className="mx-auto max-w-7xl flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                <div className="flex items-center gap-1.5">
-                  <div className="relative flex h-4 w-4 items-center justify-center">
-                    <div className="absolute h-4 w-4 rounded-full bg-brand/20" />
-                    <div className="relative h-1 w-1 rounded-full bg-brand" />
-                  </div>
-                  <span className="text-[10px] font-semibold text-slate-500">
-                    Orbit<span className="text-brand">Foresight</span>
-                  </span>
-                </div>
-                <span className="text-[9px] text-slate-700">© 2026 Orbit Foresight Inc.</span>
-              </div>
-              <div className="flex items-center gap-3 text-[9px] text-slate-700">
-                <Link to="/help" className="hover:text-slate-500 transition-colors">Documentation</Link>
-                <span>·</span>
-                <Link to="/settings" className="hover:text-slate-500 transition-colors">Settings</Link>
-                <span>·</span>
-                <span>v2.4.1</span>
-              </div>
-            </div>
-          </footer>
-        )}
+        {!presentMode && <Footer />}
       </div>
 
     </div>
