@@ -233,15 +233,19 @@ const severityColor = {
 }
 
 function AnimatedStatCard({ value, label, color, delay = 200 }) {
+  const safeValue = value ?? 0
   const [count, setCount] = useState(0)
   useEffect(() => {
+    if (safeValue === 0) { setCount(0); return }
     const timer = setTimeout(() => {
       let current = 0
-      const step = Math.max(0.1, value / 30)
+      const step = Math.max(0.1, safeValue / 30)
+      let iterations = 0
       const interval = setInterval(() => {
+        iterations++
         current += step
-        if (current >= value) {
-          setCount(value)
+        if (current >= safeValue || iterations > 100) {
+          setCount(safeValue)
           clearInterval(interval)
         } else {
           setCount(current)
@@ -249,7 +253,7 @@ function AnimatedStatCard({ value, label, color, delay = 200 }) {
       }, 25)
     }, delay)
     return () => clearTimeout(timer)
-  }, [value, delay])
+  }, [safeValue, delay])
 
   return (
     <motion.div
@@ -273,7 +277,7 @@ function AnimatedStatCard({ value, label, color, delay = 200 }) {
       <div className="mt-3 h-1 rounded-full bg-slate-800 overflow-hidden">
         <motion.div
           initial={{ width: 0 }}
-          animate={{ width: `${(count / (label.includes('Rate') ? 100 : value > 500 ? value : 1000)) * 100}%` }}
+          animate={{ width: `${(count / (label.includes('Rate') ? 100 : safeValue > 500 ? safeValue : 1000)) * 100}%` }}
           transition={{ duration: 0.8, ease: 'easeOut' }}
           className="h-full rounded-full"
           style={{ backgroundColor: color, boxShadow: `0 0 8px ${color}40` }}
@@ -305,34 +309,6 @@ function Sparkline({ data, color = '#a855f7', height = 24, width = 80 }) {
   )
 }
 
-function WormholeAnimation() {
-  return (
-    <div className="relative w-full h-32 my-6 overflow-hidden rounded-xl border border-white/[0.04] bg-slate-950/50">
-      <div className="absolute inset-0 flex items-center justify-center">
-        <svg className="w-24 h-24 animate-spin-slow" viewBox="0 0 100 100">
-          <defs>
-            <linearGradient id="ring1" x1="0%" y1="0%" x2="100%" y2="100%">
-              <stop offset="0%" stopColor="#a855f7" />
-              <stop offset="50%" stopColor="#22d3ee" />
-              <stop offset="100%" stopColor="#d946ef" />
-            </linearGradient>
-            <linearGradient id="ring2" x1="100%" y1="0%" x2="0%" y2="100%">
-              <stop offset="0%" stopColor="#22d3ee" />
-              <stop offset="50%" stopColor="#d946ef" />
-              <stop offset="100%" stopColor="#a855f7" />
-            </linearGradient>
-          </defs>
-          <circle cx="50" cy="50" r="45" fill="none" stroke="url(#ring1)" strokeWidth="1" opacity="0.6" className="animate-spin-reverse" style={{ transformOrigin: 'center' }} />
-          <circle cx="50" cy="50" r="35" fill="none" stroke="url(#ring2)" strokeWidth="1.5" opacity="0.5" className="animate-spin" style={{ transformOrigin: 'center' }} />
-          <circle cx="50" cy="50" r="25" fill="none" stroke="url(#ring1)" strokeWidth="2" opacity="0.4" className="animate-spin-reverse" style={{ transformOrigin: 'center' }} />
-          <circle cx="50" cy="50" r="15" fill="none" stroke="url(#ring2)" strokeWidth="2.5" opacity="0.3" className="animate-spin" style={{ transformOrigin: 'center' }} />
-          <circle cx="50" cy="50" r="6" fill="none" stroke="#22d3ee" strokeWidth="3" opacity="0.2" className="animate-pulse" />
-        </svg>
-      </div>
-      <div className="absolute inset-0 bg-gradient-to-r from-transparent via-purple-500/5 to-transparent" />
-    </div>
-  )
-}
 
 function DeploymentCard({ deploy, index }) {
   const [showComparison, setShowComparison] = useState(false)
@@ -1199,7 +1175,183 @@ export default function IncidentTimeMachine() {
                 </div>
               </motion.div>
 
-              <WormholeAnimation />
+              {/* 2a. Data Visualizations — replaced WormholeAnimation */}
+              <motion.div variants={item} className="space-y-2">
+                <div className="grid grid-cols-3 gap-2">
+                  <div className="rounded-lg border border-white/[0.06] bg-slate-900/50 p-2.5">
+                    <span className="text-[8px] font-mono text-slate-600 uppercase tracking-wider">Impact Score</span>
+                    <p className="text-lg font-bold text-red-400 mt-0.5">
+                      {Math.round((results.impactForecast || []).reduce((a, f) => a + (f?.risk ?? 0), 0) / Math.max((results.impactForecast || []).length, 1))}%
+                    </p>
+                  </div>
+                  <div className="rounded-lg border border-white/[0.06] bg-slate-900/50 p-2.5">
+                    <span className="text-[8px] font-mono text-slate-600 uppercase tracking-wider">Recovery Duration</span>
+                    <p className="text-lg font-bold text-cyan-400 mt-0.5">
+                      {(results.recoveryTimeline || []).reduce((a, s) => a + (parseInt(s?.duration) || 0), 0)}min
+                    </p>
+                  </div>
+                  <div className="rounded-lg border border-white/[0.06] bg-slate-900/50 p-2.5">
+                    <span className="text-[8px] font-mono text-slate-600 uppercase tracking-wider">Team Involved</span>
+                    <p className="text-lg font-bold text-purple-400 mt-0.5 truncate">
+                      {[...new Set((results.recoveryTimeline || []).map(s => s?.owner))].join(', ')}
+                    </p>
+                  </div>
+                </div>
+
+                <div className="rounded-lg border border-white/[0.06] bg-slate-900/50 p-3">
+                  <h3 className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider mb-2 flex items-center gap-1.5">
+                    <svg className="w-3 h-3 text-purple-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    Incident Replay Timeline
+                  </h3>
+                  <div className="relative pt-4 pb-1">
+                    <div className="absolute top-[22px] left-0 right-0 h-0.5 bg-slate-800" />
+                    <div className="flex items-start justify-between overflow-x-auto gap-1">
+                      {(timelineHistory || []).map((ev, i) => {
+                        const sev = severityColor[ev?.severity] || severityColor.medium
+                        const dotColors = { critical: '#ef4444', high: '#f97316', medium: '#eab308' }
+                        return (
+                          <button key={i} type="button" onClick={() => setActiveTimelineIdx(activeTimelineIdx === i ? -1 : i)} className="flex flex-col items-center shrink-0 w-20 group relative">
+                            <div className={`w-3 h-3 rounded-full ${sev.dot} ring-2 ring-slate-900 transition-transform group-hover:scale-125`}
+                              style={{ boxShadow: activeTimelineIdx === i ? `0 0 8px ${dotColors[ev?.severity] || '#eab308'}` : 'none' }} />
+                            <span className="text-[7px] font-mono text-slate-600 text-center leading-tight truncate w-full mt-0.5">{ev?.title?.split(' ').slice(0, 2).join(' ') || ''}</span>
+                            <span className="text-[6px] font-mono text-slate-700">{ev?.date?.slice(5) || ''}</span>
+                            {activeTimelineIdx === i && (
+                              <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="mt-1 p-1.5 rounded bg-slate-800 border border-white/[0.06] absolute top-8 z-20 w-36">
+                                <p className="text-[8px] text-slate-300">{ev?.description}</p>
+                                <span className="text-[7px] font-mono text-cyan-400">{ev?.duration}</span>
+                              </motion.div>
+                            )}
+                          </button>
+                        )
+                      })}
+                    </div>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                  <div className="rounded-lg border border-white/[0.06] bg-slate-900/50 p-2.5">
+                    <h3 className="text-[9px] font-semibold text-slate-500 uppercase tracking-wider mb-1.5">Failure Path</h3>
+                    <div className="flex items-end gap-0.5 h-16">
+                      {(evolution || []).map((e, i) => (
+                        <div key={i} className="flex-1 flex flex-col items-center justify-end gap-0.5">
+                          <motion.div
+                            initial={{ height: 0 }}
+                            animate={{ height: `${e?.risk ?? 0}%` }}
+                            transition={{ duration: 0.5, delay: i * 0.05 }}
+                            className="w-full rounded-t"
+                            style={{
+                              backgroundColor: (e?.risk ?? 0) > 70 ? '#ef4444' : (e?.risk ?? 0) > 50 ? '#f97316' : '#eab308',
+                              minHeight: '4px',
+                            }}
+                          />
+                        </div>
+                      ))}
+                    </div>
+                    <div className="flex justify-between mt-0.5">
+                      {(evolution || []).map((e, i) => (
+                        <span key={i} className="text-[6px] font-mono text-slate-700">{e?.month || ''}</span>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div className="rounded-lg border border-white/[0.06] bg-slate-900/50 p-2.5">
+                    <h3 className="text-[9px] font-semibold text-slate-500 uppercase tracking-wider mb-1">Root Cause</h3>
+                    {((results.rootCauses || [])[0]) && (
+                      <div>
+                        <p className="text-[9px] font-semibold text-white truncate">{(results.rootCauses[0])?.title}</p>
+                        <div className="mt-1 space-y-0.5">
+                          {((results.rootCauses[0])?.eventTimeline || []).slice(0, 3).map((ev, j) => (
+                            <div key={j} className="flex items-center gap-1">
+                              <div className="w-1 h-1 rounded-full bg-cyan-400 shrink-0" />
+                              <span className="text-[7px] font-mono text-cyan-400 shrink-0">{ev?.time || ''}</span>
+                              <span className="text-[7px] text-slate-500 truncate">{ev?.event || ''}</span>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+
+                  <div className="rounded-lg border border-white/[0.06] bg-slate-900/50 p-2.5">
+                    <h3 className="text-[9px] font-semibold text-slate-500 uppercase tracking-wider mb-1.5">Recovery</h3>
+                    <div className="flex items-end gap-1 h-16">
+                      {(results.recoveryTimeline || []).map((step, i) => {
+                        const stepColors = ['#a855f7', '#22d3ee', '#d946ef', '#f59e0b', '#22c55e']
+                        const mins = parseInt(step?.duration) || 1
+                        return (
+                          <div key={i} className="flex-1 flex flex-col items-center gap-0.5 group relative">
+                            <motion.div
+                              initial={{ height: 0 }}
+                              animate={{ height: `${Math.min(mins * 4, 60)}px` }}
+                              transition={{ duration: 0.4, delay: i * 0.08 }}
+                              className="w-full rounded-sm"
+                              style={{ backgroundColor: stepColors[i], opacity: 0.7 }}
+                            />
+                            <span className="text-[6px] font-mono text-slate-700">{step?.step?.slice(0, 3) || ''}</span>
+                            <div className="hidden group-hover:block absolute bottom-full mb-1 z-20 bg-slate-800 border border-white/[0.06] rounded p-1 w-28 pointer-events-none">
+                              <p className="text-[7px] text-slate-300">{step?.step}: {step?.duration}</p>
+                              <p className="text-[6px] text-slate-500">{step?.detail}</p>
+                            </div>
+                          </div>
+                        )
+                      })}
+                    </div>
+                  </div>
+
+                  <div className="rounded-lg border border-white/[0.06] bg-slate-900/50 p-2.5">
+                    <h3 className="text-[9px] font-semibold text-slate-500 uppercase tracking-wider mb-1.5">Blast Radius</h3>
+                    <div className="space-y-1">
+                      {(results.impactForecast || []).slice(0, 4).map((f) => {
+                        const impactColors = { downtime: '#ef4444', delay: '#f59e0b', overload: '#a855f7', failure: '#f97316' }
+                        return (
+                          <div key={f?.service} className="flex items-center gap-1">
+                            <span className="text-[7px] text-slate-500 w-12 truncate">{f?.service?.split(' ')[0] || ''}</span>
+                            <div className="flex-1 h-1.5 rounded-full bg-slate-800 overflow-hidden">
+                              <motion.div
+                                initial={{ width: 0 }}
+                                animate={{ width: `${f?.risk ?? 0}%` }}
+                                transition={{ duration: 0.5 }}
+                                className="h-full rounded-full"
+                                style={{ backgroundColor: impactColors[f?.impact] || '#f97316' }}
+                              />
+                            </div>
+                            <span className="text-[7px] font-mono text-slate-600 w-5 text-right">{f?.risk ?? 0}%</span>
+                          </div>
+                        )
+                      })}
+                    </div>
+                  </div>
+                </div>
+
+                <div className="rounded-lg border border-white/[0.06] bg-slate-900/50 p-3">
+                  <div className="flex items-center justify-between">
+                    <h3 className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider flex items-center gap-1.5">
+                      <svg className="w-3 h-3 text-fuchsia-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M5.25 5.653c0-.856.917-1.398 1.667-.986l11.54 6.348a1.125 1.125 0 010 1.971l-11.54 6.347a1.125 1.125 0 01-1.667-.985V5.653z" />
+                      </svg>
+                      Replay Controls
+                    </h3>
+                    <StatusBadge status="warning" label={`${(replays || []).length} replays`} />
+                  </div>
+                  <div className="flex items-center gap-2 mt-2 overflow-x-auto">
+                    {(replays || []).slice(0, 3).map((r, i) => (
+                      <div key={i} className="flex items-center gap-2 rounded-lg border border-white/[0.04] bg-white/[0.02] px-3 py-1.5 shrink-0">
+                        <div className="flex-1 min-w-0">
+                          <p className="text-[9px] font-semibold text-white truncate">{r?.title}</p>
+                          <span className="text-[7px] font-mono text-slate-600">{r?.date} · {r?.duration}</span>
+                        </div>
+                        <button type="button" className="w-6 h-6 rounded-full bg-cyan-500/20 flex items-center justify-center hover:bg-cyan-500/30 transition-all shrink-0">
+                          <svg className="w-2.5 h-2.5 text-cyan-400" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M8 5.14v14.72a1 1 0 001.5.86l11-7.36a1 1 0 000-1.72l-11-7.36A1 1 0 008 5.14z" />
+                          </svg>
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </motion.div>
 
               {/* 3. Incident Replay Engine */}
               <motion.div variants={item}>

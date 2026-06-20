@@ -278,16 +278,20 @@ const rollbackReasons = [
 ]
 
 const customTooltip = ({ active, payload, label }) => {
-  if (!active || !payload) return null
+  if (!active || !payload || !Array.isArray(payload)) return null
   return (
     <div className="rounded-lg border border-white/[0.06] bg-slate-900/90 p-3 text-xs shadow-xl backdrop-blur-xl">
-      <p className="text-slate-400 mb-1 font-medium">{label}</p>
-      {payload.map((p, i) => (
-        <p key={i} className="text-slate-200" style={{ color: p.color || '#e2e8f0' }}>
-          {p.name}: {p.value}{p.name === 'minutes' || p.name === 'Min' ? 'm' : p.name === 'Failure Rate' || p.name === 'Change Failure Rate' ? '%' : ''}
-          {p.name === 'value' ? '%' : ''}
-        </p>
-      ))}
+      <p className="text-slate-400 mb-1 font-medium">{label || ''}</p>
+      {payload.map((p, i) => {
+        if (!p) return null
+        const nm = p.name || ''
+        return (
+          <p key={i} className="text-slate-200" style={{ color: p.color || '#e2e8f0' }}>
+            {nm}: {p.value ?? '-'}{nm === 'minutes' || nm === 'Min' ? 'm' : nm === 'Failure Rate' || nm === 'Change Failure Rate' ? '%' : ''}
+            {nm === 'value' ? '%' : ''}
+          </p>
+        )
+      })}
     </div>
   )
 }
@@ -298,7 +302,7 @@ function ChartCard({ title, subtitle, children, delay = 0, className = '' }) {
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay }}
-      className={`rounded-xl border border-white/[0.06] bg-slate-900/50 p-4 ${className}`}
+      className={`rounded-xl border border-white/[0.06] bg-slate-900/50 p-4 overflow-hidden min-w-0 ${className}`}
     >
       <div className="mb-3">
         <h3 className="text-sm font-semibold text-white">{title}</h3>
@@ -307,6 +311,14 @@ function ChartCard({ title, subtitle, children, delay = 0, className = '' }) {
       {children}
     </motion.div>
   )
+}
+
+function safeArr(arr) {
+  return Array.isArray(arr) ? arr : []
+}
+
+function safeVal(v, fallback = 0) {
+  return v ?? fallback
 }
 
 const container = { hidden: {}, show: { transition: { staggerChildren: 0.03 } } }
@@ -339,13 +351,9 @@ export default function Analytics() {
     return '#ef4444'
   }
 
-  const filteredTimeline = selectedSeverity === 'all'
-    ? incidentTimeline
-    : incidentTimeline.filter(i => i.severity === selectedSeverity)
+  const filteredTimeline = (selectedSeverity === 'all' ? incidentTimeline : (incidentTimeline || []).filter(i => i?.severity === selectedSeverity)) || []
 
-  const filteredServices = selectedRegion === 'all'
-    ? serviceAnalytics
-    : serviceAnalytics.filter(s => s.region === selectedRegion)
+  const filteredServices = (selectedRegion === 'all' ? serviceAnalytics : (serviceAnalytics || []).filter(s => s?.region === selectedRegion)) || []
 
   const totalCostImpact = costImpactData.reduce((acc, c) => {
     const val = parseFloat(c.value.replace(/[^0-9.]/g, ''))
@@ -354,7 +362,7 @@ export default function Analytics() {
 
   return (
     <Layout>
-      <motion.div variants={container} initial="hidden" animate="show" className="space-y-3">
+      <motion.div variants={container} initial="hidden" animate="show" className="space-y-3 overflow-x-hidden">
 
         <motion.div variants={item}>
           <h1 className="text-2xl font-bold tracking-tight sm:text-3xl text-white">Analytics</h1>
@@ -404,7 +412,7 @@ export default function Analytics() {
                 <Line type="monotone" dataKey="autoResolved" stroke="#06b6d4" strokeWidth={1.5} strokeDasharray="4 2" dot={{ fill: '#06b6d4', r: 2 }} name="Auto-Resolved" />
               </LineChart>
             </ResponsiveContainer>
-            <div className="grid grid-cols-4 gap-2 mt-2">
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 mt-2">
               <div className="text-center rounded-lg bg-slate-800/20 p-1.5 border border-white/[0.03]">
                 <p className="text-[11px] font-bold text-red-400">66</p>
                 <p className="text-[9px] text-slate-600">Total Incidents</p>
@@ -492,7 +500,7 @@ export default function Analytics() {
                 <Area type="monotone" dataKey="commits" stroke="#f59e0b" fill="#f59e0b" fillOpacity={0.12} strokeWidth={2} name="Commits" />
               </AreaChart>
             </ResponsiveContainer>
-            <div className="grid grid-cols-7 gap-1 mt-2">
+            <div className="grid grid-cols-3 sm:grid-cols-7 gap-1 mt-2">
               {teamData.map((t) => (
                 <div key={t.name} className="text-center">
                   <p className="text-[10px] font-semibold text-white">{t.velocity}</p>
@@ -511,7 +519,7 @@ export default function Analytics() {
                 <Tooltip content={<customTooltip />} />
               </RadialBarChart>
             </ResponsiveContainer>
-            <div className="grid grid-cols-5 gap-1 mt-1">
+            <div className="grid grid-cols-3 sm:grid-cols-5 gap-1 mt-1">
               {healthData.map((h) => (
                 <div key={h.name} className="text-center p-1 rounded bg-slate-800/10">
                   <p className="text-[11px] font-semibold text-white">
@@ -645,7 +653,7 @@ export default function Analytics() {
                 <Line yAxisId="right" type="monotone" dataKey="failureRate" stroke="#ef4444" strokeWidth={2} dot={{ fill: '#ef4444', r: 3 }} name="Change Failure Rate" />
               </ComposedChart>
             </ResponsiveContainer>
-            <div className="grid grid-cols-4 gap-2 mt-2">
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 mt-2">
               <div className="text-center rounded bg-slate-800/10 p-1">
                 <p className="text-[11px] font-bold text-cyan-400">{weeklyDeployments.reduce((a, b) => a + b.deploys, 0)}</p>
                 <p className="text-[8px] text-slate-600">Total Deploys</p>
@@ -680,7 +688,7 @@ export default function Analytics() {
                 </Bar>
               </BarChart>
             </ResponsiveContainer>
-            <div className="grid grid-cols-6 gap-1 mt-2">
+            <div className="grid grid-cols-3 sm:grid-cols-6 gap-1 mt-2">
               {mttrData.map((m) => (
                 <div key={m.name} className="text-center">
                   <p className="text-[10px] font-semibold text-white">{m.minutes}m</p>
@@ -820,7 +828,7 @@ export default function Analytics() {
                 <Bar dataKey="p99Latency" fill="#8b5cf6" radius={[0, 3, 3, 0]} name="P99 Latency" />
               </BarChart>
             </ResponsiveContainer>
-            <div className="grid grid-cols-6 gap-1 mt-1">
+            <div className="grid grid-cols-3 sm:grid-cols-6 gap-1 mt-1">
               {dbPerformance.map((d) => (
                 <div key={d.name} className="text-center">
                   <p className="text-[8px] font-semibold" style={{ color: d.poolUtilization > 85 ? '#ef4444' : d.poolUtilization > 70 ? '#f59e0b' : '#22c55e' }}>{d.poolUtilization}%</p>
@@ -844,7 +852,7 @@ export default function Analytics() {
                 </Bar>
               </BarChart>
             </ResponsiveContainer>
-            <div className="grid grid-cols-3 gap-2 mt-1">
+            <div className="grid grid-cols-3 gap-1 mt-1">
               <div className="text-center rounded bg-slate-800/10 p-1">
                 <p className="text-[10px] font-bold text-green-400">{cacheMetrics.reduce((a, b) => a + b.hits, 0).toLocaleString()}</p>
                 <p className="text-[7px] text-slate-600">Total Hits</p>
@@ -854,7 +862,7 @@ export default function Analytics() {
                 <p className="text-[7px] text-slate-600">Total Misses</p>
               </div>
               <div className="text-center rounded bg-slate-800/10 p-1">
-                <p className="text-[10px] font-bold text-cyan-400">{((cacheMetrics.reduce((a, b) => a + b.hits, 0) / (cacheMetrics.reduce((a, b) => a + b.hits + b.misses, 0))) * 100).toFixed(1)}%</p>
+                <p className="text-[10px] font-bold text-cyan-400">{(() => { const t = cacheMetrics.reduce((a, b) => a + b.hits + b.misses, 0); return t > 0 ? ((cacheMetrics.reduce((a, b) => a + b.hits, 0) / t) * 100).toFixed(1) : '0.0' })()}%</p>
                 <p className="text-[7px] text-slate-600">Overall Hit Rate</p>
               </div>
             </div>
@@ -862,7 +870,7 @@ export default function Analytics() {
 
           <ChartCard title="Release Train Health" subtitle="Recent release train performance" delay={0.58}>
             <div className="space-y-1.5">
-              <div className="grid grid-cols-6 gap-1 text-[8px] text-slate-600 font-medium pb-1 border-b border-white/[0.04]">
+              <div className="hidden sm:grid grid-cols-6 gap-1 text-[8px] text-slate-600 font-medium pb-1 border-b border-white/[0.04]">
                 <span>Train</span>
                 <span className="text-center">Changes</span>
                 <span className="text-center">Incidents</span>
@@ -871,7 +879,7 @@ export default function Analytics() {
                 <span className="text-center">Rollback</span>
               </div>
               {releaseTrains.map((r) => (
-                <div key={r.train} className="grid grid-cols-6 gap-1 text-[9px] text-slate-300 py-0.5 border-b border-white/[0.02] last:border-0 items-center">
+                <div key={r.train} className="grid grid-cols-3 sm:grid-cols-6 gap-1 text-[9px] text-slate-300 py-0.5 border-b border-white/[0.02] last:border-0 items-center">
                   <span className="font-medium text-white text-[8px]">{r.train}</span>
                   <span className="text-center">{r.changes}</span>
                   <span className="text-center" style={{ color: r.incidents > 2 ? '#ef4444' : r.incidents > 1 ? '#f59e0b' : '#22c55e' }}>{r.incidents}</span>
@@ -911,7 +919,7 @@ export default function Analytics() {
 
           <ChartCard title="Alert Fatigue Analysis" subtitle="Alert volume by service (last 30 days)" delay={0.62}>
             <div className="space-y-1.5">
-              <div className="grid grid-cols-6 gap-1 text-[8px] text-slate-600 font-medium pb-1 border-b border-white/[0.04]">
+              <div className="hidden sm:grid grid-cols-6 gap-1 text-[8px] text-slate-600 font-medium pb-1 border-b border-white/[0.04]">
                 <span>Service</span>
                 <span className="text-center">Crit</span>
                 <span className="text-center">Warn</span>
@@ -920,7 +928,7 @@ export default function Analytics() {
                 <span className="text-center">Noise</span>
               </div>
               {alertFatigue.map((a) => (
-                <div key={a.service} className="grid grid-cols-6 gap-1 text-[9px] text-slate-300 py-0.5 border-b border-white/[0.02] last:border-0 items-center">
+                <div key={a.service} className="grid grid-cols-3 sm:grid-cols-6 gap-1 text-[9px] text-slate-300 py-0.5 border-b border-white/[0.02] last:border-0 items-center">
                   <span className="font-medium text-white text-[8px]">{a.service}</span>
                   <span className="text-center" style={{ color: a.critical > 5 ? '#ef4444' : '#f59e0b' }}>{a.critical}</span>
                   <span className="text-center text-yellow-400">{a.warning}</span>
@@ -953,7 +961,7 @@ export default function Analytics() {
                 <Line type="monotone" dataKey="velocity" stroke="#06b6d4" strokeWidth={2} dot={{ fill: '#06b6d4', r: 3 }} name="Velocity" />
               </ComposedChart>
             </ResponsiveContainer>
-            <div className="grid grid-cols-4 gap-2 mt-1">
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 mt-1">
               <div className="text-center rounded bg-slate-800/10 p-1">
                 <p className="text-[10px] font-bold text-green-400">{weeklySprintHealth.reduce((a, b) => a + b.completed, 0)}</p>
                 <p className="text-[7px] text-slate-600">Total Done</p>
@@ -1100,7 +1108,7 @@ export default function Analytics() {
               <Line type="monotone" dataKey="autoResolved" stroke="#06b6d4" strokeWidth={1.5} strokeDasharray="4 2" dot={{ fill: '#06b6d4', r: 3 }} name="Auto-Resolved" />
             </ComposedChart>
           </ResponsiveContainer>
-          <div className="grid grid-cols-3 gap-3 mt-2">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mt-2">
             {trendForecast.map((t) => (
               <div key={t.month} className="rounded-lg border border-white/[0.04] bg-slate-800/20 p-2 text-center">
                 <p className="text-[11px] font-bold text-white">{t.month}</p>
@@ -1109,9 +1117,9 @@ export default function Analytics() {
                   <span className="text-[8px] text-slate-600">±{((t.upper - t.lower) / 2).toFixed(0)}</span>
                 </div>
                 <p className="text-[8px] text-slate-600">{t.prevented} prevented · {t.autoResolved} auto</p>
-                <div className="mt-1 w-full h-1 rounded-full bg-slate-800 overflow-hidden">
-                  <div className="h-full rounded-full bg-green-500" style={{ width: `${(t.prevented / (t.prevented + t.predicted)) * 100}%` }} />
-                </div>
+                  <div className="mt-1 w-full h-1 rounded-full bg-slate-800 overflow-hidden">
+                    <div className="h-full rounded-full bg-green-500" style={{ width: `${(t.prevented + t.predicted) > 0 ? (t.prevented / (t.prevented + t.predicted)) * 100 : 0}%` }} />
+                  </div>
               </div>
             ))}
           </div>
@@ -1163,7 +1171,7 @@ export default function Analytics() {
         <div className="grid gap-3 lg:grid-cols-2">
           <ChartCard title="On-Call Response Metrics" subtitle="Weekly on-call performance" delay={0.85}>
             <div className="space-y-1.5">
-              <div className="grid grid-cols-5 gap-2 text-[8px] text-slate-600 font-medium pb-1 border-b border-white/[0.04]">
+              <div className="hidden sm:grid grid-cols-5 gap-2 text-[8px] text-slate-600 font-medium pb-1 border-b border-white/[0.04]">
                 <span>Week</span>
                 <span className="text-center">Pages</span>
                 <span className="text-center">Ack'd</span>
@@ -1171,7 +1179,7 @@ export default function Analytics() {
                 <span className="text-right">Resp</span>
               </div>
               {onCallData.map((o) => (
-                <div key={o.shift} className="grid grid-cols-5 gap-2 text-[10px] text-slate-300 py-1 border-b border-white/[0.02] last:border-0 items-center">
+                <div key={o.shift} className="grid grid-cols-3 sm:grid-cols-5 gap-2 text-[10px] text-slate-300 py-1 border-b border-white/[0.02] last:border-0 items-center">
                   <span className="font-medium text-[9px]">{o.shift}</span>
                   <span className="text-center text-slate-400">{o.pagesReceived}</span>
                   <span className="text-center text-green-400">{o.acknowledged}</span>
@@ -1182,14 +1190,14 @@ export default function Analytics() {
             </div>
             <div className="flex items-center justify-between mt-2 pt-2 border-t border-white/[0.04] text-[8px] text-slate-600">
               <span>Total pages: {onCallData.reduce((a, b) => a + b.pagesReceived, 0)}</span>
-              <span>Ack rate: {((onCallData.reduce((a, b) => a + b.acknowledged, 0) / onCallData.reduce((a, b) => a + b.pagesReceived, 0)) * 100).toFixed(0)}%</span>
+              <span>Ack rate: {(() => { const p = onCallData.reduce((a, b) => a + b.pagesReceived, 0); return p > 0 ? ((onCallData.reduce((a, b) => a + b.acknowledged, 0) / p) * 100).toFixed(0) : '100' })()}%</span>
               <span>Missed: {onCallData.reduce((a, b) => a + b.missed, 0)}</span>
             </div>
           </ChartCard>
 
           <ChartCard title="Team Velocity Detail" subtitle="Per-team sprint metrics for current period" delay={0.9}>
             <div className="space-y-1">
-              <div className="grid grid-cols-8 gap-1 text-[7px] text-slate-600 font-medium pb-1 border-b border-white/[0.04]">
+              <div className="hidden sm:grid grid-cols-8 gap-1 text-[7px] text-slate-600 font-medium pb-1 border-b border-white/[0.04]">
                 <span>Team</span>
                 <span className="text-center">PRs</span>
                 <span className="text-center">Rvws</span>
@@ -1200,7 +1208,7 @@ export default function Analytics() {
                 <span className="text-center">Size</span>
               </div>
               {teamData.map((t) => (
-                <div key={t.name} className="grid grid-cols-8 gap-1 text-[9px] text-slate-300 py-0.5 border-b border-white/[0.02] last:border-0 items-center">
+                <div key={t.name} className="grid grid-cols-4 sm:grid-cols-8 gap-1 text-[9px] text-slate-300 py-0.5 border-b border-white/[0.02] last:border-0 items-center">
                   <span className="font-medium text-white truncate text-[8px]">{t.name}</span>
                   <span className="text-center">{t.prs}</span>
                   <span className="text-center">{t.reviews}</span>
@@ -1223,16 +1231,16 @@ export default function Analytics() {
                   <p className="text-[11px] font-semibold text-white">{r.name}</p>
                   <div className={`w-1.5 h-1.5 rounded-full ${r.status === 'healthy' ? 'bg-green-400' : 'bg-yellow-400'}`} />
                 </div>
-                <div className="grid grid-cols-3 gap-1">
-                  <div>
+                <div className="flex justify-center gap-3 sm:gap-1">
+                  <div className="text-center">
                     <p className="text-[10px] font-bold text-emerald-400">{r.uptime}%</p>
                     <p className="text-[7px] text-slate-600">Uptime</p>
                   </div>
-                  <div>
+                  <div className="text-center">
                     <p className="text-[10px] font-bold text-cyan-400">{r.latency}ms</p>
                     <p className="text-[7px] text-slate-600">Latency</p>
                   </div>
-                  <div>
+                  <div className="text-center">
                     <p className="text-[10px] font-bold text-yellow-400">{r.errors}%</p>
                     <p className="text-[7px] text-slate-600">Errors</p>
                   </div>

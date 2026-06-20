@@ -1,6 +1,7 @@
 import { Routes, Route, useLocation } from 'react-router-dom'
 import { useEffect, useState, lazy, Suspense } from 'react'
 import Landing from './pages/Landing'
+import ErrorBoundary from './components/ErrorBoundary'
 
 function PageSkeleton() {
   return (
@@ -52,8 +53,8 @@ export default function App() {
       <Route path="/impact-analysis" element={<Suspense fallback={<PageSkeleton />}><FadeIn><ChangeImpactAnalysis /></FadeIn></Suspense>} />
       <Route path="/cto-report" element={<Suspense fallback={<PageSkeleton />}><FadeIn><AICTOReport /></FadeIn></Suspense>} />
       <Route path="/deployment-simulator" element={<Suspense fallback={<PageSkeleton />}><FadeIn><DeploymentSimulator /></FadeIn></Suspense>} />
-      <Route path="/analytics" element={<Suspense fallback={<PageSkeleton />}><FadeIn><Analytics /></FadeIn></Suspense>} />
-      <Route path="/time-machine" element={<Suspense fallback={<PageSkeleton />}><FadeIn><IncidentTimeMachine /></FadeIn></Suspense>} />
+      <Route path="/analytics" element={<Suspense fallback={<PageSkeleton />}><FadeIn><ErrorBoundary><Analytics /></ErrorBoundary></FadeIn></Suspense>} />
+      <Route path="/time-machine" element={<Suspense fallback={<PageSkeleton />}><FadeIn><ErrorBoundary><IncidentTimeMachine /></ErrorBoundary></FadeIn></Suspense>} />
       <Route path="/ai-planner" element={<Suspense fallback={<PageSkeleton />}><FadeIn><AIEngineeringPlanner /></FadeIn></Suspense>} />
       <Route path="/execution-planner" element={<Suspense fallback={<PageSkeleton />}><FadeIn><OrbitExecutionPlanner /></FadeIn></Suspense>} />
       <Route path="/settings" element={<Suspense fallback={<PageSkeleton />}><FadeIn><Settings /></FadeIn></Suspense>} />

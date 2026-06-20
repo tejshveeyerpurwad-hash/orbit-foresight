@@ -269,15 +269,14 @@ function RiskGauge({ score }) {
   const strokeColor = animatedScore >= 80 ? '#ef4444' : animatedScore >= 50 ? '#f59e0b' : '#22c55e'
   const severityLabel = animatedScore >= 80 ? 'CRITICAL' : animatedScore >= 50 ? 'ELEVATED' : 'MODERATE'
   return (
-    <div className="flex flex-col items-center relative">
-      <svg width="120" height="120" viewBox="0 0 120 120" className="-rotate-90">
+    <div className="flex flex-col items-center relative scale-[0.65] -my-3 -mx-2">
+      <svg width="100" height="100" viewBox="0 0 120 120" className="-rotate-90">
         <circle cx="60" cy="60" r="42" fill="none" stroke="rgba(255,255,255,0.06)" strokeWidth="8" />
         <circle cx="60" cy="60" r="42" fill="none" stroke={strokeColor} strokeWidth="8" strokeLinecap="round" strokeDasharray={circumference} strokeDashoffset={offset} style={{ transition: 'stroke-dashoffset 1.8s ease-out, stroke 0.3s' }} />
-        <circle cx="60" cy="60" r="32" fill="none" stroke="rgba(255,255,255,0.03)" strokeWidth="1" strokeDasharray="2 4" />
       </svg>
       <div className="absolute inset-0 flex flex-col items-center justify-center">
-        <span className="text-3xl font-bold text-white drop-shadow-lg" style={{ color: strokeColor }}>{animatedScore}</span>
-        <span className="text-[9px] text-slate-500 uppercase tracking-widest mt-0.5">{severityLabel}</span>
+        <span className="text-2xl font-bold text-white drop-shadow-lg" style={{ color: strokeColor }}>{animatedScore}</span>
+        <span className="text-[7px] text-slate-500 uppercase tracking-widest">{severityLabel}</span>
       </div>
     </div>
   )
@@ -297,12 +296,12 @@ function ConfidenceMeter({ confidence, label = 'INVESTIGATION CONFIDENCE' }) {
   }, [confidence])
   const barColor = animVal >= 80 ? 'bg-green-500' : animVal >= 60 ? 'bg-yellow-500' : 'bg-red-500'
   return (
-    <div className="space-y-2">
+    <div className="space-y-1">
       <div className="flex items-center justify-between">
-        <span className="text-xs text-slate-500 font-mono tracking-wide">{label}</span>
-        <span className="text-sm font-bold text-white">{animVal}%</span>
+        <span className="text-[8px] text-slate-500 font-mono tracking-wide">{label}</span>
+        <span className="text-xs font-bold text-white">{animVal}%</span>
       </div>
-      <div className="relative h-3 rounded-full bg-white/[0.06] overflow-hidden">
+      <div className="relative h-2 rounded-full bg-white/[0.06] overflow-hidden">
         <div className={'h-full rounded-full transition-all duration-[1500ms] ease-out ' + barColor} style={{ width: animVal + '%' }} />
       </div>
     </div>
@@ -423,122 +422,139 @@ export default function IntelligenceCenter() {
 
   return (
     <Layout>
-      <motion.div variants={container} initial="hidden" animate="show" className="space-y-3 pb-8">
+      <motion.div variants={container} initial="hidden" animate="show"           className="space-y-2 pb-8">
 
-        {/* ===== SECTION 1: CASE COMMAND HEADER ===== */}
-        <motion.div variants={item} className="glass-card overflow-hidden">
-          <div className="relative p-3">
-            <div className="absolute inset-0 bg-gradient-to-br from-cyan-500/[0.04] to-blue-500/[0.02] pointer-events-none" />
-            <div className="absolute top-0 right-0 w-80 h-80 bg-cyan-500/[0.02] rounded-full blur-3xl pointer-events-none" />
-            <div className="relative">
-              <div className="flex items-start justify-between flex-wrap gap-2 mb-3">
-                <div className="flex items-center gap-2">
-                  <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-cyan-500/20 to-blue-500/20 shadow-lg shadow-cyan-500/10">
-                    <svg className="h-4 w-4 text-cyan-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09z" />
-                    </svg>
-                  </div>
-                  <div>
-                    <h1 className="font-mono text-base font-bold tracking-widest text-white uppercase">Forensic Investigation Console</h1>
-                    <p className="text-[9px] text-slate-500 font-mono tracking-wide">AI-Powered Risk Intelligence & Root Cause Analysis Platform</p>
-                  </div>
+        {/* ===== SECTION 1: CASE COMMAND HEADER (COMPACT) ===== */}
+        <motion.div variants={item} className="glass-card">
+          <div className="p-2">
+            <div className="flex items-start justify-between flex-wrap gap-1 mb-1.5">
+              <div className="flex items-center gap-1.5">
+                <div className="flex h-5 w-5 items-center justify-center rounded-md bg-gradient-to-br from-cyan-500/20 to-blue-500/20">
+                  <svg className="h-3 w-3 text-cyan-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09z" />
+                  </svg>
                 </div>
-                <div className="flex items-center gap-2 flex-wrap">
-                  <button onClick={copyId} className="group flex items-center gap-1.5 font-mono text-[9px] text-slate-500 border border-white/[0.08] rounded-md px-2 py-0.5 tracking-wider hover:border-cyan-500/30 hover:text-cyan-400 transition-all">
-                    {copied ? 'Copied!' : data.caseId}
-                    <svg className="h-2.5 w-2.5 text-slate-600 group-hover:text-cyan-400 transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M16.5 8.25V6a2.25 2.25 0 00-2.25-2.25H6A2.25 2.25 0 003.75 6v8.25A2.25 2.25 0 006 16.5h2.25m8.25-8.25H18a2.25 2.25 0 012.25 2.25V18A2.25 2.25 0 0118 20.25h-7.5A2.25 2.25 0 018.25 18v-1.5m8.25-8.25h-3a4.5 4.5 0 01-4.5-4.5v-3" />
-                    </svg>
-                  </button>
-                  <span className="flex items-center gap-1 text-[9px] text-green-400 font-mono tracking-wider border border-green-500/20 rounded-md px-2 py-0.5">
-                    <span className="h-1.5 w-1.5 rounded-full bg-green-400 animate-pulse shadow-[0_0_6px_rgba(74,222,128,0.5)]" />
-                    {data.status}
-                  </span>
-                  <span className="text-[9px] text-slate-600 font-mono border border-white/[0.06] rounded-md px-2 py-0.5">
-                    Updated {timeAgo}
-                  </span>
+                <div>
+                  <h1 className="font-mono text-xs font-bold tracking-widest text-white uppercase">Forensic Investigation Console</h1>
+                  <p className="text-[7px] text-slate-500 font-mono tracking-wide">AI-Powered Risk Intelligence & Root Cause Analysis Platform</p>
                 </div>
               </div>
-              <h2 className="text-xs text-slate-300 font-mono mb-3 leading-relaxed">{data.title}</h2>
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 mb-3">
-                <div className="glass-card p-2 text-center hover:border-cyan-500/20 transition-all relative overflow-hidden group">
-                  <div className="absolute inset-0 bg-gradient-to-br from-cyan-500/[0.02] to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
-                  <div className="relative">
-                    <div className="text-xl font-bold text-cyan-400"><AnimatedCounter value={data.totalFailures} /></div>
-                    <div className="text-[9px] text-slate-500 mt-0.5 font-mono tracking-wide">Total Failures</div>
-                    <div className="flex justify-center gap-1.5 mt-0.5 text-[7px] text-slate-600">
-                      <span className="text-red-400">{data.criticalFailures}C</span>
-                      <span className="text-orange-400">{data.highFailures}H</span>
-                      <span className="text-yellow-400">{data.mediumFailures}M</span>
-                      <span className="text-green-400">{data.lowFailures}L</span>
-                    </div>
-                  </div>
-                </div>
-                <div className="glass-card p-2 text-center hover:border-red-500/20 transition-all relative overflow-hidden group">
-                  <div className="absolute inset-0 bg-gradient-to-br from-red-500/[0.02] to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
-                  <div className="relative">
-                    <div className="text-xl font-bold text-red-400"><AnimatedCounter value={data.criticalFailures} /></div>
-                    <div className="text-[9px] text-slate-500 mt-0.5 font-mono tracking-wide">Critical Threats</div>
-                    <div className="text-[7px] text-red-400/60 mt-0.5">Requires immediate action</div>
-                  </div>
-                </div>
-                <div className="glass-card p-2 text-center hover:border-blue-500/20 transition-all relative overflow-hidden group">
-                  <div className="absolute inset-0 bg-gradient-to-br from-blue-500/[0.02] to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
-                  <div className="relative">
-                    <div className="text-xl font-bold text-blue-400"><AnimatedCounter value={data.mrsAnalyzed} /></div>
-                    <div className="text-[9px] text-slate-500 mt-0.5 font-mono tracking-wide">MRs Analyzed</div>
-                    <div className="text-[7px] text-blue-400/60 mt-0.5">Historical correlation</div>
-                  </div>
-                </div>
-                <div className="glass-card p-2 text-center hover:border-green-500/20 transition-all relative overflow-hidden group">
-                  <div className="absolute inset-0 bg-gradient-to-br from-green-500/[0.02] to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
-                  <div className="relative">
-                    <div className="text-xl font-bold text-green-400"><AnimatedCounter value={data.incidentsPrevented} /></div>
-                    <div className="text-[9px] text-slate-500 mt-0.5 font-mono tracking-wide">Incidents Prevented</div>
-                    <div className="text-[7px] text-green-400/60 mt-0.5">Proactive detection</div>
-                  </div>
+              <div className="flex items-center gap-1.5 flex-wrap">
+                <button onClick={copyId} className="group flex items-center gap-1 font-mono text-[8px] text-slate-500 border border-white/[0.08] rounded-md px-1.5 py-0.5 tracking-wider hover:border-cyan-500/30 hover:text-cyan-400 transition-all">
+                  {copied ? 'Copied!' : data.caseId}
+                  <svg className="h-2 w-2 text-slate-600 group-hover:text-cyan-400 transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M16.5 8.25V6a2.25 2.25 0 00-2.25-2.25H6A2.25 2.25 0 003.75 6v8.25A2.25 2.25 0 006 16.5h2.25m8.25-8.25H18a2.25 2.25 0 012.25 2.25V18A2.25 2.25 0 0118 20.25h-7.5A2.25 2.25 0 018.25 18v-1.5m8.25-8.25h-3a4.5 4.5 0 01-4.5-4.5v-3" />
+                  </svg>
+                </button>
+                <span className="flex items-center gap-1 text-[8px] text-green-400 font-mono tracking-wider border border-green-500/20 rounded-md px-1.5 py-0.5">
+                  <span className="h-1 w-1 rounded-full bg-green-400 animate-pulse shadow-[0_0_6px_rgba(74,222,128,0.5)]" />
+                  {data.status}
+                </span>
+                <span className="text-[8px] text-slate-600 font-mono border border-white/[0.06] rounded-md px-1.5 py-0.5">
+                  Updated {timeAgo}
+                </span>
+              </div>
+            </div>
+            <h2 className="text-[10px] text-slate-300 font-mono mb-1.5 leading-relaxed">{data.title}</h2>
+            <div className="grid grid-cols-4 gap-1.5 mb-1.5">
+              <div className="glass-card p-1.5 text-center">
+                <div className="text-base font-bold text-cyan-400"><AnimatedCounter value={data.totalFailures} /></div>
+                <div className="text-[7px] text-slate-500 font-mono tracking-wide">Total Failures</div>
+                <div className="flex justify-center gap-1 text-[6px] text-slate-600">
+                  <span className="text-red-400">{data.criticalFailures}C</span>
+                  <span className="text-orange-400">{data.highFailures}H</span>
+                  <span className="text-yellow-400">{data.mediumFailures}M</span>
+                  <span className="text-green-400">{data.lowFailures}L</span>
                 </div>
               </div>
-              <div className="flex items-center gap-3 flex-wrap pt-2 border-t border-white/[0.04]">
-                <RiskGauge score={data.riskScore} />
-                <div className="w-40">
-                  <ConfidenceMeter confidence={data.confidence} label="CONFIDENCE" />
-                </div>
-                <div className="flex items-center gap-2">
-                  <div className="flex flex-col">
-                    <span className="text-[8px] text-slate-600 font-mono uppercase tracking-wider">Impact Score</span>
-                    <div className="flex items-center gap-1">
-                      <span className="text-base font-bold text-amber-400 font-mono">{data.impactScore}</span>
-                      <span className="text-[7px] text-amber-400/60 font-mono">/100</span>
-                    </div>
-                  </div>
-                </div>
-                <StatusBadge status="critical" label="HIGH RISK" />
-                <div className="flex items-center gap-1.5">
-                  <span className="h-1.5 w-1.5 rounded-full bg-red-500 animate-pulse" />
-                  <span className="text-[10px] font-bold text-red-400 font-mono">CRITICAL</span>
+              <div className="glass-card p-1.5 text-center">
+                <div className="text-base font-bold text-red-400"><AnimatedCounter value={data.criticalFailures} /></div>
+                <div className="text-[7px] text-slate-500 font-mono tracking-wide">Critical Threats</div>
+              </div>
+              <div className="glass-card p-1.5 text-center">
+                <div className="text-base font-bold text-blue-400"><AnimatedCounter value={data.mrsAnalyzed} /></div>
+                <div className="text-[7px] text-slate-500 font-mono tracking-wide">MRs Analyzed</div>
+              </div>
+              <div className="glass-card p-1.5 text-center">
+                <div className="text-base font-bold text-green-400"><AnimatedCounter value={data.incidentsPrevented} /></div>
+                <div className="text-[7px] text-slate-500 font-mono tracking-wide">Incidents Prevented</div>
+              </div>
+            </div>
+            <div className="flex items-center gap-2 flex-wrap pt-1.5 border-t border-white/[0.04]">
+              <RiskGauge score={data.riskScore} />
+              <div className="w-28">
+                <ConfidenceMeter confidence={data.confidence} label="CONFIDENCE" />
+              </div>
+              <div className="flex flex-col border-l border-white/[0.04] pl-2">
+                <span className="text-[7px] text-slate-600 font-mono uppercase tracking-wider">Impact Score</span>
+                <div className="flex items-center gap-1">
+                  <span className="text-sm font-bold text-amber-400 font-mono">{data.impactScore}</span>
+                  <span className="text-[6px] text-amber-400/60 font-mono">/100</span>
                 </div>
               </div>
-              <div className="flex flex-wrap gap-1.5 mt-2 pt-2 border-t border-white/[0.04]">
-                {data.affectedSystems.map((sys, i) => (
-                  <div key={i} className={'inline-flex items-center gap-1.5 rounded-lg border px-2 py-1 text-[9px] ' + (sys.impact === 'Critical' ? 'border-red-500/20 bg-red-500/[0.05]' : sys.impact === 'High' ? 'border-orange-500/20 bg-orange-500/[0.04]' : 'border-yellow-500/15 bg-yellow-500/[0.03]')}>
-                    <span className={'h-1 w-1 rounded-full ' + (sys.impact === 'Critical' ? 'bg-red-500 animate-pulse' : sys.impact === 'High' ? 'bg-orange-500' : 'bg-yellow-500')} />
-                    <span className="text-slate-300 font-mono">{sys.name}</span>
-                    <span className={'font-mono font-semibold ' + (sys.impact === 'Critical' ? 'text-red-400' : sys.impact === 'High' ? 'text-orange-400' : 'text-yellow-400')}>{sys.impact}</span>
-                    <span className="text-slate-600">|</span>
-                    <span className="text-slate-600 font-mono">{sys.rps} RPS</span>
-                    <span className="text-slate-600">|</span>
-                    <span className="text-slate-500">{sys.status}</span>
-                  </div>
-                ))}
-              </div>
+              <StatusBadge status="critical" label="HIGH RISK" />
+            </div>
+            <div className="flex flex-wrap gap-1.5 mt-1.5 pt-1.5 border-t border-white/[0.04]">
+              {(data.affectedSystems || []).map((sys, i) => (
+                <div key={i} className={'inline-flex items-center gap-1 rounded-lg border px-1.5 py-0.5 text-[8px] ' + (sys?.impact === 'Critical' ? 'border-red-500/20 bg-red-500/[0.05]' : sys?.impact === 'High' ? 'border-orange-500/20 bg-orange-500/[0.04]' : 'border-yellow-500/15 bg-yellow-500/[0.03]')}>
+                  <span className={'h-1 w-1 rounded-full ' + (sys?.impact === 'Critical' ? 'bg-red-500 animate-pulse' : sys?.impact === 'High' ? 'bg-orange-500' : 'bg-yellow-500')} />
+                  <span className="text-slate-300 font-mono">{sys?.name}</span>
+                  <span className={'font-mono font-semibold ' + (sys?.impact === 'Critical' ? 'text-red-400' : sys?.impact === 'High' ? 'text-orange-400' : 'text-yellow-400')}>{sys?.impact}</span>
+                  <span className="text-slate-600">|</span>
+                  <span className="text-slate-600 font-mono">{sys?.rps} RPS</span>
+                  <span className="text-slate-600">|</span>
+                  <span className="text-slate-500">{sys?.status}</span>
+                </div>
+              ))}
             </div>
           </div>
         </motion.div>
 
+        {/* ===== NEW: ROOT CAUSE GRAPH ===== */}
+        <motion.div variants={item} className="glass-card p-2">
+          <div className="flex items-center gap-1 mb-2">
+            <div className="flex h-4 w-4 items-center justify-center rounded-md bg-gradient-to-br from-purple-500/20 to-pink-500/20">
+              <svg className="h-2.5 w-2.5 text-purple-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" />
+              </svg>
+            </div>
+            <h3 className="text-[10px] font-semibold text-white">Root Cause Graph</h3>
+            <span className="text-[8px] text-slate-600 font-mono">causal chains</span>
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-1.5">
+            {(data.rootCauseChains || []).map((chain, ci) => (
+              <div key={ci} className="rounded-lg border border-white/[0.06] bg-white/[0.01] p-1.5">
+                <h4 className="text-[8px] text-slate-500 font-mono tracking-wider uppercase mb-1">{chain?.title}</h4>
+                <div className="flex flex-col gap-0.5">
+                  {(chain?.chain || []).map((cause, ni) => (
+                    <div key={ni}>
+                      {ni > 0 && (
+                        <div className="flex justify-center -my-0.5">
+                          <svg width="10" height="10" viewBox="0 0 10 10" className="text-cyan-500/30"><path d="M5 8L1 2h8z" fill="currentColor" /></svg>
+                        </div>
+                      )}
+                      <div className="rounded border border-white/[0.04] bg-white/[0.02] p-1 text-[8px] leading-tight">
+                        <div className="flex items-start justify-between gap-1">
+                          <span className="text-slate-300">{cause}</span>
+                          <span className="shrink-0 rounded bg-white/[0.04] px-1 text-[6px] font-mono text-slate-500">E:{(chain?.evidence || [])[ni]}</span>
+                        </div>
+                        <div className="flex items-center gap-1 mt-0.5">
+                          <div className="flex-1 h-1 rounded-full bg-white/[0.06] overflow-hidden">
+                            <div className={'h-full rounded-full ' + ((chain?.confidences || [])[ni] >= 90 ? 'bg-green-500' : (chain?.confidences || [])[ni] >= 80 ? 'bg-yellow-500' : 'bg-orange-500')} style={{ width: (chain?.confidences || [])[ni] + '%' }} />
+                          </div>
+                          <span className="text-[6px] font-mono text-slate-600">{(chain?.confidences || [])[ni]}%</span>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            ))}
+          </div>
+        </motion.div>
 
         {/* ===== Investigation Query ===== */}
-        <motion.div variants={item} className="glass-card p-3">
+        <motion.div variants={item} className="glass-card p-2">
           <div className="flex items-center gap-1.5 mb-2">
             <div className="flex h-4 w-4 items-center justify-center rounded-md bg-gradient-to-br from-cyan-500/20 to-blue-500/20">
               <svg className="h-2.5 w-2.5 text-cyan-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
@@ -585,13 +601,13 @@ export default function IntelligenceCenter() {
         </motion.div>
 
         {loading && (
-          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-3">
+          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-2">
             <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-4">
               {Array.from({ length: 4 }).map((_, i) => (
                 <div key={i} className="glass-card p-3 animate-pulse"><div className="h-2.5 w-24 bg-slate-800 rounded mb-2" /><div className="h-6 w-14 bg-slate-800 rounded mb-1.5" /><div className="h-1.5 w-32 bg-slate-800 rounded" /></div>
               ))}
             </div>
-            <div className="grid gap-2 sm:grid-cols-2">
+            <div className="grid gap-1.5 sm:grid-cols-2">
               <div className="glass-card p-3 animate-pulse"><div className="h-3 w-36 bg-slate-800 rounded mb-3" /><div className="h-36 bg-slate-800 rounded" /></div>
               <div className="glass-card p-3 animate-pulse"><div className="h-3 w-36 bg-slate-800 rounded mb-3" /><div className="h-36 bg-slate-800 rounded" /></div>
             </div>
@@ -600,10 +616,10 @@ export default function IntelligenceCenter() {
         )}
 
         {!loading && (
-          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-3">
+          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-2">
 
             {/* ===== SECTION 2: EXECUTIVE BRIEFING ===== */}
-            <motion.div variants={item} className="glass-card p-3">
+            <motion.div variants={item} className="glass-card p-2">
               <div className="flex items-center gap-1.5 mb-1">
                 <span className="text-[8px] text-slate-700 font-mono">Analysis completed at 2024-06-01T14:23:00Z . Engine: OV-Forensic-v2.4 . Data sources: GitLab, PagerDuty, Datadog, K8s</span>
               </div>
@@ -616,26 +632,26 @@ export default function IntelligenceCenter() {
                 <h3 className="text-xs font-semibold text-white">Executive Briefing</h3>
                 <StatusBadge status="info" label="Live Analysis" />
               </div>
-              <div className="rounded-lg border border-white/[0.06] bg-white/[0.02] p-3 mb-3">
+              <div className="rounded-lg border border-white/[0.06] bg-white/[0.02] p-2 mb-2">
                 <span className="text-[8px] text-slate-600 font-mono tracking-wider uppercase block mb-1">Executive Summary</span>
                 <p className="text-[10px] text-slate-400 leading-relaxed">
                   Forensic analysis of the Payment Pipeline failure identified a critical circuit breaker gap in the payment worker retry loop, which caused a cascading system failure affecting 4 services. The investigation analyzed 847 MRs across the platform, correlating 5 historical incidents with 94% confidence. Three distinct root cause chains were identified - circuit breaker cascade (primary, 92% confidence), memory exhaustion (secondary, 91% confidence), and idempotency gap (tertiary, 88% confidence). Immediate remediation of the circuit breaker configuration is recommended to prevent recurrence of the P0 outage that blocked all payment flows for 45 minutes. Estimated business impact: $202K revenue at risk, 15K affected users, and $12K SLA exposure.
                 </p>
               </div>
-              <div className="grid gap-2 sm:grid-cols-3 mb-3">
-                {data.keyFindingsData.map((kf, i) => (
+              <div className="grid gap-2 sm:grid-cols-3 mb-2">
+                {(data.keyFindingsData || []).map((kf, i) => (
                   <motion.div key={kf.id} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.06 }}
                     className={'rounded-lg border p-2 ' + (kf.severity === 'critical' ? 'border-red-500/20 bg-red-500/[0.03]' : 'border-orange-500/20 bg-orange-500/[0.02]')}>
                     <div className="flex items-center justify-between mb-1">
                       <span className="font-mono text-[8px] text-slate-600">{kf.id}</span>
-                      <StatusBadge status={kf.severity} label={kf.severity} />
+                      <StatusBadge status={kf?.severity} label={kf?.severity} />
                     </div>
                     <h4 className="text-[10px] font-semibold text-slate-200 mb-0.5">{kf.title}</h4>
                     <p className="text-[9px] text-slate-500 leading-relaxed">{kf.description}</p>
                   </motion.div>
                 ))}
               </div>
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 mb-2">
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-1.5 mb-1.5">
                 <div className="rounded-lg border border-white/[0.06] bg-white/[0.02] p-2 text-center">
                   <div className="text-[8px] text-slate-600 font-mono uppercase tracking-wider mb-0.5">Risk Score</div>
                   <div className="text-lg font-bold text-orange-400 font-mono">{data.riskScore}%</div>
@@ -660,7 +676,7 @@ export default function IntelligenceCenter() {
             </motion.div>
 
             {/* ===== SECTION 3: ROOT CAUSE FORENSICS ===== */}
-            <motion.div variants={item} className="glass-card p-3">
+            <motion.div variants={item} className="glass-card p-2">
               <div className="flex items-center gap-1.5 mb-3">
                 <div className="flex h-4 w-4 items-center justify-center rounded-md bg-gradient-to-br from-purple-500/20 to-pink-500/20">
                   <svg className="h-2.5 w-2.5 text-purple-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
@@ -671,14 +687,14 @@ export default function IntelligenceCenter() {
                 <span className="text-[9px] text-slate-600 font-mono">3 causal chains identified</span>
               </div>
               <div className="grid gap-3 lg:grid-cols-3">
-                {data.rootCauseChains.map((chain, ci) => (
+                {(data.rootCauseChains || []).map((chain, ci) => (
                   <div key={ci} className="relative">
                     <h4 className="text-[9px] text-slate-500 font-mono tracking-wider mb-2 uppercase">{chain.title}</h4>
                     <div className="relative flex flex-col items-center">
                       <svg className="absolute top-0 left-1/2 w-full h-full -translate-x-1/2 pointer-events-none" style={{ zIndex: 0 }}>
                         <line x1="50%" y1="0" x2="50%" y2="100%" stroke="rgba(6,182,212,0.1)" strokeWidth="1" strokeDasharray="3 3" />
                       </svg>
-                      {chain.chain.map((cause, ni) => (
+                      {(chain.chain || []).map((cause, ni) => (
                         <div key={ni} className="relative z-10 w-full flex flex-col items-center">
                           {ni > 0 && (
                             <div className="flex flex-col items-center my-0.5">
@@ -717,39 +733,137 @@ export default function IntelligenceCenter() {
             </motion.div>
 
 
+            {/* ===== NEW: CORRELATION MATRIX ===== */}
+            <motion.div variants={item} className="glass-card p-2">
+              <div className="flex items-center gap-1.5 mb-2">
+                <div className="flex h-4 w-4 items-center justify-center rounded-md bg-gradient-to-br from-purple-500/20 to-indigo-500/20">
+                  <svg className="h-2.5 w-2.5 text-purple-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M13.19 8.688a4.5 4.5 0 011.242 7.244l-4.5 4.5a4.5 4.5 0 01-6.364-6.364l1.757-1.757m13.35-.622l1.757-1.757a4.5 4.5 0 00-6.364-6.364l-4.5 4.5a4.5 4.5 0 001.242 7.244" />
+                  </svg>
+                </div>
+                <h3 className="text-[10px] font-semibold text-white">Correlation Matrix</h3>
+                <span className="text-[8px] text-slate-600 font-mono">incident correlations</span>
+              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-1.5">
+                {(data.correlations || []).map((corr, i) => {
+                  const scoreColor = corr?.score >= 85 ? 'bg-red-500' : corr?.score >= 70 ? 'bg-orange-500' : 'bg-yellow-500'
+                  const scoreTextColor = corr?.score >= 85 ? 'text-red-400' : corr?.score >= 70 ? 'text-orange-400' : 'text-yellow-400'
+                  return (
+                    <motion.div key={i} initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.05 }}
+                      className="rounded-lg border border-white/[0.06] bg-white/[0.02] p-1.5 hover:border-cyan-500/20 transition-all">
+                      <div className="flex items-center justify-between mb-1">
+                        <h4 className="text-[9px] font-semibold text-slate-200">{corr?.incident}</h4>
+                        <span className={'text-sm font-bold font-mono ' + scoreTextColor}>{corr?.score}</span>
+                      </div>
+                      <div className="h-1.5 rounded-full bg-white/[0.06] overflow-hidden mb-1">
+                        <div className={'h-full rounded-full ' + scoreColor} style={{ width: (corr?.score || 0) + '%' }} />
+                      </div>
+                      <div className="text-[7px] text-slate-500">
+                        <span className="text-slate-600">Cause: </span>{corr?.commonCause}
+                      </div>
+                      <div className="text-[7px] text-slate-500">
+                        <span className="text-slate-600">Services: </span>{(corr?.services || []).join(', ')}
+                      </div>
+                    </motion.div>
+                  )
+                })}
+              </div>
+            </motion.div>
+
+            {/* ===== NEW: AI REASONING CHAIN ===== */}
+            <motion.div variants={item} className="glass-card p-2">
+              <div className="flex items-center gap-1.5 mb-2">
+                <div className="flex h-4 w-4 items-center justify-center rounded-md bg-gradient-to-br from-cyan-500/20 to-blue-500/20">
+                  <svg className="h-2.5 w-2.5 text-cyan-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                </div>
+                <h3 className="text-[10px] font-semibold text-white">AI Reasoning Chain</h3>
+                <span className="text-[8px] text-slate-600 font-mono">investigation phases</span>
+              </div>
+              <div className="grid grid-cols-6 gap-1">
+                {(data.investigationTimeline || []).map((phase, i) => (
+                  <motion.div key={i} initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.06 }}
+                    className="rounded-lg border border-white/[0.06] bg-white/[0.02] p-1.5 hover:border-cyan-500/20 transition-all text-center">
+                    <div className="flex items-center justify-center gap-1 mb-0.5">
+                      <span className={'text-[6px] font-bold px-1 py-0.5 rounded ' + ((timelineBadgeColors[phase?.type]) || 'bg-slate-500/10 text-slate-400')}>{phase?.type}</span>
+                    </div>
+                    <div className="text-[6px] text-slate-600 font-mono">{phase?.date}</div>
+                    <div className="text-[7px] text-slate-300 font-semibold truncate leading-tight">{phase?.title}</div>
+                    <div className="text-[6px] text-slate-500 leading-tight truncate">{phase?.description}</div>
+                    <div className="flex items-center justify-center gap-1 mt-0.5 text-[6px] text-slate-600 font-mono">
+                      <span>{phase?.team}</span>
+                      <span className="text-slate-700">|</span>
+                      <span>{phase?.duration}</span>
+                    </div>
+                  </motion.div>
+                ))}
+              </div>
+            </motion.div>
+
+            {/* ===== NEW: EVIDENCE TIMELINE ===== */}
+            <motion.div variants={item} className="glass-card p-2">
+              <div className="flex items-center gap-1.5 mb-2">
+                <div className="flex h-4 w-4 items-center justify-center rounded-md bg-gradient-to-br from-amber-500/20 to-yellow-500/20">
+                  <svg className="h-2.5 w-2.5 text-amber-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M20.25 8.511c.884.284 1.5 1.128 1.5 2.097v4.286c0 1.136-.847 2.1-1.98 2.193-.34.027-.68.052-1.02.072v3.091l-3-3c-1.354 0-2.694-.055-4.02-.163a2.115 2.115 0 01-.825-.242m9.345-8.334a2.126 2.126 0 00-.476-.095 48.64 48.64 0 00-8.048 0c-1.131.094-1.976 1.057-1.976 2.192v4.286c0 .837.46 1.58 1.155 1.951m9.345-8.334V6.637c0-1.621-1.152-3.026-2.76-3.235A48.455 48.455 0 0011.25 3c-2.115 0-4.198.137-6.24.402-1.608.209-2.76 1.614-2.76 3.235v6.226c0 1.621 1.152 3.026 2.76 3.235.577.075 1.157.14 1.74.194V21l4.155-4.155" />
+                  </svg>
+                </div>
+                <h3 className="text-[10px] font-semibold text-white">Evidence Timeline</h3>
+                <span className="text-[8px] text-slate-600 font-mono">chronological evidence</span>
+              </div>
+              <div className="space-y-0.5">
+                {(data.evidenceTimeline || []).map((ev, i) => (
+                  <motion.div key={i} initial={{ opacity: 0, x: -8 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: i * 0.04 }}
+                    className="flex items-center gap-2 rounded border border-white/[0.04] bg-white/[0.01] p-1 text-[8px]">
+                    <span className="text-[7px] text-slate-600 font-mono shrink-0 w-20">{ev?.date}</span>
+                    <span className="rounded bg-white/[0.03] px-1 py-0.5 text-[6px] text-slate-500 font-mono shrink-0">{ev?.type}</span>
+                    <span className="flex-1 text-slate-400 truncate">{ev?.description}</span>
+                    <span className="text-[7px] text-slate-600 font-mono shrink-0 hidden sm:inline">{ev?.source}</span>
+                    <div className="flex items-center gap-1 shrink-0 w-16">
+                      <div className="flex-1 h-1 rounded-full bg-white/[0.06] overflow-hidden">
+                        <div className={'h-full rounded-full ' + ((ev?.relevance || 0) >= 85 ? 'bg-red-500' : (ev?.relevance || 0) >= 75 ? 'bg-yellow-500' : 'bg-slate-500')} style={{ width: (ev?.relevance || 0) + '%' }} />
+                      </div>
+                      <span className="text-[6px] font-mono text-slate-600">{ev?.relevance}%</span>
+                    </div>
+                  </motion.div>
+                ))}
+              </div>
+            </motion.div>
+
             {/* ===== SECTION 4: RISK PROPAGATION ENGINE ===== */}
-            <motion.div variants={item} className="glass-card p-3">
-              <div className="flex items-center gap-1.5 mb-3">
+            <motion.div variants={item} className="glass-card p-2">
+              <div className="flex items-center gap-1.5 mb-2">
                 <div className="flex h-4 w-4 items-center justify-center rounded-md bg-gradient-to-br from-red-500/20 to-orange-500/20">
                   <svg className="h-2.5 w-2.5 text-red-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                     <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 3v11.25A2.25 2.25 0 006 16.5h2.25M3.75 3h-1.5m1.5 0h16.5m0 0h1.5m-1.5 0v11.25A2.25 2.25 0 0118 16.5h-2.25m-7.5 0h7.5m-7.5 0l-1 3m8.5-3l1 3m0 0l.5 1.5m-.5-1.5h-9.5m0 0l-.5 1.5" />
                   </svg>
                 </div>
-                <h3 className="text-xs font-semibold text-white">Risk Propagation Engine</h3>
-                <span className="text-[9px] text-slate-600 font-mono">{data.propagation.length} propagation paths</span>
+                <h3 className="text-[10px] font-semibold text-white">Risk Propagation Engine</h3>
+                <span className="text-[8px] text-slate-600 font-mono">{(data.propagation || []).length} propagation paths</span>
               </div>
-              <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
-                {data.propagation.map((p, i) => (
+              <div className="grid gap-1.5 sm:grid-cols-2 lg:grid-cols-3">
+                {(data.propagation || []).map((p, i) => (
                   <motion.div key={i} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.08 }}
                     className="relative rounded-lg border border-white/[0.06] bg-white/[0.02] p-2 hover:border-cyan-500/20 transition-all group">
                     <div className="flex items-center justify-between mb-1.5">
                       <div className="flex items-center gap-1">
                         <span className="h-1.5 w-1.5 rounded-full bg-red-500" />
-                        <span className="text-[9px] font-mono text-slate-300 font-medium">{p.from}</span>
+                        <span className="text-[9px] font-mono text-slate-300 font-medium">{p?.from}</span>
                       </div>
                       <svg className="h-3 w-3 text-cyan-500/40" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" /></svg>
                       <div className="flex items-center gap-1">
-                        <span className="text-[9px] font-mono text-slate-300 font-medium">{p.to}</span>
+                        <span className="text-[9px] font-mono text-slate-300 font-medium">{p?.to}</span>
                         <span className="h-1.5 w-1.5 rounded-full bg-orange-500" />
                       </div>
                     </div>
-                    <AnimatedBar value={p.risk} color={p.risk >= 80 ? 'bg-red-500' : p.risk >= 60 ? 'bg-orange-500' : 'bg-yellow-500'} />
+                    <AnimatedBar value={p?.risk} color={p.risk >= 80 ? 'bg-red-500' : p.risk >= 60 ? 'bg-orange-500' : 'bg-yellow-500'} />
                     <div className="flex items-center justify-between mt-0.5">
                       <span className="text-[7px] text-slate-700 font-mono">Propagation Likelihood</span>
-                      <span className="text-[9px] font-mono text-red-400">{p.risk}%</span>
+                      <span className="text-[9px] font-mono text-red-400">{p?.risk}%</span>
                     </div>
                     <div className="mt-1.5 rounded bg-white/[0.02] p-1 text-[7px] text-slate-600 leading-relaxed">
-                      {p.from} failure {'->'} <span className="text-red-400">{p.risk}%</span> likely to affect {p.to}
+                      {p?.from} failure {'->'} <span className="text-red-400">{p?.risk}%</span> likely to affect {p?.to}
                     </div>
                   </motion.div>
                 ))}
@@ -775,7 +889,7 @@ export default function IntelligenceCenter() {
             </motion.div>
 
             {/* ===== SECTION 5: BLAST RADIUS ANALYSIS ===== */}
-            <motion.div variants={item} className="glass-card p-3">
+            <motion.div variants={item} className="glass-card p-2">
               <div className="flex items-center gap-1.5 mb-3">
                 <div className="flex h-4 w-4 items-center justify-center rounded-md bg-gradient-to-br from-orange-500/20 to-red-500/20">
                   <svg className="h-2.5 w-2.5 text-orange-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
@@ -785,30 +899,30 @@ export default function IntelligenceCenter() {
                 <h3 className="text-xs font-semibold text-white">Blast Radius Analysis</h3>
                 <StatusBadge status="critical" label={data.blastRadius.totalServices + ' services affected'} />
               </div>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 mb-3">
-                {data.blastRadius.zones.map((z, i) => (
-                  <motion.div key={z.name} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.06 }}
-                    className={'rounded-lg border p-3 transition-all hover:border-cyan-500/30 ' + (z.critical ? 'border-red-500/20 bg-red-500/[0.03]' : 'border-white/[0.06] bg-white/[0.02]')}>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-1.5 mb-2">
+                {(data.blastRadius.zones || []).map((z, i) => (
+                  <motion.div key={z?.name} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.06 }}
+                    className={'rounded-lg border p-3 transition-all hover:border-cyan-500/30 ' + (z?.critical ? 'border-red-500/20 bg-red-500/[0.03]' : 'border-white/[0.06] bg-white/[0.02]')}>
                     <div className="flex items-center justify-between mb-2">
                       <div className="flex items-center gap-1.5">
-                        <span className={'h-2 w-2 rounded-full ' + (z.radius === 1 ? 'bg-red-500 animate-pulse' : z.radius === 2 ? 'bg-orange-500' : 'bg-cyan-500')} />
-                        <span className="text-[10px] font-mono text-slate-200 font-semibold">{z.name}</span>
+                        <span className={'h-2 w-2 rounded-full ' + (z?.radius === 1 ? 'bg-red-500 animate-pulse' : z?.radius === 2 ? 'bg-orange-500' : 'bg-cyan-500')} />
+                        <span className="text-[10px] font-mono text-slate-200 font-semibold">{z?.name}</span>
                       </div>
                       <div className="flex items-center gap-1.5">
-                        {z.critical && <span className="rounded bg-red-500/15 px-1 py-0.5 text-[7px] font-bold text-red-400 border border-red-500/25">CRITICAL</span>}
-                        <span className={'text-[10px] font-mono font-bold ' + (z.risk >= 80 ? 'text-red-400' : z.risk >= 60 ? 'text-orange-400' : 'text-cyan-400')}>R:{z.risk}</span>
+                        {z?.critical && <span className="rounded bg-red-500/15 px-1 py-0.5 text-[7px] font-bold text-red-400 border border-red-500/25">CRITICAL</span>}
+                        <span className={'text-[10px] font-mono font-bold ' + (z.risk >= 80 ? 'text-red-400' : z.risk >= 60 ? 'text-orange-400' : 'text-cyan-400')}>R:{z?.risk}</span>
                       </div>
                     </div>
                     <div className="mb-1.5">
                       <div className="flex items-center justify-between mb-0.5">
                         <span className="text-[7px] text-slate-600 font-mono">Risk Level</span>
-                        <span className={'text-[8px] font-mono ' + (z.risk >= 80 ? 'text-red-400' : z.risk >= 60 ? 'text-orange-400' : 'text-cyan-400')}>{z.risk}%</span>
+                        <span className={'text-[8px] font-mono ' + (z.risk >= 80 ? 'text-red-400' : z.risk >= 60 ? 'text-orange-400' : 'text-cyan-400')}>{z?.risk}%</span>
                       </div>
-                      <AnimatedBar value={z.risk} color={z.risk >= 80 ? 'bg-red-500' : z.risk >= 60 ? 'bg-orange-500' : 'bg-cyan-500'} />
+                      <AnimatedBar value={z?.risk} color={z.risk >= 80 ? 'bg-red-500' : z.risk >= 60 ? 'bg-orange-500' : 'bg-cyan-500'} />
                     </div>
                     <div className="flex items-center justify-between text-[8px] text-slate-600">
-                      <span className="font-mono">Files Changed: {z.files}</span>
-                      <span className="font-mono">Status: {z.status}</span>
+                      <span className="font-mono">Files Changed: {z?.files}</span>
+                      <span className="font-mono">Status: {z?.status}</span>
                     </div>
                   </motion.div>
                 ))}
@@ -839,7 +953,7 @@ export default function IntelligenceCenter() {
             </motion.div>
 
             {/* ===== SECTION 6: DEPENDENCY INTELLIGENCE ===== */}
-            <motion.div variants={item} className="glass-card p-3">
+            <motion.div variants={item} className="glass-card p-2">
               <div className="flex items-center gap-1.5 mb-3">
                 <div className="flex h-4 w-4 items-center justify-center rounded-md bg-gradient-to-br from-cyan-500/20 to-blue-500/20">
                   <svg className="h-2.5 w-2.5 text-cyan-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
@@ -850,20 +964,20 @@ export default function IntelligenceCenter() {
                 <span className="text-[9px] text-slate-600 font-mono">4 services - 7 dependency edges</span>
               </div>
               <div className="grid gap-2 sm:grid-cols-2 mb-3">
-                {data.deps.map((dep, i) => (
+                {(data.deps || []).map((dep, i) => (
                   <motion.div key={i} initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.05 }}
-                    onMouseEnter={() => setHoveredDep(dep.service)} onMouseLeave={() => setHoveredDep(null)}
-                    className={'rounded-lg border p-2 transition-all ' + (dep.critical ? 'border-red-500/20 bg-red-500/[0.03]' : 'border-white/[0.06] bg-white/[0.02]') + (hoveredDep === dep.service ? ' border-cyan-500/40' : '')}>
+                    onMouseEnter={() => setHoveredDep(dep?.service)} onMouseLeave={() => setHoveredDep(null)}
+                    className={'rounded-lg border p-2 transition-all ' + (dep?.critical ? 'border-red-500/20 bg-red-500/[0.03]' : 'border-white/[0.06] bg-white/[0.02]') + (hoveredDep === dep?.service ? ' border-cyan-500/40' : '')}>
                     <div className="flex items-center justify-between mb-1.5">
                       <div className="flex items-center gap-1.5">
-                        <span className={'h-1.5 w-1.5 rounded-full ' + (dep.critical ? 'bg-red-500 animate-pulse' : 'bg-cyan-500')} />
-                        <span className="text-[10px] font-mono text-slate-200 font-semibold">{dep.service}</span>
-                        {dep.critical && <span className="rounded bg-red-500/15 px-1 py-0.5 text-[7px] font-bold text-red-400">CRITICAL</span>}
+                        <span className={'h-1.5 w-1.5 rounded-full ' + (dep?.critical ? 'bg-red-500 animate-pulse' : 'bg-cyan-500')} />
+                        <span className="text-[10px] font-mono text-slate-200 font-semibold">{dep?.service}</span>
+                        {dep?.critical && <span className="rounded bg-red-500/15 px-1 py-0.5 text-[7px] font-bold text-red-400">CRITICAL</span>}
                       </div>
-                      <span className={'text-[9px] font-mono font-bold ' + (dep.risk >= 80 ? 'text-red-400' : dep.risk >= 60 ? 'text-orange-400' : 'text-cyan-400')}>{dep.risk}%</span>
+                      <span className={'text-[9px] font-mono font-bold ' + (dep.risk >= 80 ? 'text-red-400' : dep.risk >= 60 ? 'text-orange-400' : 'text-cyan-400')}>{dep?.risk}%</span>
                     </div>
                     <div className="flex flex-wrap gap-1">
-                      {dep.deps.map((d, di) => (
+                      {(dep.deps || []).map((d, di) => (
                         <span key={di} className="inline-flex items-center gap-0.5 rounded bg-white/[0.03] px-1.5 py-0.5 text-[7px] font-mono text-slate-500 border border-white/[0.04]">
                           <svg className="h-1.5 w-1.5 text-slate-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" /></svg>
                           {d}
@@ -871,8 +985,8 @@ export default function IntelligenceCenter() {
                       ))}
                     </div>
                     <div className="mt-1.5 pt-1.5 border-t border-white/[0.04] flex items-center justify-between text-[7px] text-slate-700 font-mono">
-                      <span>Upstream: {dep.deps.length} dep{dep.deps.length > 1 ? 's' : ''}</span>
-                      <span>Propagation Risk: {dep.risk}%</span>
+                      <span>Upstream: {(dep?.deps || []).length} dep{(dep?.deps || []).length > 1 ? 's' : ''}</span>
+                      <span>Propagation Risk: {dep?.risk}%</span>
                     </div>
                   </motion.div>
                 ))}
@@ -914,7 +1028,7 @@ export default function IntelligenceCenter() {
             </motion.div>
 
             {/* ===== SECTION 7: HISTORICAL INTELLIGENCE ===== */}
-            <motion.div variants={item} className="glass-card p-3">
+            <motion.div variants={item} className="glass-card p-2">
               <div className="flex items-center gap-1.5 mb-3">
                 <div className="flex h-4 w-4 items-center justify-center rounded-md bg-gradient-to-br from-blue-500/20 to-indigo-500/20">
                   <svg className="h-2.5 w-2.5 text-blue-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
@@ -925,31 +1039,31 @@ export default function IntelligenceCenter() {
                 <span className="text-[9px] text-slate-600 font-mono">{data.mrs.length} correlated MRs</span>
               </div>
               <div className="space-y-1.5">
-                {data.mrs.map((mr, i) => (
+                {(data.mrs || []).map((mr, i) => (
                   <motion.div key={i} initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: i * 0.06 }}
                     className="rounded-lg border border-white/[0.06] bg-white/[0.02] p-2 hover:border-cyan-500/20 transition-all">
                     <div className="flex items-start justify-between gap-2 mb-1.5">
                       <div className="flex items-center gap-1.5">
-                        <span className="font-mono text-[9px] text-cyan-400 font-bold">{mr.id}</span>
-                        <span className="text-[9px] text-slate-600 font-mono">{mr.author}</span>
+                        <span className="font-mono text-[9px] text-cyan-400 font-bold">{mr?.id}</span>
+                        <span className="text-[9px] text-slate-600 font-mono">{mr?.author}</span>
                         <span className="text-[9px] text-slate-600">|</span>
-                        <span className="text-[9px] text-slate-600">{mr.date}</span>
+                        <span className="text-[9px] text-slate-600">{mr?.date}</span>
                       </div>
                       <div className="flex items-center gap-1.5">
-                        <span className={'rounded px-1 py-0.5 text-[7px] font-bold ' + (mr.outcome === 'Incident' ? 'bg-red-500/15 text-red-400 border border-red-500/25' : 'bg-yellow-500/10 text-yellow-400 border border-yellow-500/20')}>{mr.outcome}</span>
-                        <span className={'rounded px-1 py-0.5 text-[7px] font-bold ' + (riskBadgeColors[mr.risk] || 'bg-slate-500/10 text-slate-400')}>{mr.risk.toUpperCase()}</span>
+                        <span className={'rounded px-1 py-0.5 text-[7px] font-bold ' + (mr?.outcome === 'Incident' ? 'bg-red-500/15 text-red-400 border border-red-500/25' : 'bg-yellow-500/10 text-yellow-400 border border-yellow-500/20')}>{mr.outcome}</span>
+                        <span className={'rounded px-1 py-0.5 text-[7px] font-bold ' + (riskBadgeColors[mr.risk] || 'bg-slate-500/10 text-slate-400')}>{mr?.risk?.toUpperCase()}</span>
                       </div>
                     </div>
-                    <p className="text-[10px] text-slate-400 mb-1.5">{mr.desc}</p>
+                    <p className="text-[10px] text-slate-400 mb-1.5">{mr?.desc}</p>
                     <div className="flex items-center gap-2">
                       <div className="flex-1">
                         <div className="flex items-center justify-between mb-0.5">
                           <span className="text-[7px] text-slate-600 font-mono">Match Score</span>
-                          <span className={'text-[8px] font-mono ' + (mr.match >= 85 ? 'text-green-400' : mr.match >= 70 ? 'text-yellow-400' : 'text-slate-500')}>{mr.match}%</span>
+                          <span className={'text-[8px] font-mono ' + (mr.match >= 85 ? 'text-green-400' : mr.match >= 70 ? 'text-yellow-400' : 'text-slate-500')}>{mr?.match}%</span>
                         </div>
-                        <AnimatedBar value={mr.match} color={mr.match >= 85 ? 'bg-green-500' : mr.match >= 70 ? 'bg-yellow-500' : 'bg-slate-500'} />
+                        <AnimatedBar value={mr?.match} color={mr.match >= 85 ? 'bg-green-500' : mr.match >= 70 ? 'bg-yellow-500' : 'bg-slate-500'} />
                       </div>
-                      <span className="text-[7px] text-slate-700 font-mono whitespace-nowrap">{mr.files} files changed</span>
+                      <span className="text-[7px] text-slate-700 font-mono whitespace-nowrap">{mr?.files} files changed</span>
                     </div>
                   </motion.div>
                 ))}
@@ -958,7 +1072,7 @@ export default function IntelligenceCenter() {
 
 
             {/* ===== SECTION 8: SIMILAR INCIDENT DATABASE ===== */}
-            <motion.div variants={item} className="glass-card p-3">
+            <motion.div variants={item} className="glass-card p-2">
               <div className="flex items-center gap-1.5 mb-3">
                 <div className="flex h-4 w-4 items-center justify-center rounded-md bg-gradient-to-br from-red-500/20 to-rose-500/20">
                   <svg className="h-2.5 w-2.5 text-red-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
@@ -968,29 +1082,29 @@ export default function IntelligenceCenter() {
                 <h3 className="text-xs font-semibold text-white">Similar Incident Database</h3>
                 <span className="text-[9px] text-slate-600 font-mono">{data.similarIncidents.length} historical matches</span>
               </div>
-              <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
-                {data.similarIncidents.map((inc, i) => (
-                  <motion.div key={inc.id} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.05 }}
+              <div className="grid gap-1.5 sm:grid-cols-2 lg:grid-cols-3">
+                {(data.similarIncidents || []).map((inc, i) => (
+                  <motion.div key={inc?.id} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.05 }}
                     className="rounded-lg border border-white/[0.06] bg-white/[0.02] p-2 hover:border-cyan-500/20 transition-all group">
                     <div className="flex items-center justify-between mb-1">
-                      <span className="font-mono text-[8px] text-cyan-400">{inc.id}</span>
-                      <span className="text-[7px] text-slate-600 font-mono">{inc.date}</span>
+                      <span className="font-mono text-[8px] text-cyan-400">{inc?.id}</span>
+                      <span className="text-[7px] text-slate-600 font-mono">{inc?.date}</span>
                     </div>
-                    <h4 className="text-[10px] text-slate-200 font-semibold mb-1 leading-tight">{inc.title}</h4>
+                    <h4 className="text-[10px] text-slate-200 font-semibold mb-1 leading-tight">{inc?.title}</h4>
                     <div className="flex items-center gap-1 mb-1.5">
-                      <span className="rounded bg-green-500/10 text-green-400 px-1 py-0.5 text-[7px] font-mono border border-green-500/20">{inc.outcome}</span>
-                      <span className="text-[7px] text-slate-600 font-mono">{inc.duration}</span>
+                      <span className="rounded bg-green-500/10 text-green-400 px-1 py-0.5 text-[7px] font-mono border border-green-500/20">{inc?.outcome}</span>
+                      <span className="text-[7px] text-slate-600 font-mono">{inc?.duration}</span>
                     </div>
                     <div className="flex items-center justify-between mb-1">
                       <span className="text-[7px] text-slate-600 font-mono">Similarity</span>
-                      <span className={'text-[9px] font-mono font-bold ' + (inc.similarity >= 85 ? 'text-green-400' : inc.similarity >= 70 ? 'text-yellow-400' : 'text-slate-400')}>{inc.similarity}%</span>
+                      <span className={'text-[9px] font-mono font-bold ' + (inc.similarity >= 85 ? 'text-green-400' : inc.similarity >= 70 ? 'text-yellow-400' : 'text-slate-400')}>{inc?.similarity}%</span>
                     </div>
-                    <AnimatedBar value={inc.similarity} color={inc.similarity >= 85 ? 'bg-green-500' : inc.similarity >= 70 ? 'bg-yellow-500' : 'bg-slate-500'} />
+                    <AnimatedBar value={inc?.similarity} color={inc.similarity >= 85 ? 'bg-green-500' : inc.similarity >= 70 ? 'bg-yellow-500' : 'bg-slate-500'} />
                     <div className="mt-1.5 text-[7px] text-slate-600 font-mono leading-tight">
-                      <span className="text-slate-500">Fix: </span>{inc.fixApplied}
+                      <span className="text-slate-500">Fix: </span>{inc?.fixApplied}
                     </div>
                     <div className="flex flex-wrap gap-1 mt-1">
-                      {inc.services.map((s, si) => (
+                      {(inc.services || []).map((s, si) => (
                         <span key={si} className="rounded bg-white/[0.03] px-1 py-0.5 text-[6px] font-mono text-slate-600 border border-white/[0.04]">{s}</span>
                       ))}
                     </div>
@@ -1000,7 +1114,7 @@ export default function IntelligenceCenter() {
             </motion.div>
 
             {/* ===== SECTION 9: EVIDENCE CENTER ===== */}
-            <motion.div variants={item} className="glass-card p-3">
+            <motion.div variants={item} className="glass-card p-2">
               <div className="flex items-center gap-1.5 mb-3">
                 <div className="flex h-4 w-4 items-center justify-center rounded-md bg-gradient-to-br from-amber-500/20 to-yellow-500/20">
                   <svg className="h-2.5 w-2.5 text-amber-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
@@ -1011,17 +1125,17 @@ export default function IntelligenceCenter() {
                 <span className="text-[9px] text-slate-600 font-mono">{data.evidenceItems.length} forensic artifacts</span>
               </div>
               <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-1.5 mb-3">
-                {data.evidenceItems.map((ev, i) => (
+                {(data.evidenceItems || []).map((ev, i) => (
                   <motion.div key={i} initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: i * 0.04 }}
                     className={'rounded-lg border p-2 text-center transition-all hover:border-cyan-500/30 cursor-pointer ' + (ev.critical ? 'border-red-500/20 bg-red-500/[0.04]' : 'border-white/[0.06] bg-white/[0.02]')}
                     onClick={() => setSelectedEvidence(selectedEvidence === i ? null : i)}>
                     <div className="flex items-center justify-between mb-0.5">
-                      <span className="text-[7px] text-slate-600 font-mono">{ev.type}</span>
+                      <span className="text-[7px] text-slate-600 font-mono">{ev?.type}</span>
                       {ev.critical && <span className="h-1.5 w-1.5 rounded-full bg-red-500 animate-pulse" />}
                     </div>
-                    <div className="text-xs font-bold text-white font-mono">{ev.value}</div>
-                    <div className="text-[7px] text-slate-500 mt-0.5">{ev.title}</div>
-                    <div className="text-[6px] text-slate-700 font-mono mt-0.5">{ev.source}</div>
+                    <div className="text-xs font-bold text-white font-mono">{ev?.value}</div>
+                    <div className="text-[7px] text-slate-500 mt-0.5">{ev?.title}</div>
+                    <div className="text-[6px] text-slate-700 font-mono mt-0.5">{ev?.source}</div>
                   </motion.div>
                 ))}
               </div>
@@ -1052,7 +1166,7 @@ export default function IntelligenceCenter() {
                   <span className="text-[8px] text-cyan-400 font-mono uppercase tracking-wider">Evidence Timeline Chain</span>
                 </div>
                 <div className="space-y-1">
-                  {data.evidenceTimeline.map((ev, i) => (
+                  {(data.evidenceTimeline || []).map((ev, i) => (
                     <motion.div key={i} initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: i * 0.04 }}
                       className="flex items-start gap-2 text-[8px]">
                       <div className="flex flex-col items-center">
@@ -1061,12 +1175,12 @@ export default function IntelligenceCenter() {
                       </div>
                       <div className="flex-1 min-w-0 pb-1">
                         <div className="flex items-center gap-1.5">
-                          <span className="text-[7px] text-slate-600 font-mono">{ev.date}</span>
-                          <span className="rounded bg-white/[0.03] px-1 py-0.5 text-[6px] text-slate-500 font-mono">{ev.type}</span>
-                          <span className="ml-auto text-[7px] font-mono text-slate-600">{ev.relevance}%</span>
+                          <span className="text-[7px] text-slate-600 font-mono">{ev?.date}</span>
+                          <span className="rounded bg-white/[0.03] px-1 py-0.5 text-[6px] text-slate-500 font-mono">{ev?.type}</span>
+                          <span className="ml-auto text-[7px] font-mono text-slate-600">{ev?.relevance}%</span>
                         </div>
-                        <p className="text-[8px] text-slate-400">{ev.description}</p>
-                        <p className="text-[7px] text-slate-600 font-mono">{ev.source}</p>
+                        <p className="text-[8px] text-slate-400">{ev?.description}</p>
+                        <p className="text-[7px] text-slate-600 font-mono">{ev?.source}</p>
                       </div>
                     </motion.div>
                   ))}
@@ -1077,7 +1191,7 @@ export default function IntelligenceCenter() {
 
             {/* ===== SECTION 10: AI RECOMMENDATIONS ===== */}
             <motion.div variants={item} className="glass-card overflow-hidden">
-              <div className="flex items-center gap-1.5 p-3 pb-2">
+              <div className="flex items-center gap-1.5 p-2 pb-1">
                 <div className="flex h-4 w-4 items-center justify-center rounded-md bg-gradient-to-br from-green-500/20 to-emerald-500/20">
                   <svg className="h-2.5 w-2.5 text-green-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                     <path strokeLinecap="round" strokeLinejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09z" />
@@ -1086,27 +1200,27 @@ export default function IntelligenceCenter() {
                 <h3 className="text-xs font-semibold text-white">AI Recommendations</h3>
                 <span className="text-[9px] text-slate-600 font-mono ml-1">{data.recommendations.length} prioritized actions</span>
               </div>
-              <div className="px-3 pb-3 space-y-1.5">
-                {data.recommendations.map((r, i) => (
+              <div className="px-2 pb-2 space-y-1">
+                {(data.recommendations || []).map((r, i) => (
                   <motion.div key={i} initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: i * 0.06 }}
                     className="flex items-start gap-2 rounded-lg border border-white/[0.06] bg-white/[0.02] p-2 hover:border-cyan-500/20 transition-all group">
                     <div className="flex items-center gap-1 shrink-0 mt-0.5">
-                      <span className={'rounded px-1 py-0.5 text-[7px] font-bold ' + (r.priority === 'P0' ? 'bg-red-500/15 text-red-400 border border-red-500/25' : r.priority === 'P1' ? 'bg-yellow-500/10 text-yellow-400 border border-yellow-500/20' : 'bg-blue-500/10 text-blue-400 border border-blue-500/20')}>{r.priority}</span>
+                      <span className={'rounded px-1 py-0.5 text-[7px] font-bold ' + (r?.priority === 'P0' ? 'bg-red-500/15 text-red-400 border border-red-500/25' : r?.priority === 'P1' ? 'bg-yellow-500/10 text-yellow-400 border border-yellow-500/20' : 'bg-blue-500/10 text-blue-400 border border-blue-500/20')}>{r.priority}</span>
                     </div>
                     <div className="flex-1 min-w-0">
-                      <p className="text-[10px] text-slate-300 font-medium">{r.action}</p>
+                      <p className="text-[10px] text-slate-300 font-medium">{r?.action}</p>
                       <div className="flex flex-wrap gap-2 mt-0.5 text-[8px] text-slate-600">
                         <span className="flex items-center gap-0.5">
                           <svg className="h-2.5 w-2.5 text-green-400/60" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}><path strokeLinecap="round" strokeLinejoin="round" d="M13.5 10.5V6.75a4.5 4.5 0 119 0v3.75M3.75 21.75h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H3.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z" /></svg>
-                          {r.impact}
+                          {r?.impact}
                         </span>
                         <span className="flex items-center gap-0.5">
                           <svg className="h-2.5 w-2.5 text-blue-400/60" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}><path strokeLinecap="round" strokeLinejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
-                          {r.effort}
+                          {r?.effort}
                         </span>
                         <span className="flex items-center gap-0.5">
                           <svg className="h-2.5 w-2.5 text-purple-400/60" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}><path strokeLinecap="round" strokeLinejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" /></svg>
-                          {r.owner}
+                          {r?.owner}
                         </span>
                         <span className="flex items-center gap-0.5">
                           <svg className="h-2.5 w-2.5 text-cyan-400/60" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}><path strokeLinecap="round" strokeLinejoin="round" d="M3.75 13.5l10.5-11.25L12 10.5h8.25L9.75 21.75 12 13.5H3.75z" /></svg>
@@ -1121,7 +1235,7 @@ export default function IntelligenceCenter() {
 
             {/* ===== SECTION 11: MITIGATION ROADMAP ===== */}
             <motion.div variants={item} className="glass-card overflow-hidden">
-              <div className="flex items-center gap-1.5 p-3 pb-2">
+              <div className="flex items-center gap-1.5 p-2 pb-1">
                 <div className="flex h-4 w-4 items-center justify-center rounded-md bg-gradient-to-br from-blue-500/20 to-cyan-500/20">
                   <svg className="h-2.5 w-2.5 text-blue-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                     <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75m-3-7.036A11.959 11.959 0 013.598 6 11.99 11.99 0 003 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285z" />
@@ -1130,8 +1244,8 @@ export default function IntelligenceCenter() {
                 <h3 className="text-xs font-semibold text-white">Mitigation Roadmap</h3>
                 <span className="text-[9px] text-slate-600 font-mono ml-1">{data.mitigations.length} phases</span>
               </div>
-              <div className="px-3 pb-3 space-y-2">
-                {data.mitigations.map((m, i) => {
+              <div className="px-2 pb-2 space-y-1">
+                {(data.mitigations || []).map((m, i) => {
                   const isOpen = expandedMitigation === i
                   const phaseColors = ['from-red-500/5 to-orange-500/5 border-red-500/15', 'from-yellow-500/5 to-orange-500/5 border-yellow-500/15', 'from-green-500/5 to-cyan-500/5 border-green-500/15']
                   const phaseBadgeColors = ['bg-red-500/15 text-red-400', 'bg-yellow-500/10 text-yellow-400', 'bg-green-500/10 text-green-400']
@@ -1140,12 +1254,12 @@ export default function IntelligenceCenter() {
                       className={'rounded-lg border bg-gradient-to-br ' + phaseColors[i] + ' overflow-hidden hover:border-cyan-500/30 transition-all'}>
                       <button onClick={() => setExpandedMitigation(isOpen ? null : i)} className="w-full text-left p-3">
                         <div className="flex items-center justify-between mb-1.5">
-                          <h4 className="text-[10px] font-mono text-white font-semibold">{m.phase}</h4>
-                          <span className={'rounded px-1.5 py-0.5 text-[7px] font-bold ' + phaseBadgeColors[i]}>{m.timeline}</span>
+                          <h4 className="text-[10px] font-mono text-white font-semibold">{m?.phase}</h4>
+                          <span className={'rounded px-1.5 py-0.5 text-[7px] font-bold ' + phaseBadgeColors[i]}>{m?.timeline}</span>
                         </div>
                         <div className="flex items-center gap-2 text-[8px] text-slate-500">
-                          <span className="font-mono">Owner: {m.owner}</span>
-                          <span className="font-mono">{m.actions.length} action items</span>
+                          <span className="font-mono">Owner: {m?.owner}</span>
+                          <span className="font-mono">{(m?.actions || []).length} action items</span>
                           <svg className={'h-2.5 w-2.5 ml-auto transition-transform ' + (isOpen ? 'rotate-180' : '')} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                             <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
                           </svg>
@@ -1153,16 +1267,16 @@ export default function IntelligenceCenter() {
                         <div className="mt-1.5">
                           <div className="flex items-center justify-between text-[7px] text-slate-600 font-mono mb-0.5">
                             <span>Expected Risk Reduction</span>
-                            <span className={i === 0 ? 'text-red-400' : i === 1 ? 'text-yellow-400' : 'text-green-400'}>{data.riskReduction[i].reduction}%</span>
+                            <span className={i === 0 ? 'text-red-400' : i === 1 ? 'text-yellow-400' : 'text-green-400'}>{(data.riskReduction || [])[i]?.reduction}%</span>
                           </div>
-                          <AnimatedBar value={data.riskReduction[i].reduction} color={i === 0 ? 'bg-red-500' : i === 1 ? 'bg-yellow-500' : 'bg-green-500'} />
+                          <AnimatedBar value={(data.riskReduction || [])[i]?.reduction} color={i === 0 ? 'bg-red-500' : i === 1 ? 'bg-yellow-500' : 'bg-green-500'} />
                         </div>
                       </button>
                       <AnimatePresence>
                         {isOpen && (
                           <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} exit={{ opacity: 0, height: 0 }} className="border-t border-white/[0.04]">
                             <div className="p-3 space-y-1.5">
-                              {m.actions.map((a, ai) => (
+                              {(m.actions || []).map((a, ai) => (
                                 <div key={ai} className="flex items-start gap-1.5 group">
                                   <div className="h-3.5 w-3.5 mt-0.5 shrink-0 rounded-full border border-cyan-500/30 flex items-center justify-center group-hover:bg-cyan-500/10 transition-colors">
                                     <svg className="h-2 w-2 text-cyan-400/60 group-hover:text-cyan-400 transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
@@ -1184,7 +1298,7 @@ export default function IntelligenceCenter() {
 
 
             {/* ===== SECTION 12: WHAT-IF SIMULATION LAB ===== */}
-            <motion.div variants={item} className="glass-card p-3">
+            <motion.div variants={item} className="glass-card p-2">
               <div className="flex items-center gap-1.5 mb-3">
                 <div className="flex h-4 w-4 items-center justify-center rounded-md bg-gradient-to-br from-violet-500/20 to-purple-500/20">
                   <svg className="h-2.5 w-2.5 text-violet-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
@@ -1194,7 +1308,7 @@ export default function IntelligenceCenter() {
                 <h3 className="text-xs font-semibold text-white">What-If Simulation Lab</h3>
                 <span className="text-[9px] text-slate-600 font-mono">{data.whatIfSimulation.scenarios.length} scenarios</span>
               </div>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 mb-3">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-1.5 mb-2">
                 <div className="rounded-lg border border-red-500/20 bg-red-500/[0.04] p-2">
                   <div className="flex items-center gap-1.5 mb-1.5">
                     <span className="h-2 w-2 rounded-full bg-red-500" />
@@ -1223,18 +1337,18 @@ export default function IntelligenceCenter() {
                 </div>
               </div>
               <div className="grid gap-1.5 sm:grid-cols-2 lg:grid-cols-4 mb-2">
-                {data.whatIfSimulation.scenarios.map((sc, i) => (
+                {(data.whatIfSimulation.scenarios || []).map((sc, i) => (
                   <motion.div key={i} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.06 }}
                     className={'rounded-lg border p-2 ' + (i === 0 ? 'border-red-500/20 bg-red-500/[0.03]' : i === 1 ? 'border-green-500/20 bg-green-500/[0.03]' : i === 2 ? 'border-yellow-500/20 bg-yellow-500/[0.03]' : 'border-cyan-500/20 bg-cyan-500/[0.03]')}>
-                    <h4 className="text-[9px] font-semibold text-slate-200 mb-1">{sc.name}</h4>
+                    <h4 className="text-[9px] font-semibold text-slate-200 mb-1">{sc?.name}</h4>
                     <div className="flex items-center justify-between mb-0.5">
                       <span className="text-[7px] text-slate-600 font-mono">Risk</span>
-                      <span className={'text-[9px] font-mono font-bold ' + (sc.risk >= 80 ? 'text-red-400' : sc.risk >= 40 ? 'text-yellow-400' : 'text-green-400')}>{sc.risk}%</span>
+                      <span className={'text-[9px] font-mono font-bold ' + (sc.risk >= 80 ? 'text-red-400' : sc.risk >= 40 ? 'text-yellow-400' : 'text-green-400')}>{sc?.risk}%</span>
                     </div>
-                    <AnimatedBar value={100 - sc.risk} color={sc.risk >= 80 ? 'bg-red-500' : sc.risk >= 40 ? 'bg-yellow-500' : 'bg-green-500'} />
+                    <AnimatedBar value={100 - sc?.risk} color={sc.risk >= 80 ? 'bg-red-500' : sc.risk >= 40 ? 'bg-yellow-500' : 'bg-green-500'} />
                     <div className="flex items-center justify-between mt-1 text-[7px] text-slate-600 font-mono">
-                      <span>{sc.impact}</span>
-                      <span>{sc.timeToRecover}</span>
+                      <span>{sc?.impact}</span>
+                      <span>{sc?.timeToRecover}</span>
                     </div>
                   </motion.div>
                 ))}
@@ -1260,7 +1374,7 @@ export default function IntelligenceCenter() {
             </motion.div>
 
             {/* ===== SECTION 13: AI FORECAST ENGINE ===== */}
-            <motion.div variants={item} className="glass-card p-3">
+            <motion.div variants={item} className="glass-card p-2">
               <div className="flex items-center gap-1.5 mb-3">
                 <div className="flex h-4 w-4 items-center justify-center rounded-md bg-gradient-to-br from-sky-500/20 to-blue-500/20">
                   <svg className="h-2.5 w-2.5 text-sky-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
@@ -1270,28 +1384,28 @@ export default function IntelligenceCenter() {
                 <h3 className="text-xs font-semibold text-white">AI Forecast Engine</h3>
                 <span className="text-[9px] text-slate-600 font-mono">{data.forecast.predictions.length} prediction windows</span>
               </div>
-              <div className="grid gap-2 sm:grid-cols-3 mb-3">
-                {data.forecast.predictions.map((pred, i) => (
+              <div className="grid gap-2 sm:grid-cols-3 mb-2">
+                {(data.forecast.predictions || []).map((pred, i) => (
                   <motion.div key={i} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.07 }}
                     className={'rounded-lg border p-2 ' + (i === 0 ? 'border-cyan-500/20 bg-cyan-500/[0.03]' : i === 1 ? 'border-yellow-500/20 bg-yellow-500/[0.03]' : 'border-green-500/20 bg-green-500/[0.03]')}>
                     <div className="flex items-center justify-between mb-1">
-                      <span className="text-[9px] font-mono text-white font-semibold">{pred.period}</span>
+                      <span className="text-[9px] font-mono text-white font-semibold">{pred?.period}</span>
                       <span className={'flex items-center gap-0.5 text-[8px] font-mono ' + (pred.trend === 'down' ? 'text-green-400' : 'text-yellow-400')}>
                         <svg className={'h-2.5 w-2.5 ' + (pred.trend === 'down' ? '' : 'rotate-180')} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" /></svg>
-                        {pred.trend}
+                        {pred?.trend}
                       </span>
                     </div>
                     <div className="flex items-center gap-2 mb-1">
                       <div className="flex-1 h-1.5 rounded-full bg-white/[0.06] overflow-hidden">
                         <div className={'h-full rounded-full ' + (pred.risk >= 50 ? 'bg-red-500' : 'bg-green-500')} style={{ width: pred.risk + '%' }} />
                       </div>
-                      <span className="text-[8px] font-mono text-slate-400">{pred.risk}%</span>
+                      <span className="text-[8px] font-mono text-slate-400">{pred?.risk}%</span>
                     </div>
                     <div className="flex items-center gap-1 mb-1">
                       <span className="text-[7px] text-slate-600 font-mono">Confidence:</span>
-                      <span className="text-[8px] text-cyan-400 font-mono font-bold">{pred.confidence}%</span>
+                      <span className="text-[8px] text-cyan-400 font-mono font-bold">{pred?.confidence}%</span>
                     </div>
-                    <p className="text-[7px] text-slate-500 leading-tight">{pred.description}</p>
+                    <p className="text-[7px] text-slate-500 leading-tight">{pred?.description}</p>
                   </motion.div>
                 ))}
               </div>
@@ -1299,13 +1413,13 @@ export default function IntelligenceCenter() {
                 <div className="rounded-lg border border-white/[0.06] bg-white/[0.02] p-2">
                   <span className="text-[7px] text-slate-500 font-mono uppercase tracking-wider block mb-1.5">Monthly Incident Trend</span>
                   <div className="flex items-end gap-1 h-16">
-                    {data.forecast.trendData.map((d, i) => {
-                      const maxHeight = Math.max(...data.forecast.trendData.map(x => x.incidents))
+                    {(data.forecast.trendData || []).map((d, i) => {
+                      const maxHeight = Math.max(...(data.forecast.trendData || []).map(x => x.incidents))
                       return (
                         <div key={i} className="flex-1 flex flex-col items-center gap-0.5">
                           <div className="w-full rounded-t bg-red-500/30 transition-all" style={{ height: (d.incidents / maxHeight * 100) + '%', minHeight: '4px' }} />
                           <div className="w-full rounded-t bg-cyan-500/20 transition-all" style={{ height: (d.mttr / 62 * 40) + '%', minHeight: '2px' }} />
-                          <span className="text-[6px] text-slate-600 font-mono">{d.month}</span>
+                          <span className="text-[6px] text-slate-600 font-mono">{d?.month}</span>
                         </div>
                       )
                     })}
@@ -1318,16 +1432,16 @@ export default function IntelligenceCenter() {
                 <div className="rounded-lg border border-white/[0.06] bg-white/[0.02] p-2">
                   <span className="text-[7px] text-slate-500 font-mono uppercase tracking-wider block mb-1.5">Risk by Service - Mitigation Impact</span>
                   <div className="space-y-1">
-                    {data.forecast.riskByService.map((svc, i) => (
+                    {(data.forecast.riskByService || []).map((svc, i) => (
                       <div key={i} className="flex items-center gap-1.5 text-[8px]">
-                        <span className="w-24 text-slate-400 font-mono truncate">{svc.service}</span>
+                        <span className="w-24 text-slate-400 font-mono truncate">{svc?.service}</span>
                         <div className="flex-1 flex items-center gap-0.5">
                           <div className="flex-1 h-2 rounded-full bg-white/[0.06] overflow-hidden relative">
                             <div className="h-full rounded-full bg-red-500" style={{ width: svc.currentRisk + '%' }} />
                             <div className="absolute inset-y-0 left-0 h-full rounded-full bg-green-500/60" style={{ width: svc.mitigatedRisk + '%' }} />
                           </div>
                         </div>
-                        <span className="text-green-400 font-mono w-8 text-right">{svc.improvement}%</span>
+                        <span className="text-green-400 font-mono w-8 text-right">{svc?.improvement}%</span>
                       </div>
                     ))}
                   </div>
@@ -1341,7 +1455,7 @@ export default function IntelligenceCenter() {
 
 
             {/* ===== SECTION 14: EXECUTIVE DECISION CENTER ===== */}
-            <motion.div variants={item} className="glass-card p-3">
+            <motion.div variants={item} className="glass-card p-2">
               <div className="flex items-center gap-1.5 mb-3">
                 <div className="flex h-4 w-4 items-center justify-center rounded-md bg-gradient-to-br from-cyan-500/20 to-blue-500/20">
                   <svg className="h-2.5 w-2.5 text-cyan-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
@@ -1351,21 +1465,21 @@ export default function IntelligenceCenter() {
                 <h3 className="text-xs font-semibold text-white">Executive Decision Center</h3>
                 <StatusBadge status="info" label="Action Required" />
               </div>
-              <div className="grid gap-2 sm:grid-cols-2">
-                {data.decisions.map((dec, i) => (
-                  <motion.div key={dec.action} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.06 }}
+              <div className="grid gap-1.5 sm:grid-cols-2">
+                {(data.decisions || []).map((dec, i) => (
+                  <motion.div key={dec?.action} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.06 }}
                     className={'rounded-lg border p-3 transition-all hover:scale-[1.01] ' + decisionGlows[dec.action] + ' bg-white/[0.02]'}>
                     <div className="flex items-center justify-between mb-2">
-                      <h4 className="text-[10px] font-bold text-white font-mono">{dec.action}</h4>
-                      <span className={'text-base font-bold font-mono ' + decisionConfidenceColors[dec.action]}>{dec.confidence}%</span>
+                      <h4 className="text-[10px] font-bold text-white font-mono">{dec?.action}</h4>
+                      <span className={'text-base font-bold font-mono ' + decisionConfidenceColors[dec.action]}>{dec?.confidence}%</span>
                     </div>
                     <div className="h-1.5 rounded-full bg-white/[0.06] overflow-hidden mb-2">
                       <div className={'h-full rounded-full transition-all duration-1000 ' + (dec.action === 'Deploy Now' ? 'bg-green-500 shadow-[0_0_8px_rgba(34,197,94,0.5)]' : dec.action === 'Monitor Closely' ? 'bg-amber-500' : dec.action === 'Rollback Changes' ? 'bg-orange-500' : 'bg-red-500')}
                         style={{ width: dec.confidence + '%' }} />
                     </div>
-                    <p className="text-[9px] text-slate-400 mb-2 leading-relaxed">{dec.reasoning}</p>
+                    <p className="text-[9px] text-slate-400 mb-2 leading-relaxed">{dec?.reasoning}</p>
                     <div className="flex items-center justify-between">
-                      <span className="text-[8px] text-slate-600 font-mono">Assigned: {dec.team}</span>
+                      <span className="text-[8px] text-slate-600 font-mono">Assigned: {dec?.team}</span>
                       <button className={'rounded-lg px-2.5 py-1 text-[8px] font-bold text-white transition-all hover:opacity-80 ' + decisionButtons[dec.action]}>
                         {dec.action === 'Deploy Now' ? 'Execute' : dec.action === 'Monitor Closely' ? 'Observe' : dec.action === 'Rollback Changes' ? 'Rollback' : 'Deep Dive'}
                       </button>
@@ -1377,7 +1491,7 @@ export default function IntelligenceCenter() {
 
             {/* ===== SIMILAR FAILURE DATABASE ===== */}
             <motion.div variants={item} className="glass-card overflow-hidden">
-              <div className="flex items-center gap-1.5 p-3 pb-2">
+              <div className="flex items-center gap-1.5 p-2 pb-1">
                 <div className="flex h-4 w-4 items-center justify-center rounded-md bg-gradient-to-br from-red-500/20 to-orange-500/20">
                   <svg className="h-2.5 w-2.5 text-red-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                     <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m9-.75a9 9 0 11-18 0 9 9 0 0118 0zm-9 3.75h.008v.008H12v-.008z" />
@@ -1386,8 +1500,8 @@ export default function IntelligenceCenter() {
                 <h3 className="text-xs font-semibold text-white">Similar Failure Database</h3>
                 <span className="text-[9px] text-slate-600 font-mono ml-1">{data.failureModes.length} known failure modes</span>
               </div>
-              <div className="px-3 pb-3 space-y-1.5">
-                {data.failureModes.map((f, i) => {
+              <div className="px-2 pb-2 space-y-1">
+                {(data.failureModes || []).map((f, i) => {
                   const isOpen = expandedFailure === i
                   return (
                     <motion.div key={i} initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.04 }}
@@ -1395,8 +1509,8 @@ export default function IntelligenceCenter() {
                       <button onClick={() => setExpandedFailure(isOpen ? null : i)}
                         className="flex w-full items-center justify-between p-2 text-left">
                         <div className="flex items-center gap-1.5 flex-1 min-w-0">
-                          <span className={'rounded px-1 py-0.5 text-[7px] font-bold shrink-0 ' + severityColors[f.severity]}>{f.severity}</span>
-                          <span className="text-[10px] text-slate-300">{f.mode}</span>
+                          <span className={'rounded px-1 py-0.5 text-[7px] font-bold shrink-0 ' + severityColors[f.severity]}>{f?.severity}</span>
+                          <span className="text-[10px] text-slate-300">{f?.mode}</span>
                         </div>
                         <div className="flex items-center gap-1.5 shrink-0 ml-2">
                           <StatusBadge status={f.probability === 'High' ? 'critical' : f.probability === 'Medium' ? 'warning' : 'info'} label={f.probability} />
@@ -1409,9 +1523,9 @@ export default function IntelligenceCenter() {
                         {isOpen && (
                           <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} exit={{ opacity: 0, height: 0 }} className="border-t border-white/[0.04]">
                             <div className="p-2 grid grid-cols-1 sm:grid-cols-2 gap-1.5 text-[9px]">
-                              <div className="rounded bg-white/[0.02] p-1.5"><span className="text-slate-600 block mb-0.5 font-mono text-[8px] uppercase tracking-wider">Impact</span><span className="text-slate-400">{f.impact}</span></div>
-                              <div className="rounded bg-white/[0.02] p-1.5"><span className="text-slate-600 block mb-0.5 font-mono text-[8px] uppercase tracking-wider">Detection</span><span className="text-slate-400">{f.detection}</span></div>
-                              <div className="rounded bg-white/[0.02] p-1.5 sm:col-span-2"><span className="text-slate-600 block mb-0.5 font-mono text-[8px] uppercase tracking-wider">Mitigation</span><span className="text-cyan-400">{f.mitigation}</span></div>
+                              <div className="rounded bg-white/[0.02] p-1.5"><span className="text-slate-600 block mb-0.5 font-mono text-[8px] uppercase tracking-wider">Impact</span><span className="text-slate-400">{f?.impact}</span></div>
+                              <div className="rounded bg-white/[0.02] p-1.5"><span className="text-slate-600 block mb-0.5 font-mono text-[8px] uppercase tracking-wider">Detection</span><span className="text-slate-400">{f?.detection}</span></div>
+                              <div className="rounded bg-white/[0.02] p-1.5 sm:col-span-2"><span className="text-slate-600 block mb-0.5 font-mono text-[8px] uppercase tracking-wider">Mitigation</span><span className="text-cyan-400">{f?.mitigation}</span></div>
                             </div>
                           </motion.div>
                         )}
@@ -1423,7 +1537,7 @@ export default function IntelligenceCenter() {
             </motion.div>
 
             {/* ===== INCIDENT CORRELATION ENGINE ===== */}
-            <motion.div variants={item} className="glass-card p-3">
+            <motion.div variants={item} className="glass-card p-2">
               <div className="flex items-center gap-1.5 mb-3">
                 <div className="flex h-4 w-4 items-center justify-center rounded-md bg-gradient-to-br from-purple-500/20 to-indigo-500/20">
                   <svg className="h-2.5 w-2.5 text-purple-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
@@ -1433,8 +1547,8 @@ export default function IntelligenceCenter() {
                 <h3 className="text-xs font-semibold text-white">Incident Correlation Engine</h3>
                 <span className="text-[9px] text-slate-600 font-mono">{data.correlations.length} correlations found</span>
               </div>
-              <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
-                {data.correlations.map((corr, i) => {
+              <div className="grid gap-1.5 sm:grid-cols-2 lg:grid-cols-3">
+                {(data.correlations || []).map((corr, i) => {
                   const corrColors = ['from-red-500/10 to-orange-500/5', 'from-orange-500/10 to-yellow-500/5', 'from-yellow-500/10 to-green-500/5', 'from-blue-500/10 to-cyan-500/5', 'from-purple-500/10 to-pink-500/5']
                   const borderColors = ['border-red-500/20', 'border-orange-500/20', 'border-yellow-500/20', 'border-blue-500/20', 'border-purple-500/20']
                   return (
@@ -1470,7 +1584,7 @@ export default function IntelligenceCenter() {
             </motion.div>
 
             {/* ===== RISK HEATMAP ===== */}
-            <motion.div variants={item} className="glass-card p-3">
+            <motion.div variants={item} className="glass-card p-2">
               <div className="flex items-center gap-1.5 mb-3">
                 <div className="flex h-4 w-4 items-center justify-center rounded-md bg-gradient-to-br from-orange-500/20 to-red-500/20">
                   <svg className="h-2.5 w-2.5 text-orange-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
@@ -1496,24 +1610,24 @@ export default function IntelligenceCenter() {
                   {['Design', 'Implementation', 'Testing', 'Deployment', 'Post-Release'].map((phase, i) => (
                     <text key={phase} x="75" y={85 + i * 60} textAnchor="end" fill="#94a3b8" fontSize="9" fontFamily="monospace">{phase}</text>
                   ))}
-                  {data.heatmap.map((row, ri) => {
+                  {(data.heatmap || []).map((row, ri) => {
                     const cells = [
-                      { label: row.critical, grad: 'heatRed', val: row.critical },
-                      { label: row.high, grad: 'heatAmber', val: row.high },
-                      { label: row.medium, grad: 'heatYellow', val: row.medium },
-                      { label: row.low, grad: 'heatGreen', val: row.low },
+                      { label: row?.critical, grad: 'heatRed', val: row?.critical },
+                      { label: row?.high, grad: 'heatAmber', val: row?.high },
+                      { label: row?.medium, grad: 'heatYellow', val: row?.medium },
+                      { label: row?.low, grad: 'heatGreen', val: row?.low },
                     ]
-                    return cells.map((cell, ci) => {
+                    return (cells || []).map((cell, ci) => {
                       const x = 110 + ci * 105, y = 55 + ri * 60
                       return (
                         <motion.g key={ri + '-' + ci} initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: (ri * 4 + ci) * 0.04 }}>
                           <rect x={x} y={y} width="90" height="40" rx="6"
-                            fill={'url(#' + cell.grad + ')'}
-                            stroke={cell.val >= 70 ? 'rgba(239,68,68,0.3)' : cell.val >= 40 ? 'rgba(245,158,11,0.2)' : 'rgba(255,255,255,0.05)'}
+                            fill={'url(#' + (cell?.grad || 'heatRed') + ')'}
+                            stroke={(cell?.val || 0) >= 70 ? 'rgba(239,68,68,0.3)' : (cell?.val || 0) >= 40 ? 'rgba(245,158,11,0.2)' : 'rgba(255,255,255,0.05)'}
                             strokeWidth="1" className="transition-all hover:stroke-cyan-500/40 hover:stroke-2 cursor-pointer" />
                           <text x={x + 45} y={y + 24} textAnchor="middle"
-                            fill={cell.val >= 70 ? '#fca5a5' : cell.val >= 40 ? '#fbbf24' : '#86efac'}
-                            fontSize="14" fontWeight="700" fontFamily="monospace">{cell.val}</text>
+                            fill={(cell?.val || 0) >= 70 ? '#fca5a5' : (cell?.val || 0) >= 40 ? '#fbbf24' : '#86efac'}
+                            fontSize="14" fontWeight="700" fontFamily="monospace">{cell?.val}</text>
                         </motion.g>
                       )
                     })
@@ -1523,7 +1637,7 @@ export default function IntelligenceCenter() {
             </motion.div>
 
             {/* ===== INVESTIGATION QUALITY ===== */}
-            <motion.div variants={item} className="glass-card p-3">
+            <motion.div variants={item} className="glass-card p-2">
               <div className="flex items-center gap-1.5 mb-2">
                 <div className="flex h-4 w-4 items-center justify-center rounded-md bg-gradient-to-br from-cyan-500/20 to-blue-500/20">
                   <svg className="h-2.5 w-2.5 text-cyan-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
@@ -1550,7 +1664,7 @@ export default function IntelligenceCenter() {
             </motion.div>
 
             {/* ===== HISTORICAL INCIDENT TRENDS ===== */}
-            <motion.div variants={item} className="glass-card p-3">
+            <motion.div variants={item} className="glass-card p-2">
               <div className="flex items-center gap-1.5 mb-3">
                 <div className="flex h-4 w-4 items-center justify-center rounded-md bg-gradient-to-br from-indigo-500/20 to-purple-500/20">
                   <svg className="h-2.5 w-2.5 text-indigo-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
@@ -1560,28 +1674,28 @@ export default function IntelligenceCenter() {
                 <h3 className="text-xs font-semibold text-white">Historical Incident Trends</h3>
                 <span className="text-[9px] text-slate-600 font-mono">{data.incidents.length} past incidents</span>
               </div>
-              <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
-                {data.incidents.map((inc, i) => (
+              <div className="grid gap-1.5 sm:grid-cols-2 lg:grid-cols-3">
+                {(data.incidents || []).map((inc, i) => (
                   <motion.div key={i} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.06 }}
                     className={'rounded-lg border p-2 hover:border-cyan-500/30 transition-all ' + (inc.severity === 'critical' ? 'border-red-500/20 bg-red-500/[0.03]' : inc.severity === 'high' ? 'border-orange-500/20 bg-orange-500/[0.02]' : 'border-yellow-500/15 bg-yellow-500/[0.02]')}>
                     <div className="flex items-center justify-between mb-1">
-                      <span className="text-[8px] text-slate-600 font-mono">{inc.date}</span>
-                      <span className={'rounded px-1 py-0.5 text-[6px] font-bold ' + (inc.severity === 'critical' ? 'bg-red-500/15 text-red-400 border border-red-500/25' : inc.severity === 'high' ? 'bg-orange-500/10 text-orange-400 border border-orange-500/20' : 'bg-yellow-500/10 text-yellow-400 border border-yellow-500/15')}>{inc.severity}</span>
+                      <span className="text-[8px] text-slate-600 font-mono">{inc?.date}</span>
+                      <span className={'rounded px-1 py-0.5 text-[6px] font-bold ' + (inc.severity === 'critical' ? 'bg-red-500/15 text-red-400 border border-red-500/25' : inc.severity === 'high' ? 'bg-orange-500/10 text-orange-400 border border-orange-500/20' : 'bg-yellow-500/10 text-yellow-400 border border-yellow-500/15')}>{inc?.severity}</span>
                     </div>
-                    <h4 className="text-[10px] font-semibold text-slate-200 mb-0.5">{inc.title}</h4>
-                    <p className="text-[8px] text-slate-500 mb-1">{inc.cause}</p>
+                    <h4 className="text-[10px] font-semibold text-slate-200 mb-0.5">{inc?.title}</h4>
+                    <p className="text-[8px] text-slate-500 mb-1">{inc?.cause}</p>
                     <div className="flex items-center gap-1 text-[7px] text-slate-600 font-mono mb-1">
-                      <span className="text-red-400">Impact:</span> {inc.impact}
+                      <span className="text-red-400">Impact:</span> {inc?.impact}
                     </div>
                     <div className="flex items-center gap-1 text-[7px] text-slate-600 font-mono">
-                      <span className="text-cyan-400">Lesson:</span> {inc.lessons}
+                      <span className="text-cyan-400">Lesson:</span> {inc?.lessons}
                     </div>
                     <div className="flex flex-wrap gap-1 mt-1.5">
                       <span className="text-[7px] text-slate-600 font-mono">Services: </span>
-                      {inc.services.map((s, si) => (
+                      {(inc.services || []).map((s, si) => (
                         <span key={si} className="rounded bg-white/[0.03] px-1 py-0.5 text-[6px] font-mono text-slate-500 border border-white/[0.04]">{s}</span>
                       ))}
-                      <span className="ml-auto text-[7px] text-slate-600 font-mono">{inc.duration}</span>
+                      <span className="ml-auto text-[7px] text-slate-600 font-mono">{inc?.duration}</span>
                     </div>
                   </motion.div>
                 ))}
@@ -1589,7 +1703,7 @@ export default function IntelligenceCenter() {
             </motion.div>
 
             {/* ===== RISK TIMELINE ANALYSIS ===== */}
-            <motion.div variants={item} className="glass-card p-3">
+            <motion.div variants={item} className="glass-card p-2">
               <div className="flex items-center gap-1.5 mb-3">
                 <div className="flex h-4 w-4 items-center justify-center rounded-md bg-gradient-to-br from-amber-500/20 to-orange-500/20">
                   <svg className="h-2.5 w-2.5 text-amber-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
@@ -1600,13 +1714,13 @@ export default function IntelligenceCenter() {
                 <span className="text-[9px] text-slate-600 font-mono">5 lifecycle phases</span>
               </div>
               <div className="space-y-2">
-                {data.riskTimeline.map((rt, i) => (
+                {(data.riskTimeline || []).map((rt, i) => (
                   <div key={i} className="flex items-center gap-2">
-                    <span className="w-28 text-[8px] text-slate-400 font-mono">{rt.phase}</span>
+                    <span className="w-28 text-[8px] text-slate-400 font-mono">{rt?.phase}</span>
                     <div className="flex-1 h-2 rounded-full bg-white/[0.06] overflow-hidden">
-                      <div className={'h-full rounded-full ' + (rt.color === 'red' ? 'bg-red-500' : rt.color === 'orange' ? 'bg-orange-500' : rt.color === 'yellow' ? 'bg-yellow-500' : 'bg-green-500')} style={{ width: rt.risk + '%' }} />
+                      <div className={'h-full rounded-full ' + (rt?.color === 'red' ? 'bg-red-500' : rt?.color === 'orange' ? 'bg-orange-500' : rt?.color === 'yellow' ? 'bg-yellow-500' : 'bg-green-500')} style={{ width: rt.risk + '%' }} />
                     </div>
-                    <span className={'text-[9px] font-mono font-bold w-8 text-right ' + (rt.risk >= 80 ? 'text-red-400' : rt.risk >= 60 ? 'text-orange-400' : rt.risk >= 40 ? 'text-yellow-400' : 'text-green-400')}>{rt.risk}</span>
+                    <span className={'text-[9px] font-mono font-bold w-8 text-right ' + (rt.risk >= 80 ? 'text-red-400' : rt.risk >= 60 ? 'text-orange-400' : rt.risk >= 40 ? 'text-yellow-400' : 'text-green-400')}>{rt?.risk}</span>
                   </div>
                 ))}
               </div>
@@ -1616,7 +1730,7 @@ export default function IntelligenceCenter() {
             </motion.div>
 
             {/* ===== DEFENSE IN DEPTH SCORE ===== */}
-            <motion.div variants={item} className="glass-card p-3">
+            <motion.div variants={item} className="glass-card p-2">
               <div className="flex items-center gap-1.5 mb-3">
                 <div className="flex h-4 w-4 items-center justify-center rounded-md bg-gradient-to-br from-green-500/20 to-teal-500/20">
                   <svg className="h-2.5 w-2.5 text-green-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
@@ -1668,7 +1782,7 @@ export default function IntelligenceCenter() {
 
             {/* ===== SECTION 15: INVESTIGATION CONCLUSION ===== */}
             <motion.div variants={item} className="glass-card overflow-hidden">
-              <div className="relative p-3">
+              <div className="relative p-2">
                 <div className="absolute inset-0 bg-gradient-to-br from-red-500/[0.03] via-transparent to-cyan-500/[0.02] pointer-events-none" />
                 <div className="relative">
                   <div className="flex items-center gap-1.5 mb-3">
@@ -1680,7 +1794,7 @@ export default function IntelligenceCenter() {
                     <h3 className="text-xs font-semibold text-white">Investigation Conclusion</h3>
                     <StatusBadge status="critical" label={data.verdict.risk + ' Risk'} />
                   </div>
-                  <div className="grid gap-3 lg:grid-cols-3 mb-3">
+                  <div className="grid gap-2 lg:grid-cols-3 mb-2">
                     <div className="flex flex-col items-center justify-center p-3 rounded-lg border border-white/[0.06] bg-white/[0.02]">
                       <span className="text-[9px] text-slate-600 font-mono tracking-wider uppercase mb-1">Overall Risk Verdict</span>
                       <span className={'text-2xl font-bold font-mono ' + (data.verdict.risk === 'High' ? 'text-red-400' : data.verdict.risk === 'Medium' ? 'text-yellow-400' : 'text-green-400')}>
@@ -1695,7 +1809,7 @@ export default function IntelligenceCenter() {
                       <div className="rounded-lg border border-white/[0.06] bg-white/[0.02] p-2">
                         <span className="text-[8px] text-slate-600 font-mono tracking-wider uppercase block mb-1">Key Findings</span>
                         <ul className="space-y-1">
-                          {data.verdict.findings.map((f, fi) => (
+                          {(data.verdict.findings || []).map((f, fi) => (
                             <li key={fi} className="flex items-start gap-1.5 text-[10px] text-slate-400">
                               <svg className="h-3.5 w-3.5 mt-0.5 shrink-0 text-red-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                                 <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -1711,7 +1825,7 @@ export default function IntelligenceCenter() {
                       </div>
                     </div>
                   </div>
-                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 mb-2">
+                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-1.5 mb-1.5">
                     <div className="rounded bg-white/[0.02] border border-white/[0.06] p-2 text-center">
                       <div className="text-[8px] text-slate-600 font-mono uppercase">Failures Found</div>
                       <div className="text-lg font-bold text-red-400 font-mono">{data.totalFailures}</div>
@@ -1747,7 +1861,7 @@ export default function IntelligenceCenter() {
             </motion.div>
 
             {/* ===== INVESTIGATION TIMELINE ===== */}
-            <motion.div variants={item} className="glass-card p-3">
+            <motion.div variants={item} className="glass-card p-2">
               <div className="flex items-center gap-1.5 mb-3">
                 <div className="flex h-4 w-4 items-center justify-center rounded-md bg-gradient-to-br from-purple-500/20 to-indigo-500/20">
                   <svg className="h-2.5 w-2.5 text-purple-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
@@ -1760,27 +1874,27 @@ export default function IntelligenceCenter() {
               <div className="relative">
                 <div className="absolute left-[15px] top-0 bottom-0 w-px bg-gradient-to-b from-blue-500/40 via-cyan-500/30 via-orange-500/20 via-green-500/20 via-purple-500/15 to-slate-500/10" />
                 <div className="space-y-0">
-                  {data.investigationTimeline.map((ev, i) => (
+                  {(data.investigationTimeline || []).map((ev, i) => (
                     <motion.div key={i} initial={{ opacity: 0, x: -15 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: i * 0.08 }}
-                      className="relative flex items-start gap-3 py-3 group">
+                      className="relative flex items-start gap-2 py-2 group">
                       <div className={'relative z-10 mt-0.5 h-3 w-3 shrink-0 rounded-full border-2 ' + (timelineDotColors[ev.type] || 'bg-slate-500 border-slate-500/30') + ' transition-all group-hover:scale-125 shadow-lg'}>
                         <div className="absolute inset-0.5 rounded-full bg-current opacity-30 animate-pulse" />
                       </div>
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center justify-between flex-wrap gap-1 mb-0.5">
                           <div className="flex items-center gap-1.5">
-                            <span className={'rounded px-1 py-0.5 text-[7px] font-bold ' + (timelineBadgeColors[ev.type] || 'bg-slate-500/10 text-slate-400')}>{ev.type}</span>
-                            <span className="text-[9px] font-mono text-slate-500">{ev.date}</span>
+                            <span className={'rounded px-1 py-0.5 text-[7px] font-bold ' + (timelineBadgeColors[ev.type] || 'bg-slate-500/10 text-slate-400')}>{ev?.type}</span>
+                            <span className="text-[9px] font-mono text-slate-500">{ev?.date}</span>
                           </div>
-                          <span className="text-[8px] text-slate-600 font-mono">{ev.duration}</span>
+                          <span className="text-[8px] text-slate-600 font-mono">{ev?.duration}</span>
                         </div>
-                        <h4 className="text-[10px] font-semibold text-slate-200 mb-0.5">{ev.title}</h4>
-                        <p className="text-[9px] text-slate-500 leading-relaxed">{ev.description}</p>
+                        <h4 className="text-[10px] font-semibold text-slate-200 mb-0.5">{ev?.title}</h4>
+                        <p className="text-[9px] text-slate-500 leading-relaxed">{ev?.description}</p>
                         <div className="flex items-center gap-1.5 mt-1 text-[8px] text-slate-600 font-mono">
                           <svg className="h-2.5 w-2.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
                             <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" />
                           </svg>
-                          {ev.team}
+                          {ev?.team}
                         </div>
                       </div>
                     </motion.div>
@@ -1791,7 +1905,7 @@ export default function IntelligenceCenter() {
 
             {/* ===== LIVE INTELLIGENCE FEED ===== */}
             <motion.div variants={item} className="glass-card overflow-hidden">
-              <div className="flex items-center justify-between p-3 pb-2">
+              <div className="flex items-center justify-between p-2 pb-1">
                 <div className="flex items-center gap-1.5">
                   <div className="flex h-4 w-4 items-center justify-center rounded-md bg-gradient-to-br from-cyan-500/20 to-blue-500/20">
                     <svg className="h-2.5 w-2.5 text-cyan-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
@@ -1808,17 +1922,17 @@ export default function IntelligenceCenter() {
               </div>
               <div ref={feedRef} className="relative max-h-[360px] overflow-y-auto scroll-smooth">
                 <div className="sticky top-0 h-3 bg-gradient-to-b from-slate-950/40 to-transparent pointer-events-none z-10" />
-                {data.liveFeed.map((item, i) => (
+                {(data.liveFeed || []).map((item, i) => (
                   <motion.div key={i} initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: i * 0.03 }}
                     className={'border-l-2 pl-3 pr-4 py-2 ' + (feedTypeStyles[item.type] || 'border-l-slate-600 bg-white/[0.01]') + ' hover:bg-white/[0.03] transition-all'}>
                     <div className="flex items-start justify-between gap-2">
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-1.5 mb-0.5">
-                          <span className="text-[8px] font-mono text-slate-600">{item.time}</span>
-                          <span className={'rounded px-1 py-0.5 text-[6px] font-bold uppercase ' + (item.severity === 'critical' ? 'bg-red-500/15 text-red-400' : item.severity === 'high' ? 'bg-orange-500/10 text-orange-400' : item.severity === 'warning' ? 'bg-yellow-500/10 text-yellow-400' : 'bg-blue-500/10 text-blue-400')}>{item.severity}</span>
-                          <span className="text-[7px] text-slate-700 font-mono uppercase">{item.type}</span>
+                          <span className="text-[8px] font-mono text-slate-600">{item?.time}</span>
+                          <span className={'rounded px-1 py-0.5 text-[6px] font-bold uppercase ' + (item.severity === 'critical' ? 'bg-red-500/15 text-red-400' : item.severity === 'high' ? 'bg-orange-500/10 text-orange-400' : item.severity === 'warning' ? 'bg-yellow-500/10 text-yellow-400' : 'bg-blue-500/10 text-blue-400')}>{item?.severity}</span>
+                          <span className="text-[7px] text-slate-700 font-mono uppercase">{item?.type}</span>
                         </div>
-                        <p className="text-[9px] text-slate-400 leading-relaxed">{item.message}</p>
+                        <p className="text-[9px] text-slate-400 leading-relaxed">{item?.message}</p>
                       </div>
                     </div>
                   </motion.div>

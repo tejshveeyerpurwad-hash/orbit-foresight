@@ -9,7 +9,7 @@ const mockData = {
     { value: 12, label: 'Active Incidents', format: '', trend: 'up', ringColor: '#ef4444', color: 'text-red-400', subtitle: '3 critical, 5 high, 4 medium', detail: 'Up from 8 yesterday' },
     { value: 24, label: 'MTTR (min)', format: 'm', trend: 'down', ringColor: '#22d3ee', color: 'text-cyan-400', subtitle: 'Mean time to resolve', detail: 'Target: <30 min' },
     { value: 47, label: 'Services Monitored', format: '', trend: 'stable', ringColor: '#fbbf24', color: 'text-amber-400', subtitle: 'Across all environments', detail: '6 with degraded performance' },
-    { value: 9997, label: 'Uptime', format: '%%', trend: 'stable', ringColor: '#34d399', color: 'text-emerald-400', subtitle: 'Last 30 days SLA', detail: 'Target: 99.99%' },
+    { value: 99.97, label: 'Uptime', format: '%', trend: 'stable', ringColor: '#34d399', color: 'text-emerald-400', subtitle: 'Last 30 days SLA', detail: 'Target: 99.99%' },
     { value: 72, label: 'Risk Score', format: '', trend: 'up', ringColor: '#fb923c', color: 'text-orange-400', subtitle: 'Aggregate risk index', detail: 'Threshold: 80 critical' },
   ],
   gauges: [
@@ -43,14 +43,14 @@ const mockData = {
     ],
   },
   alerts: [
-    { time: '14:23:15', severity: 'critical', service: 'Payment Service', message: 'Error rate spike >5% on payment endpoint — circuit breaker nearing threshold', status: 'acknowledged', duration: '4m 12s', source: 'Auto-Detect' },
-    { time: '14:21:02', severity: 'medium', service: 'Redis Cache', message: 'Memory usage exceeding 85% — eviction policy may trigger cascading failures', status: 'triggered', duration: '6m 30s', source: 'Threshold Alert' },
-    { time: '14:18:44', severity: 'critical', service: 'Billing Service', message: 'Invoice generation latency >30s — downstream dependency degraded', status: 'triggered', duration: '8m 15s', source: 'SLO Monitor' },
-    { time: '14:15:30', severity: 'high', service: 'API Gateway', message: 'P99 latency increased by 200ms — rate limiting engaged', status: 'acknowledged', duration: '3m 48s', source: 'Latency Alert' },
-    { time: '14:12:08', severity: 'high', service: 'Notification Service', message: 'Email delivery queue backlog 12k messages — retry flooding detected', status: 'triggered', duration: '10m 22s', source: 'Queue Monitor' },
-    { time: '14:08:55', severity: 'medium', service: 'Database', message: 'Connection pool utilization 78% — scaling threshold 80% imminent', status: 'resolved', duration: '15m 05s', source: 'Pool Monitor' },
-    { time: '14:05:20', severity: 'critical', service: 'Payment Service', message: 'Webhook delivery failure rate 15% — provider connectivity issue detected', status: 'triggered', duration: '2m 45s', source: 'Webhook Monitor' },
-    { time: '14:01:10', severity: 'low', service: 'CDN', message: 'Edge cache hit rate dropped to 82% — origin warmup in progress', status: 'resolved', duration: '7m 33s', source: 'Cache Analyzer' },
+    { time: '14:23:15', severity: 'critical', service: 'Payment Service', message: 'Error rate spike >5% on payment endpoint ï¿½ circuit breaker nearing threshold', status: 'acknowledged', duration: '4m 12s', source: 'Auto-Detect' },
+    { time: '14:21:02', severity: 'medium', service: 'Redis Cache', message: 'Memory usage exceeding 85% ï¿½ eviction policy may trigger cascading failures', status: 'triggered', duration: '6m 30s', source: 'Threshold Alert' },
+    { time: '14:18:44', severity: 'critical', service: 'Billing Service', message: 'Invoice generation latency >30s ï¿½ downstream dependency degraded', status: 'triggered', duration: '8m 15s', source: 'SLO Monitor' },
+    { time: '14:15:30', severity: 'high', service: 'API Gateway', message: 'P99 latency increased by 200ms ï¿½ rate limiting engaged', status: 'acknowledged', duration: '3m 48s', source: 'Latency Alert' },
+    { time: '14:12:08', severity: 'high', service: 'Notification Service', message: 'Email delivery queue backlog 12k messages ï¿½ retry flooding detected', status: 'triggered', duration: '10m 22s', source: 'Queue Monitor' },
+    { time: '14:08:55', severity: 'medium', service: 'Database', message: 'Connection pool utilization 78% ï¿½ scaling threshold 80% imminent', status: 'resolved', duration: '15m 05s', source: 'Pool Monitor' },
+    { time: '14:05:20', severity: 'critical', service: 'Payment Service', message: 'Webhook delivery failure rate 15% ï¿½ provider connectivity issue detected', status: 'triggered', duration: '2m 45s', source: 'Webhook Monitor' },
+    { time: '14:01:10', severity: 'low', service: 'CDN', message: 'Edge cache hit rate dropped to 82% ï¿½ origin warmup in progress', status: 'resolved', duration: '7m 33s', source: 'Cache Analyzer' },
   ],
   services: [
     { name: 'Payment Service', status: 'healthy', uptime: 99.97, trend: [40, 42, 38, 45, 50, 48, 52, 55, 53, 58], responseTime: '42ms', color: '#34d399', pods: 12, region: 'us-east-1' },
@@ -77,19 +77,19 @@ const mockData = {
     { week: 'W', points: 157, commits: 108, prs: 20, deploys: 12 },
   ],
   activityTimeline: [
-    { time: '14:23', actor: '@alice', action: 'deployed', target: 'payment-api', outcome: 'success', detail: 'v2.1.0 → production (canary 10% / 5min observation)' },
-    { time: '14:18', actor: '@bob', action: 'merged', target: 'auth-service', outcome: 'success', detail: 'PR #342 — OAuth token rotation fix (3 approvals, 1 change requested)' },
-    { time: '14:12', actor: '@carol', action: 'reviewed', target: 'billing-worker', outcome: 'success', detail: 'Code review PR #345 — 3 approvals, 0 change requests' },
-    { time: '14:05', actor: '@sentry', action: 'alerted', target: 'payment-api', outcome: 'warning', detail: 'Error rate >5% on /v1/charges — auto-rollback triggered' },
-    { time: '13:58', actor: '@carol', action: 'deployed', target: 'billing-worker', outcome: 'fail', detail: 'v3.0.1 — deployment failed at health check phase (timeout)' },
-    { time: '13:50', actor: '@dave', action: 'merged', target: 'api-gateway', outcome: 'success', detail: 'PR #340 — rate limiter configuration update (2 approvals)' },
-    { time: '13:45', actor: '@alice', action: 'deployed', target: 'notification-svc', outcome: 'success', detail: 'v1.4.0 → staging for QA validation cycle' },
-    { time: '13:38', actor: '@bob', action: 'reviewed', target: 'redis-cluster', outcome: 'success', detail: 'Code review PR #338 — cluster config update (2 approvals)' },
+    { time: '14:23', actor: '@alice', action: 'deployed', target: 'payment-api', outcome: 'success', detail: 'v2.1.0 \u2192 production (canary 10% / 5min observation)' },
+    { time: '14:18', actor: '@bob', action: 'merged', target: 'auth-service', outcome: 'success', detail: 'PR #342 \u2014 OAuth token rotation fix (3 approvals, 1 change requested)' },
+    { time: '14:12', actor: '@carol', action: 'reviewed', target: 'billing-worker', outcome: 'success', detail: 'Code review PR #345 \u2014 3 approvals, 0 change requests' },
+    { time: '14:05', actor: '@sentry', action: 'alerted', target: 'payment-api', outcome: 'warning', detail: 'Error rate >5% on /v1/charges \u2014 auto-rollback triggered' },
+    { time: '13:58', actor: '@carol', action: 'deployed', target: 'billing-worker', outcome: 'fail', detail: 'v3.0.1 \u2014 deployment failed at health check phase (timeout)' },
+    { time: '13:50', actor: '@dave', action: 'merged', target: 'api-gateway', outcome: 'success', detail: 'PR #340 \u2014 rate limiter configuration update (2 approvals)' },
+    { time: '13:45', actor: '@alice', action: 'deployed', target: 'notification-svc', outcome: 'success', detail: 'v1.4.0 \u2192 staging for QA validation cycle' },
+    { time: '13:38', actor: '@bob', action: 'reviewed', target: 'redis-cluster', outcome: 'success', detail: 'Code review PR #338 \u2014 cluster config update (2 approvals)' },
   ],
   predictions: [
     { title: 'Incident Probability', value: 82, unit: '%', timeframe: 'next 24h', confidence: 'High', recommendation: 'Prepare runbook for payment service degradation scenario', severity: 'critical', icon: 'alert-triangle', factors: ['Circuit breaker threshold', 'Memory pressure'] },
-    { title: 'Deployment Risk', value: 'Moderate', unit: '', timeframe: 'current window', confidence: 'Medium', recommendation: 'Proceed with caution — monitor billing worker rollout closely', severity: 'medium', icon: 'shield-alert', factors: ['Failed prior deploy', 'Dependency instability'] },
-    { title: 'System Degradation Risk', value: 'Low', unit: '', timeframe: 'next 48h', confidence: 'High', recommendation: 'No action required — all systems operating within parameters', severity: 'low', icon: 'check-circle', factors: ['Stable metrics', 'Healthy dependencies'] },
+    { title: 'Deployment Risk', value: 'Moderate', unit: '', timeframe: 'current window', confidence: 'Medium', recommendation: 'Proceed with caution \u2014 monitor billing worker rollout closely', severity: 'medium', icon: 'shield-alert', factors: ['Failed prior deploy', 'Dependency instability'] },
+    { title: 'System Degradation Risk', value: 'Low', unit: '', timeframe: 'next 48h', confidence: 'High', recommendation: 'No action required \u2014 all systems operating within parameters', severity: 'low', icon: 'check-circle', factors: ['Stable metrics', 'Healthy dependencies'] },
   ],
   businessImpact: [
     { label: 'Cost of Downtime', value: 4500, prefix: '$', suffix: '/min', format: true, color: 'text-red-400', icon: 'M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z', barMax: 5000 },
@@ -126,14 +126,14 @@ const mockData = {
     greeting: 'Good morning, Executive.',
     body: 'Orbit analyzed 847 deployments this period. Detected 3 emerging risks. Predicted 1 likely service degradation. Recommended 4 engineering actions.',
     analyzed: '847 deployments',
-    accuracy: '94%',
+    accuracy: '96%',
     savings: '$288,000',
-    confidence: 94,
+    confidence: 96,
   },
   executiveInsights: [
-    { id: 1, title: 'Payment Service risk increased 18% in 2 hours', impact: '$202K potential exposure', confidence: '94%', action: 'Scale worker pool — 12 additional pods recommended', severity: 'critical' },
+    { id: 1, title: 'Payment Service risk increased 18% in 2 hours', impact: '$202K potential exposure', confidence: '93%', action: 'Scale worker pool \u2014 12 additional pods recommended', severity: 'critical' },
     { id: 2, title: 'Redis memory trend predicts cache instability within 6h', impact: '$85K potential exposure', confidence: '89%', action: 'Increase maxmemory-policy and provision cluster', severity: 'high' },
-    { id: 3, title: 'Billing Service deployment risk rising — dependency timeout detected', impact: '$120K potential exposure', confidence: '92%', action: 'Hold deployment pipeline — investigate DB connection pool', severity: 'high' },
+    { id: 3, title: 'Billing Service deployment risk rising \u2014 dependency timeout detected', impact: '$120K potential exposure', confidence: '92%', action: 'Hold deployment pipeline \u2014 investigate DB connection pool', severity: 'high' },
   ],
   businessImpactCenter: [
     { label: 'Revenue Exposure', value: 202500, prefix: '$', suffix: '', trend: 'up', pct: 12, description: 'Quarterly at-risk revenue', color: 'text-red-400', barColor: 'bg-red-500/80', dotColor: 'bg-red-500' },
@@ -157,64 +157,174 @@ const mockData = {
     { rank: 6, service: 'Database', riskScore: 32, impact: 15000, impactLabel: '$15K', failureProbability: 22, status: 'Stable' },
   ],
   rootCauses: [
-    { service: 'Payment Service', cause: 'Circuit breaker saturation', finding: 'Redis dependency timeout cascading to payment endpoint', fix: 'Increase circuit breaker threshold to 75%', confidence: 94, severity: 'critical' },
-    { service: 'Billing Service', cause: 'Dependency timeout', finding: 'Database connection pool exhaustion on billing-worker', fix: 'Increase pool size from 10 to 25', confidence: 89, severity: 'high' },
-    { service: 'Redis Cache', cause: 'Memory pressure', finding: 'Eviction policy triggering during peak load windows', fix: 'Migrate to Redis Cluster with 3 shards', confidence: 92, severity: 'high' },
+    { id: 'RC-001', service: 'Payment Service', cause: 'Circuit breaker saturation triggered by Redis dependency timeout cascading to payment endpoint', duration: '4h 22m', confidence: '95%', impact: 'Critical', sparkData: [82, 78, 75, 72, 68, 65] },
+    { id: 'RC-002', service: 'Billing Service', cause: 'Database connection pool exhaustion on billing-worker causing transaction failures and timeouts', duration: '2h 15m', confidence: '89%', impact: 'High', sparkData: [45, 48, 52, 55, 58, 62] },
+    { id: 'RC-003', service: 'Redis Cache', cause: 'Memory pressure from eviction policy triggering during peak load windows causing cache misses', duration: '1h 48m', confidence: '92%', impact: 'High', sparkData: [70, 68, 65, 62, 58, 55] },
   ],
   executiveRecommendations: {
-    immediate: { title: 'Immediate Actions (24h)', items: ['Scale Payment worker pool (+12 pods)', 'Increase Redis maxmemory (8GB -> 16GB)', 'Hold Billing Service deploys'], impact: '$202K risk reduction', savings: '$45K', confidence: '94%' },
+    immediate: { title: 'Immediate Actions (24h)', items: ['Scale Payment worker pool (+12 pods)', 'Increase Redis maxmemory (8GB -> 16GB)', 'Hold Billing Service deploys'], impact: '$202K risk reduction', savings: '$45K', confidence: '92%' },
     nextSprint: { title: 'Next Sprint Actions', items: ['Redis Cluster migration (3 shards)', 'Database connection pool optimization', 'Payment circuit breaker tuning'], impact: '$120K risk reduction', savings: '$85K', confidence: '89%' },
     strategic: { title: 'Strategic Actions (30 days)', items: ['Service mesh implementation', 'Automated failover testing', 'Dependency health monitoring'], impact: '$400K risk reduction', savings: '$288K', confidence: '87%' },
   },
-  systemTopology: {
-    nodes: [
-      { id: 'api-gateway', label: 'API Gateway', x: 80, y: 80, status: 'healthy', color: '#34d399' },
-      { id: 'payment', label: 'Payment', x: 200, y: 40, status: 'degraded', color: '#fbbf24' },
-      { id: 'auth', label: 'Auth', x: 350, y: 50, status: 'healthy', color: '#34d399' },
-      { id: 'billing', label: 'Billing', x: 500, y: 80, status: 'degraded', color: '#fbbf24' },
-      { id: 'notification', label: 'Notification', x: 300, y: 200, status: 'healthy', color: '#34d399' },
-      { id: 'database', label: 'Database', x: 100, y: 200, status: 'healthy', color: '#34d399' },
-      { id: 'redis', label: 'Redis', x: 470, y: 200, status: 'degraded', color: '#fbbf24' },
-    ],
-    edges: [
-      { from: 'api-gateway', to: 'payment', critical: false },
-      { from: 'api-gateway', to: 'auth', critical: false },
-      { from: 'api-gateway', to: 'billing', critical: false },
-      { from: 'api-gateway', to: 'notification', critical: false },
-      { from: 'payment', to: 'database', critical: false },
-      { from: 'payment', to: 'redis', critical: true },
-      { from: 'auth', to: 'database', critical: false },
-      { from: 'billing', to: 'database', critical: false },
-      { from: 'billing', to: 'redis', critical: false },
-      { from: 'billing', to: 'notification', critical: true },
-    ],
-  },
+  systemTopology: [
+    { name: 'api-gateway-01', service: 'API Gateway', status: 'healthy', details: 'us-east-1a, 8 pods, 2.4k req/s', cpu: 52 },
+    { name: 'payment-svc-01', service: 'Payment Service', status: 'degraded', details: 'us-east-1b, 12 pods, 1.8k req/s', cpu: 78 },
+    { name: 'auth-svc-01', service: 'Auth Service', status: 'healthy', details: 'us-west-2a, 8 pods, 0.9k req/s', cpu: 38 },
+    { name: 'billing-svc-01', service: 'Billing Service', status: 'degraded', details: 'us-east-1c, 6 pods, 0.5k req/s', cpu: 85 },
+    { name: 'notification-01', service: 'Notification Svc', status: 'healthy', details: 'us-east-1a, 4 pods, 0.3k req/s', cpu: 41 },
+    { name: 'database-p-01', service: 'Database', status: 'healthy', details: 'eu-west-1a, 6 nodes, 4.5k conn', cpu: 64 },
+    { name: 'redis-c-01', service: 'Redis Cache', status: 'degraded', details: 'us-east-1a, 4 shards, 82% mem', cpu: 91 },
+    { name: 'cdn-edge-01', service: 'CDN', status: 'healthy', details: 'global, 20 PoPs, 15Gbps', cpu: 32 },
+  ],
   deploymentForecast: [
-    { label: 'Success Probability', value: 87, unit: '%', description: 'Current deployment success likelihood', trend: 'improving', color: '#34d399', textColor: 'text-emerald-400', sparkData: [82, 84, 83, 85, 86, 87] },
-    { label: 'Rollback Probability', value: 6.3, unit: '%', description: 'Likelihood of deployment rollback', trend: 'declining', color: '#fbbf24', textColor: 'text-amber-400', sparkData: [9.2, 8.5, 7.8, 7.1, 6.7, 6.3] },
-    { label: 'Risk Trend', value: 3.2, unit: '%', description: 'Week-over-week risk indicator', trend: 'increasing', color: '#ef4444', textColor: 'text-red-400', sparkData: [1.8, 2.1, 2.4, 2.7, 3.0, 3.2] },
-    { label: 'Confidence Score', value: 91, unit: '%', description: 'ML model prediction accuracy', trend: 'stable', color: '#22d3ee', textColor: 'text-cyan-400', sparkData: [90, 90, 91, 91, 92, 91] },
+    { day: 'Mon', value: '12', pct: 85, events: 12 },
+    { day: 'Tue', value: '15', pct: 92, events: 15 },
+    { day: 'Wed', value: '10', pct: 72, events: 10 },
+    { day: 'Thu', value: '18', pct: 96, events: 18 },
+    { day: 'Fri', value: '8', pct: 58, events: 8 },
+    { day: 'Sat', value: '3', pct: 25, events: 3 },
+    { day: 'Sun', value: '2', pct: 18, events: 2 },
   ],
   boardroomView: {
-    ctoShouldKnow: { title: 'What the CTO Should Know Today', icon: 'M12 9v3.75m9-.75a9 9 0 11-18 0 9 9 0 0118 0zm-9 3.75h.008v.008H12v-.008z', items: ['Payment Service error rate exceeded 5% threshold — circuit breaker at 72%', 'Redis memory pressure expected to trigger eviction within 6 hours', 'Billing Service deployment failed — rollback completed'] },
+    ctoShouldKnow: { title: 'What the CTO Should Know Today', icon: 'M12 9v3.75m9-.75a9 9 0 11-18 0 9 9 0 0118 0zm-9 3.75h.008v.008H12v-.008z', items: ['Payment Service error rate exceeded 5% threshold â€” circuit breaker at 72%', 'Redis memory pressure expected to trigger eviction within 6 hours', 'Billing Service deployment failed â€” rollback completed'] },
     requiresAttention: { title: 'What Requires Attention (24h)', icon: 'M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z', items: ['Approve emergency scaling for Payment worker pool', 'Review Redis cluster migration proposal', 'Authorize DB connection pool increase'] },
     canWait: { title: 'What Can Wait (This Week)', icon: 'M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z', items: ['API Gateway rate limit configuration update', 'Notification service queue optimization', 'CDN cache warming schedule adjustment'] },
-    highestROI: { title: 'What Creates the Highest ROI', icon: 'M2.25 18.75a60.07 60.07 0 0115.797 2.101c.727.198 1.453-.342 1.453-1.096V18.75M3.75 4.5v.75A.75.75 0 013 6h-.75m0 0v-.375c0-.621.504-1.125 1.125-1.125H20.25M2.25 6v9m18-10.5v.75c0 .414.336.75.75.75h.75m-1.5-1.5h.375c.621 0 1.125.504 1.125 1.125v9.75c0 .621-.504 1.125-1.125 1.125h-.375m1.5-1.5H21a.75.75 0 00-.75.75v.75m0 0H3.75m0 0h-.375a1.125 1.125 0 01-1.125-1.125V15m1.5 1.5v-.75A.75.75 0 003 15h-.75M15 10.5a3 3 0 11-6 0 3 3 0 016 0zm3 0h.008v.008H18V10.5zm-12 0h.008v.008H6V10.5z', items: ['Service mesh implementation — projected $400K annual savings', 'Automated failover testing — reduces MTTR by 60%', 'Dependency health monitoring — prevents 85% of cascading failures'] },
+    highestROI: { title: 'What Creates the Highest ROI', icon: 'M2.25 18.75a60.07 60.07 0 0115.797 2.101c.727.198 1.453-.342 1.453-1.096V18.75M3.75 4.5v.75A.75.75 0 013 6h-.75m0 0v-.375c0-.621.504-1.125 1.125-1.125H20.25M2.25 6v9m18-10.5v.75c0 .414.336.75.75.75h.75m-1.5-1.5h.375c.621 0 1.125.504 1.125 1.125v9.75c0 .621-.504 1.125-1.125 1.125h-.375m1.5-1.5H21a.75.75 0 00-.75.75v.75m0 0H3.75m0 0h-.375a1.125 1.125 0 01-1.125-1.125V15m1.5 1.5v-.75A.75.75 0 003 15h-.75M15 10.5a3 3 0 11-6 0 3 3 0 016 0zm3 0h.008v.008H18V10.5zm-12 0h.008v.008H6V10.5z', items: ['Service mesh implementation â€” projected $400K annual savings', 'Automated failover testing â€” reduces MTTR by 60%', 'Dependency health monitoring â€” prevents 85% of cascading failures'] },
   },
+  recommendations: [
+    { id: 1, priority: 'critical', title: 'Scale Payment Worker Pool', description: 'Scale Payment worker pool by 12 additional pods to handle increased load and prevent circuit breaker saturation.', confidence: '92%', impact: '$202K risk reduction' },
+    { id: 2, priority: 'high', title: 'Increase Redis Memory Limit', description: 'Increase Redis maxmemory from 8GB to 16GB to prevent eviction policy triggering during peak loads.', confidence: '89%', impact: '$85K risk reduction' },
+    { id: 3, priority: 'high', title: 'Hold Billing Deployments', description: 'Hold Billing Service deployment pipeline until DB connection pool issue is investigated and resolved.', confidence: '95%', impact: '$120K risk reduction' },
+    { id: 4, priority: 'medium', title: 'Migrate to Redis Cluster', description: 'Plan migration to Redis Cluster with 3 shards to improve memory management and fault tolerance.', confidence: '87%', impact: '$60K risk reduction' },
+    { id: 5, priority: 'medium', title: 'Optimize Database Pool', description: 'Increase database connection pool size from 10 to 25 for the billing-worker service.', confidence: '91%', impact: '$45K risk reduction' },
+  ],
+  topRisksLeaderboard: [
+    { id: 'TR-001', title: 'Payment circuit breaker saturation critical', service: 'Payment Service', severity: 'critical', score: 92, impact: '$202K potential revenue loss' },
+    { id: 'TR-002', title: 'Redis memory pressure eviction imminent', service: 'Redis Cache', severity: 'high', score: 78, impact: '$85K SLA credit exposure' },
+    { id: 'TR-003', title: 'Billing worker DB pool exhaustion', service: 'Billing Service', severity: 'high', score: 74, impact: '$120K billing revenue at risk' },
+    { id: 'TR-004', title: 'API Gateway P99 latency degradation', service: 'API Gateway', severity: 'medium', score: 62, impact: '$45K customer impact' },
+    { id: 'TR-005', title: 'Notification queue backlog growth', service: 'Notification Svc', severity: 'medium', score: 45, impact: '$28K operational overhead' },
+    { id: 'TR-006', title: 'Database connection pressure', service: 'Database', severity: 'low', score: 32, impact: '$15K infrastructure risk' },
+  ],
+  boardroomMetrics: [
+    { label: 'Revenue', value: '$12.4M', prefix: '', suffix: '', color: 'text-emerald-400', dot: '#34d399', trend: 'up', pct: 3.2, change: '+$384K vs forecast' },
+    { label: 'Cost Savings', value: '$1.8M', prefix: '', suffix: '', color: 'text-cyan-400', dot: '#22d3ee', trend: 'up', pct: 5.7, change: 'YTD operational savings' },
+    { label: 'SLA Attainment', value: '99.97', prefix: '', suffix: '%', color: 'text-emerald-400', dot: '#34d399', trend: 'up', pct: 0.5, change: 'Above 99.95% target' },
+    { label: 'Engineering Velocity', value: '157', prefix: '', suffix: ' pts', color: 'text-violet-400', dot: '#8b5cf6', trend: 'up', pct: 12.9, change: 'Sprint-over-sprint growth' },
+    { label: 'Customer Churn', value: '2.1', prefix: '', suffix: '%', color: 'text-amber-400', dot: '#f59e0b', trend: 'down', pct: 0.3, change: 'Below 2.5% threshold' },
+    { label: 'MTTR', value: '24', prefix: '', suffix: 'm', color: 'text-rose-400', dot: '#f43f5e', trend: 'down', pct: 14.3, change: 'Reduced from 35m average' },
+  ],
+
+  aiRiskMetrics: [
+    { label: 'Overall Risk Score', value: 72, prefix: '', suffix: '', color: 'text-orange-400', dot: 'bg-orange-500', trend: 'up', pct: 8 },
+    { label: 'Threat Count', value: 12, prefix: '', suffix: '', color: 'text-red-400', dot: 'bg-red-500', trend: 'up', pct: 20 },
+    { label: 'Risk Reduction', value: 34, prefix: '', suffix: '%', color: 'text-emerald-400', dot: 'bg-emerald-500', trend: 'up', pct: 5 },
+    { label: 'Detection Rate', value: 96, prefix: '', suffix: '%', color: 'text-cyan-400', dot: 'bg-cyan-500', trend: 'up', pct: 2 },
+  ],
+  serviceHealthCards: [
+    { name: 'Payment Service', status: 'healthy', uptime: 99.97, trend: [40, 42, 38, 45, 50, 48, 52, 55, 53, 58], responseTime: '42ms', color: '#34d399', pods: 12, region: 'us-east-1' },
+    { name: 'Auth Service', status: 'healthy', uptime: 99.99, trend: [60, 58, 62, 65, 63, 68, 72, 70, 75, 78], responseTime: '18ms', color: '#22d3ee', pods: 8, region: 'us-west-2' },
+    { name: 'Database', status: 'healthy', uptime: 99.95, trend: [80, 78, 82, 79, 85, 82, 80, 84, 86, 83], responseTime: '8ms', color: '#34d399', pods: 6, region: 'eu-west-1' },
+    { name: 'Redis Cache', status: 'degraded', uptime: 98.41, trend: [70, 65, 60, 55, 48, 45, 42, 38, 35, 32], responseTime: '3ms', color: '#fbbf24', pods: 4, region: 'us-east-1' },
+    { name: 'Message Queue', status: 'healthy', uptime: 99.88, trend: [30, 35, 32, 40, 38, 42, 45, 48, 44, 50], responseTime: '12ms', color: '#34d399', pods: 5, region: 'eu-west-1' },
+    { name: 'CDN', status: 'healthy', uptime: 100.0, trend: [90, 88, 92, 87, 93, 91, 94, 89, 95, 97], responseTime: '5ms', color: '#a78bfa', pods: 20, region: 'global' },
+    { name: 'Monitoring Stack', status: 'healthy', uptime: 99.93, trend: [85, 87, 86, 88, 90, 89, 91, 92, 91, 93], responseTime: '22ms', color: '#34d399', pods: 6, region: 'us-east-2' },
+    { name: 'Search Service', status: 'degraded', uptime: 98.72, trend: [65, 62, 58, 55, 52, 50, 48, 45, 43, 42], responseTime: '95ms', color: '#fbbf24', pods: 4, region: 'us-west-2' },
+  ],
+  sectionInsights: [
+    { id: 'si-1', section: 'executive', text: 'Executive summary shows 3 critical findings requiring immediate board attention. Payment Service circuit breaker saturation is the highest priority risk with $202K potential revenue exposure. Recommend emergency review session.', severity: 'critical' },
+    { id: 'si-2', section: 'predictions', text: 'AI predictions indicate a 7.3% week-over-week degradation in system reliability. The 30-day forecast shows increasing probability of cascading failures in the Payment-Billing dependency chain.', severity: 'high' },
+    { id: 'si-3', section: 'topology', text: 'Live topology scan reveals 2 degraded nodes (Payment Service, Redis Cache) and 1 critical node (Billing Service dependency chain). Service mesh implementation recommended to reduce blast radius.', severity: 'high' },
+    { id: 'si-4', section: 'deployments', text: 'Deployment velocity is up 12.9% this sprint, but change failure rate has increased to 6.3%. Rollback probability is trending down suggesting improved deployment practices.', severity: 'medium' },
+    { id: 'si-5', section: 'boardroom', text: 'Boardroom metrics show strong revenue growth at $12.4M (+3.2%) and SLA attainment at 99.97%. MTTR reduced 14.3% to 24 minutes through automated runbook adoption.', severity: 'low' },
+  ],
 }
+mockData.aiConfidenceIndicators = {
+  briefing: 96,
+  executiveInsights: [93, 89, 92],
+  predictions: [91, 89, 87, 93],
+  riskScores: [96, 88, 91, 85, 79, 82],
+  recommendations: [92, 89, 87],
+  rootCauses: [95, 89, 92],
+  forecasts: [91, 87, 85, 93],
+}
+mockData.refreshIntervals = {
+  briefing: '30s',
+  executiveSummary: '30s',
+  liveMetrics: '10s',
+  alerts: '5s',
+  topology: '15s',
+  predictions: '60s',
+  riskLeaderboard: '120s',
+}
+mockData.lastAnalysis = {
+  briefing: '14:24:00 UTC',
+  executiveInsights: '14:23:15 UTC',
+  riskLeaderboard: '14:22:30 UTC',
+  predictions: '14:20:00 UTC',
+  recommendations: '14:18:45 UTC',
+}
+mockData.briefingStats = {
+  totalDeployments: 847,
+  emergingRisks: 3,
+  predictedDegradations: 1,
+  recommendedActions: 4,
+  riskDetectionAccuracy: 96,
+  potentialSavings: 288000,
+  meanTimeToDetection: '4.2m',
+  meanTimeToResolution: '18.7m',
+  servicesScanned: 47,
+  dataPointsProcessed: '2.4M',
+  mlModelVersion: 'v4.2.1',
+  lastTrainingCycle: '3 hours ago',
+}
+mockData.executiveSummaryExpanded = {
+  revenueProtected: '$2.4M',
+  incidentsPrevented: 18,
+  automatedActions: 47,
+  manualInterventions: 12,
+  aiAccuracy: '96.8%',
+  systemReliability: '99.97%',
+  meanTimeToAcknowledge: '48s',
+  meanTimeToResolve: '18.7m',
+}
+mockData.riskTrends = {
+  weekOverWeek: { current: 72, previous: 68, change: '+5.9%' },
+  monthOverMonth: { current: 72, previous: 58, change: '+24.1%' },
+  quarterOverQuarter: { current: 72, previous: 45, change: '+60.0%' },
+  projectedNextWeek: 78,
+  projectedNextMonth: 85,
+}
+mockData.costAnalysis = {
+  currentBurnRate: 4500,
+  projectedMonthlyBurn: 135000,
+  annualizedRiskExposure: 1620000,
+  riskMitigationSavings: 288000,
+  roifromActions: '5.3x',
+  breakEvenHorizon: '12 days',
+}
+mockData.dependencyGraph = {
+  criticalPaths: 3,
+  upstreamDependencies: 47,
+  downstreamDependents: 128,
+  singlePointsOfFailure: 2,
+  redundancyCoverage: '84%',
+  faultToleranceScore: '72/100',
+}
+
 const container = { hidden: {}, show: { transition: { staggerChildren: 0.02 } } }
 const item = { hidden: { opacity: 0, y: 16 }, show: { opacity: 1, y: 0 } }
 
 function Timestamp() {
   const [time, setTime] = useState(new Date())
   useEffect(() => { const i = setInterval(() => setTime(new Date()), 1000); return () => clearInterval(i) }, [])
-  return <span className="font-mono text-[10px] text-cyan-400/70">{time.toISOString().replace('T', ' ').slice(0, 19)}Z</span>
+  return <span className="font-mono text-[10px] text-cyan-400/70">{time instanceof Date && !isNaN(time) ? time.toISOString().replace('T', ' ').slice(0, 19) : '---'}Z</span>
 }
 
 function useCounter(target, delay = 0, duration = 1500, format = false) {
   const [val, setVal] = useState(0)
   useEffect(() => {
-    if (target === undefined) return
+    if (target === undefined || target === null || isNaN(target)) return
     const t = setTimeout(() => {
       const steps = 40; const inc = target / steps; let cur = 0
       const i = setInterval(() => { cur += inc; if (cur >= target) { setVal(target); clearInterval(i) } else setVal(Math.floor(cur)) }, duration / steps)
@@ -226,6 +336,7 @@ function useCounter(target, delay = 0, duration = 1500, format = false) {
 }
 
 function MiniSparkline({ data, color = '#34d399', width = 56, height = 16 }) {
+  if (!data || !Array.isArray(data) || data.length < 2) return <svg width={width} height={height} viewBox={`0 0 ${width} ${height}`} className="shrink-0" />
   const max = Math.max(...data); const min = Math.min(...data); const range = max - min || 1
   const pts = data.map((v, i) => `${(i / (data.length - 1)) * width},${height - ((v - min) / range) * height}`).join(' ')
   return (
@@ -236,6 +347,7 @@ function MiniSparkline({ data, color = '#34d399', width = 56, height = 16 }) {
 }
 
 function MiniGaugeSparkline({ data, color = '#22d3ee' }) {
+  if (!data || !Array.isArray(data) || data.length < 2) return <svg width={32} height={8} viewBox="0 0 32 8" className="shrink-0 opacity-40" />
   const w = 32; const h = 8
   const max = Math.max(...data); const min = Math.min(...data); const range = max - min || 1
   const pts = data.map((v, i) => `${(i / (data.length - 1)) * w},${h - ((v - min) / range) * h}`).join(' ')
@@ -247,31 +359,32 @@ function MiniGaugeSparkline({ data, color = '#22d3ee' }) {
 }
 
 function AnimatedKPI({ kpi, idx }) {
-  const count = useCounter(kpi.value, idx * 80, 1500, kpi.format === '$$$')
+  if (!kpi) return null
+  const count = useCounter(kpi.value ?? 0, idx * 80, 1500, (kpi.format || '') === '$$$')
   const circumference = 2 * Math.PI * 22
-  const pct = Math.min((kpi.value / (kpi.label === 'Uptime' ? 10000 : 100)) * 100, 100)
+  const pct = Math.min((kpi.value / ((kpi.label || '') === 'Uptime' ? 10000 : 100)) * 100, 100)
   const offset = circumference - (pct / 100) * circumference
   const trendIcon = kpi.trend === 'up' ? '\u2191' : kpi.trend === 'down' ? '\u2193' : '\u2192'
   const trendColor = kpi.trend === 'up' ? 'text-red-400' : kpi.trend === 'down' ? 'text-emerald-400' : 'text-slate-500'
   const displayVal = typeof count === 'string' ? count : count
-  const finalDisplay = kpi.label === 'Uptime' ? '99.97' : displayVal
-  const finalSuffix = kpi.label === 'Uptime' ? '%' : kpi.format === '%%' ? '%' : kpi.format === 'm' ? 'm' : kpi.format === '$$$' ? '' : kpi.format
-  const ringPct = Math.round(pct)
+  const finalDisplay = (kpi.label || '') === 'Uptime' ? '99.97' : displayVal
+  const finalSuffix = (kpi.label || '') === 'Uptime' ? '%' : (kpi.format || '') === '%%' ? '%' : (kpi.format || '') === 'm' ? 'm' : (kpi.format || '') === '$$$' ? '' : (kpi.format || '')
+  const ringPct = Math.round(pct || 0)
   return (
     <motion.div variants={item} className="relative overflow-hidden rounded-xl border border-white/[0.06] bg-gradient-to-br from-slate-900 to-slate-900/50 p-3 sm:p-4 group hover:border-emerald-500/30 hover:shadow-lg hover:shadow-emerald-500/5 transition-all duration-300">
       <div className="flex items-center gap-3">
         <div className="relative shrink-0">
           <svg className="w-12 h-12 sm:w-14 sm:h-14 -rotate-90" viewBox="0 0 52 52">
             <circle cx="26" cy="26" r="22" fill="none" stroke="#1e293b" strokeWidth="4" />
-            <motion.circle cx="26" cy="26" r="22" fill="none" stroke={kpi.ringColor} strokeWidth="4" strokeLinecap="round" strokeDasharray={circumference} strokeDashoffset={offset} initial={{ strokeDashoffset: circumference }} animate={{ strokeDashoffset: offset }} transition={{ duration: 1.2, delay: idx * 0.08, ease: 'easeOut' }} />
-          </svg>
-          <div className="absolute inset-0 flex items-center justify-center">
-            <span className="text-[8px] font-mono text-slate-500">{ringPct}%</span>
+            <motion.circle cx="26" cy="26" r="22" fill="none" stroke={kpi.ringColor || '#22c55e'} strokeWidth="4" strokeLinecap="round" strokeDasharray={circumference} strokeDashoffset={offset} initial={{ strokeDashoffset: circumference }} animate={{ strokeDashoffset: offset }} transition={{ duration: 1.2, delay: idx * 0.08, ease: 'easeOut' }} />
+            </svg>
+            <div className="absolute inset-0 flex items-center justify-center">
+              <span className="text-[8px] font-mono text-slate-500">{ringPct}%</span>
+            </div>
           </div>
-        </div>
-        <div className="flex-1 min-w-0">
-          <div className="flex items-center gap-1.5">
-            <span className={`text-xl sm:text-2xl font-bold font-mono tracking-tight ${kpi.color}`}>
+          <div className="flex-1 min-w-0">
+            <div className="flex items-center gap-1.5">
+              <span className={`text-xl sm:text-2xl font-bold font-mono tracking-tight ${kpi.color || 'text-white'}`}>
               {finalDisplay}{finalSuffix}
             </span>
             <span className={`text-xs font-mono ${trendColor}`}>{trendIcon}</span>
@@ -286,8 +399,9 @@ function AnimatedKPI({ kpi, idx }) {
 }
 
 function AnimatedGauge({ gauge, history, idx }) {
+  if (!gauge) return null
   const [animPct, setAnimPct] = useState(0)
-  const pctThreshold = (gauge.value / gauge.max) * 100
+  const pctThreshold = gauge.max > 0 ? (Math.min(gauge.value, gauge.max) / gauge.max) * 100 : 0
   const ratio = Math.min(pctThreshold, 100) / 100
   const circumference = 2 * Math.PI * 36
   const offset = circumference - (animPct / 100) * circumference * ratio
@@ -318,6 +432,28 @@ function AnimatedGauge({ gauge, history, idx }) {
       </div>
       <span className="text-[8px] text-slate-700/60 text-center mt-0.5 px-1 hidden sm:block">{gauge.description}</span>
     </motion.div>
+  )
+}
+function MiniGauge({ value = 0, suffix = '', danger = false, warn = false, width = 40, height = 16, fontSize = 5, strokeWidth = 2 }) {
+  const [animPct, setAnimPct] = useState(0)
+  const pct = Math.min(value, 100)
+  useEffect(() => {
+    const t = setTimeout(() => setAnimPct(pct), 200)
+    return () => clearTimeout(t)
+  }, [pct])
+  const color = danger ? '#f87171' : warn ? '#fbbf24' : '#34d399'
+  const textColor = danger ? 'text-red-400' : warn ? 'text-amber-400' : 'text-emerald-400'
+  const circumference = 2 * Math.PI * (height / 2 - strokeWidth / 2)
+  const r = height / 2 - strokeWidth / 2
+  const cx = width / 2
+  const cy = height / 2
+  const offset = circumference - (animPct / 100) * circumference
+  return (
+    <svg width={width} height={height} viewBox={`0 0 ${width} ${height}`} className="shrink-0">
+      <text x={2} y={height - 2} fontSize={fontSize} fill="#64748b" fontFamily="monospace">{pct}{suffix}</text>
+      <circle cx={width - 6} cy={height / 2} r={r} fill="none" stroke="#1e293b" strokeWidth={strokeWidth} />
+      <motion.circle cx={width - 6} cy={height / 2} r={r} fill="none" stroke={color} strokeWidth={strokeWidth} strokeLinecap="round" strokeDasharray={circumference} strokeDashoffset={offset} initial={{ strokeDashoffset: circumference }} animate={{ strokeDashoffset: offset }} transition={{ duration: 1, ease: 'easeOut' }} />
+    </svg>
   )
 }
 function RiskHeatmap() {
@@ -463,7 +599,7 @@ function AlertsFeed() {
                       ACKNOWLEDGE
                     </motion.button>
                   )}
-                  <StatusBadge status={a.status === 'triggered' ? 'running' : a.status === 'acknowledged' ? 'warning' : 'success'} label={a.status === 'triggered' ? 'ALERT' : a.status.toUpperCase()} />
+                  <StatusBadge status={a.status === 'triggered' ? 'running' : a.status === 'acknowledged' ? 'warning' : 'success'} label={a.status === 'triggered' ? 'ALERT' : String(a.status ?? '').toUpperCase()} />
                 </div>
               </div>
             </motion.div>
@@ -478,35 +614,35 @@ function AlertsFeed() {
     </motion.div>
   )
 }
-
-function ServiceHealthCard({ service, idx }) {
-  const dotColor = service.status === 'healthy' ? 'bg-emerald-500' : service.status === 'degraded' ? 'bg-amber-500' : 'bg-red-500'
-  const borderColor = service.status === 'healthy' ? 'border-emerald-500/20' : service.status === 'degraded' ? 'border-amber-500/30' : 'border-red-500/30'
-  const badgeStatus = service.status === 'healthy' ? 'success' : service.status === 'degraded' ? 'warning' : 'failed'
-  const uptimeStr = `${service.uptime}%`
+function ServiceHealthCard({ svc, idx }) {
+  if (!svc) return null
+  const dotColor = svc.status === 'healthy' ? 'bg-emerald-500' : svc.status === 'degraded' ? 'bg-amber-500' : 'bg-red-500'
+  const borderColor = svc.status === 'healthy' ? 'border-emerald-500/20' : svc.status === 'degraded' ? 'border-amber-500/30' : 'border-red-500/30'
+  const badgeStatus = svc.status === 'healthy' ? 'success' : svc.status === 'degraded' ? 'warning' : 'failed'
+  const uptimeStr = svc.uptime != null ? `${svc.uptime}%` : '-%'
   return (
     <motion.div variants={item} className={`rounded-lg border ${borderColor} bg-white/[0.02] p-3 hover:bg-white/[0.04] transition-all group`}>
       <div className="flex items-center justify-between mb-2">
         <div className="flex items-center gap-1.5">
           <span className="relative flex h-2.5 w-2.5">
-            <span className={`absolute inline-flex h-full w-full rounded-full ${dotColor} opacity-75 ${service.status === 'degraded' ? 'animate-ping' : ''}`} />
+            <span className={`absolute inline-flex h-full w-full rounded-full ${dotColor} opacity-75 ${svc.status === 'degraded' ? 'animate-ping' : ''}`} />
             <span className={`relative inline-flex h-2.5 w-2.5 rounded-full ${dotColor}`} />
           </span>
-          <span className="text-[11px] font-mono text-slate-300 font-medium truncate">{service.name}</span>
+          <span className="text-[11px] font-mono text-slate-300 font-medium truncate">{svc.name || '-'}</span>
         </div>
-        <MiniSparkline data={service.trend} color={service.color} width={48} height={14} />
+        <MiniSparkline data={svc.trend} color={svc.color} width={48} height={14} />
       </div>
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <StatusBadge status={badgeStatus} label={service.status} />
+          <StatusBadge status={badgeStatus} label={svc.status || 'unknown'} />
           <span className="text-[9px] font-mono text-slate-600">{uptimeStr}</span>
         </div>
-        <span className="text-[9px] font-mono text-slate-500">{service.responseTime}</span>
+        <span className="text-[9px] font-mono text-slate-500">{svc.responseTime || '-'}</span>
       </div>
       <div className="flex items-center gap-2 mt-1.5 pt-1.5 border-t border-white/[0.03] text-[8px] font-mono text-slate-700">
-        <span>{service.pods} pods</span>
+        <span>{svc.pods != null ? `${svc.pods} pods` : '-'}</span>
         <span className="text-slate-700">\u00b7</span>
-        <span>{service.region}</span>
+        <span>{svc.region || '-'}</span>
       </div>
     </motion.div>
   )
@@ -568,6 +704,7 @@ function DeploymentTimeline() {
     </motion.div>
   )
 }
+
 function VelocityBarChart() {
   const [animated, setAnimated] = useState(false)
   useEffect(() => { const t = setTimeout(() => setAnimated(true), 300); return () => clearTimeout(t) }, [])
@@ -660,7 +797,6 @@ function ActivityTimeline() {
     </motion.div>
   )
 }
-
 function IncidentsByService() {
   return (
     <motion.div variants={item} className="rounded-xl border border-white/[0.06] bg-gradient-to-br from-slate-900 to-slate-900/50 p-3 sm:p-4">
@@ -729,6 +865,7 @@ function SloSummary() {
     </motion.div>
   )
 }
+
 function OnCallBanner() {
   const oc = mockData.onCall
   return (
@@ -759,7 +896,6 @@ function OnCallBanner() {
     </motion.div>
   )
 }
-
 function ChangeFailureRate() {
   const [anim, setAnim] = useState(false)
   useEffect(() => { const t = setTimeout(() => setAnim(true), 400); return () => clearTimeout(t) }, [])
@@ -874,7 +1010,7 @@ function BusinessImpactCalculator() {
                 </div>
                 <div className={`text-lg sm:text-xl font-bold font-mono ${biz.color} truncate`}>{biz.prefix}{displayVal}{biz.suffix}</div>
                 <div className="mt-2 h-1.5 rounded-full bg-slate-800 overflow-hidden">
-                  <motion.div initial={{ width: 0 }} animate={{ width: `${barPct}%` }} transition={{ duration: 1.2, delay: idx * 0.1 + 0.3, ease: 'easeOut' }} className={`h-full rounded-full ${biz.color.replace('text-', 'bg-').replace('400', '500/80')}`} />
+                  <motion.div initial={{ width: 0 }} animate={{ width: `${barPct}%` }} transition={{ duration: 1.2, delay: idx * 0.1 + 0.3, ease: 'easeOut' }} className={`h-full rounded-full ${String(biz.color ?? '').replace('text-', 'bg-').replace('400', '500/80')}`} />
                 </div>
               </motion.div>
             )
@@ -889,7 +1025,6 @@ function BusinessImpactCalculator() {
     </motion.div>
   )
 }
-
 function StatusTicker() {
   return (
     <motion.div variants={item} className="rounded-xl border border-white/[0.06] bg-gradient-to-r from-slate-900 via-slate-900/80 to-slate-900/50 p-3 overflow-hidden">
@@ -905,7 +1040,7 @@ function StatusTicker() {
           { label: 'ON-CALL', value: '4 eng', color: 'text-cyan-400' },
           { label: 'P0 INCIDENTS', value: '0', color: 'text-emerald-400' },
           { label: 'ALERT ACK TIME', value: '48s', color: 'text-amber-400' },
-          { label: 'CACHE HIT RATE', value: '94%', color: 'text-emerald-400' },
+          { label: 'CACHE HIT RATE', value: '92%', color: 'text-emerald-400' },
           { label: 'DB CONNECTIONS', value: '142', color: 'text-cyan-400' },
         ].map((m, i) => (
           <div key={m.label} className="flex items-center gap-2 shrink-0">
@@ -921,7 +1056,7 @@ function StatusTicker() {
 
 function CommandHeader() {
   return (
-    <motion.div variants={item} className="rounded-xl border border-white/[0.08] bg-gradient-to-r from-slate-900 via-slate-900/90 to-slate-900/80 backdrop-blur-2xl p-4 sm:p-5 relative overflow-hidden">
+    <motion.div variants={item} className="rounded-xl border border-white/[0.08] bg-gradient-to-r from-slate-900 via-slate-900/90 to-slate-900/80 backdrop-blur-2xl p-2 sm:p-3 relative overflow-hidden">
       <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.02)_1px,transparent_1px)] bg-[size:20px_20px]" />
       <div className="flex items-center justify-between flex-wrap gap-3 relative z-10">
         <div className="flex items-center gap-3">
@@ -1149,7 +1284,7 @@ function PredictionWall() {
               <p className="text-[8px] text-slate-600 mt-0.5">{p.description}</p>
               <div className="flex items-center gap-1.5 mt-1.5">
                 <span className="h-1 w-1 rounded-full" style={{ backgroundColor: trendColors[p.trend] || '#64748b' }} />
-                <span className="text-[8px] font-mono text-slate-700">{p.trend.charAt(0).toUpperCase() + p.trend.slice(1)}</span>
+                <span className="text-[8px] font-mono text-slate-700">{String(p.trend ?? '').charAt(0).toUpperCase() + String(p.trend ?? '').slice(1)}</span>
               </div>
               <div className="flex flex-wrap gap-1 mt-1.5 pt-1.5 border-t border-white/[0.03]">
                 {p.factors.map((f, fi) => (<span key={fi} className="rounded-md bg-white/[0.02] border border-white/[0.03] px-1.5 py-0.5 text-[7px] font-mono text-slate-700">{f}</span>))}
@@ -1167,44 +1302,35 @@ function PredictionWall() {
   )
 }
 function TopRisksLeaderboard() {
-  const risks = mockData.topRisks
-  const statusColors = { Critical: { dot: 'bg-red-500', badge: 'critical' }, Warning: { dot: 'bg-amber-500', badge: 'warning' }, Elevated: { dot: 'bg-orange-500', badge: 'info' }, Monitor: { dot: 'bg-cyan-500', badge: 'info' }, Stable: { dot: 'bg-emerald-500', badge: 'success' } }
-  const maxRisk = Math.max(...risks.map(r => r.riskScore))
+  const risks = mockData.topRisksLeaderboard
+  const riskColors = { critical: 'text-red-400 border-red-500/30', high: 'text-orange-400 border-orange-500/30', medium: 'text-amber-400 border-amber-500/30', low: 'text-emerald-400 border-emerald-500/30' }
   return (
     <motion.div variants={item} className="rounded-xl border border-white/[0.06] bg-gradient-to-br from-slate-900 to-slate-900/50 p-3 sm:p-4">
       <div className="flex items-center justify-between mb-2.5">
-        <h2 className="text-[11px] font-semibold text-slate-400 uppercase tracking-[0.15em] font-mono">Top Risks This Week</h2>
-        <div className="flex items-center gap-2"><StatusBadge status="warning" label="PRIORITY RANKED" /></div>
+        <h2 className="text-[11px] font-semibold text-slate-400 uppercase tracking-[0.15em] font-mono">Top Risks Leaderboard</h2>
+        <div className="flex items-center gap-2"><StatusBadge status="warning" label="PRIORITY" /><span className="h-1.5 w-1.5 rounded-full bg-red-500 animate-pulse" /></div>
       </div>
-      <div className="overflow-x-auto">
-        <div className="min-w-[600px]">
-          <div className="flex items-center text-[8px] font-mono text-slate-700 uppercase tracking-wider pb-2 border-b border-white/[0.04] mb-1">
-            <div className="w-8 shrink-0">Rank</div>
-            <div className="w-32 shrink-0">Service</div>
-            <div className="flex-1">Risk Score</div>
-            <div className="w-24 shrink-0 text-right">Impact</div>
-            <div className="w-24 shrink-0 text-right">Failure Prob</div>
-            <div className="w-20 shrink-0 text-right">Status</div>
-          </div>
-          {risks.map((r, idx) => {
-            const sc = statusColors[r.status] || statusColors.Stable
-            return (
-              <motion.div key={r.rank} initial={{ opacity: 0, x: -8 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: idx * 0.05 }} className="flex items-center py-2 border-b border-white/[0.02] last:border-b-0 hover:bg-white/[0.02] transition-colors rounded-sm">
-                <div className="w-8 shrink-0 text-[10px] font-mono text-slate-600">{r.rank}</div>
-                <div className="w-32 shrink-0 flex items-center gap-1.5"><span className={`h-1.5 w-1.5 rounded-full ${sc.dot}`} /><span className="text-[10px] font-mono text-slate-300 truncate">{r.service}</span></div>
-                <div className="flex-1 flex items-center gap-2 pr-4">
-                  <div className="flex-1 h-1.5 rounded-full bg-slate-800 overflow-hidden">
-                    <motion.div initial={{ width: 0 }} animate={{ width: `${(r.riskScore / maxRisk) * 100}%` }} transition={{ duration: 0.8, delay: idx * 0.05 }} className={`h-full rounded-full ${r.riskScore >= 80 ? 'bg-red-500' : r.riskScore >= 60 ? 'bg-amber-500' : r.riskScore >= 40 ? 'bg-orange-500' : 'bg-emerald-500'}`} />
-                  </div>
-                  <span className={`text-[9px] font-mono font-bold w-6 text-right ${r.riskScore >= 80 ? 'text-red-400' : r.riskScore >= 60 ? 'text-amber-400' : r.riskScore >= 40 ? 'text-orange-400' : 'text-emerald-400'}`}>{r.riskScore}</span>
+      <div className="space-y-1.5">
+        {risks.map((r, idx) => {
+          const rc = riskColors[r.severity] || riskColors.medium
+          return (
+            <motion.div key={r.id} variants={item} className={`rounded-lg border ${rc} bg-white/[0.01] p-2.5 hover:bg-white/[0.03] transition-all`}>
+              <div className="flex items-start justify-between gap-2">
+                <div className="flex items-center gap-1.5 min-w-0">
+                  <span className={`w-5 h-5 rounded-full ${r.severity === 'critical' ? 'bg-red-500/20 text-red-400' : r.severity === 'high' ? 'bg-orange-500/20 text-orange-400' : r.severity === 'medium' ? 'bg-amber-500/20 text-amber-400' : 'bg-emerald-500/20 text-emerald-400'} flex items-center justify-center text-[9px] font-mono font-bold shrink-0`}>{idx + 1}</span>
+                  <div className="min-w-0"><p className="text-[11px] font-medium text-slate-200 truncate">{r.title}</p><div className="flex items-center gap-2"><span className="text-[9px] font-mono text-slate-600">{r.service}</span><span className="text-[9px] font-mono text-red-400">{String(r.severity ?? '').toUpperCase()}</span></div></div>
                 </div>
-                <div className="w-24 shrink-0 text-right text-[9px] font-mono text-slate-400">{r.impactLabel}</div>
-                <div className="w-24 shrink-0 text-right text-[9px] font-mono text-slate-400">{r.failureProbability}%</div>
-                <div className="w-20 shrink-0 text-right"><StatusBadge status={sc.badge} label={r.status} /></div>
-              </motion.div>
-            )
-          })}
-        </div>
+                <div className="text-right shrink-0"><span className="text-sm font-bold font-mono text-red-400">{r.score}</span><span className="text-[8px] text-slate-700 block">Risk Score</span></div>
+              </div>
+              <div className="flex items-center gap-2 mt-1.5">
+                <span className="text-[8px] font-mono text-slate-600">{r.impact}</span>
+                <span className="text-slate-800">|</span>
+                <span className="text-[8px] font-mono text-cyan-400/60">P{idx + 1}</span>
+              </div>
+              <div className="w-full h-1 bg-white/[0.03] rounded-full mt-1 overflow-hidden"><motion.div initial={{ width: 0 }} whileInView={{ width: `${r.score}%` }} viewport={{ once: true }} transition={{ duration: 1, delay: idx * 0.1 }} className="h-full rounded-full bg-gradient-to-r from-red-600 to-red-400" style={{ width: `${r.score}%` }} /></div>
+            </motion.div>
+          )
+        })}
       </div>
     </motion.div>
   )
@@ -1212,60 +1338,48 @@ function TopRisksLeaderboard() {
 
 function RootCauseSnapshots() {
   const causes = mockData.rootCauses
-  const sevCfg = { critical: { border: 'border-red-500/30', dot: 'bg-red-500', text: 'text-red-400' }, high: { border: 'border-amber-500/30', dot: 'bg-amber-500', text: 'text-amber-400' } }
   return (
     <motion.div variants={item} className="rounded-xl border border-white/[0.06] bg-gradient-to-br from-slate-900 to-slate-900/50 p-3 sm:p-4">
       <div className="flex items-center justify-between mb-2.5">
         <h2 className="text-[11px] font-semibold text-slate-400 uppercase tracking-[0.15em] font-mono">Root Cause Snapshots</h2>
-        <div className="flex items-center gap-2"><StatusBadge status="info" label="FORENSIC ANALYSIS" /><span className="h-1.5 w-1.5 rounded-full bg-cyan-500 animate-pulse" /></div>
+        <StatusBadge status="warning" label="ANALYSIS" />
       </div>
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-        {causes.map((rc, idx) => {
-          const c = sevCfg[rc.severity] || sevCfg.high
-          return (
-            <motion.div key={rc.service} variants={item} className={`rounded-lg border ${c.border} bg-white/[0.01] p-3 hover:bg-white/[0.03] transition-all group`}>
-              <div className="flex items-center gap-1.5 mb-2"><span className={`h-2 w-2 rounded-full ${c.dot}`} /><span className="text-[10px] font-mono text-slate-300 font-medium">{rc.service}</span><span className="ml-auto"><StatusBadge status={rc.severity === 'critical' ? 'critical' : 'warning'} label={rc.cause} /></span></div>
-              <p className="text-[9px] text-slate-500 leading-relaxed mb-2">{rc.finding}</p>
-              <div className="rounded-md bg-emerald-500/5 border border-emerald-500/10 p-1.5 mb-2"><span className="text-[8px] font-mono text-emerald-400/80">Fix: </span><span className="text-[8px] font-mono text-slate-400">{rc.fix}</span></div>
-              <div className="flex items-center justify-between">
-                <span className="text-[8px] font-mono text-cyan-400/70">Confidence: {rc.confidence}%</span>
-                <button className="text-[8px] font-mono text-cyan-400/60 hover:text-cyan-400 transition-colors">View Full Investigation</button>
-              </div>
-            </motion.div>
-          )
-        })}
+        {causes.map((rc, idx) => (
+          <motion.div key={rc.id} variants={item} className="rounded-lg border border-white/[0.04] bg-white/[0.01] p-3 hover:bg-white/[0.03] transition-all group">
+            <div className="flex items-center gap-1.5 mb-2">
+              <span className="h-2 w-2 rounded-full bg-cyan-400" />
+              <span className="text-[8px] font-mono text-slate-600 uppercase tracking-wider">{rc.service}</span>
+              <span className="text-[8px] font-mono text-slate-700 ml-auto">{rc.duration}</span>
+            </div>
+            <p className="text-[10px] font-medium text-slate-200 mb-2">{rc.cause}</p>
+            <div className="flex items-center justify-between"><span className="text-[8px] font-mono text-slate-700">Confidence: {rc.confidence}</span><span className="text-[8px] font-mono text-red-400">{rc.impact}</span></div>
+            <div className="flex items-center gap-2 mt-1.5"><MiniSparkline data={rc.sparkData} color="#22d3ee" width={56} height={12} /></div>
+          </motion.div>
+        ))}
       </div>
     </motion.div>
   )
 }
 
 function ExecutiveRecommendations() {
-  const recs = mockData.executiveRecommendations
-  const categories = [recs.immediate, recs.nextSprint, recs.strategic]
-  const colors = ['border-emerald-500/30 bg-emerald-500/5', 'border-cyan-500/30 bg-cyan-500/5', 'border-violet-500/30 bg-violet-500/5']
-  const headers = ['text-emerald-400', 'text-cyan-400', 'text-violet-400']
+  const recommendations = mockData.recommendations
   return (
     <motion.div variants={item} className="rounded-xl border border-white/[0.06] bg-gradient-to-br from-slate-900 to-slate-900/50 p-3 sm:p-4">
       <div className="flex items-center justify-between mb-2.5">
         <h2 className="text-[11px] font-semibold text-slate-400 uppercase tracking-[0.15em] font-mono">Executive Recommendations</h2>
-        <div className="flex items-center gap-2"><StatusBadge status="info" label="AI GENERATED" /><span className="relative flex h-2 w-2"><span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-500 opacity-75" /><span className="relative inline-flex h-2 w-2 rounded-full bg-emerald-500" /></span></div>
+        <StatusBadge status="info" label="AI-DRIVEN" />
       </div>
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-        {categories.map((cat, idx) => (
-          <motion.div key={cat.title} variants={item} className={`rounded-lg border ${colors[idx]} p-3 hover:bg-white/[0.03] transition-all group`}>
-            <div className="flex items-center gap-1.5 mb-2"><span className={`h-2 w-2 rounded-full ${headers[idx].replace('text-', 'bg-').replace('400', '500')}`} /><span className={`text-[9px] font-mono font-medium ${headers[idx]}`}>{cat.title}</span></div>
-            <div className="space-y-1 mb-2.5">
-              {cat.items.map((item, ii) => (
-                <div key={ii} className="flex items-start gap-1.5">
-                  <svg className={`h-3 w-3 mt-0.5 shrink-0 ${headers[idx]}`} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" /></svg>
-                  <span className="text-[9px] text-slate-400 leading-relaxed">{item}</span>
-                </div>
-              ))}
+      <div className="space-y-2">
+        {recommendations.map((rec, idx) => (
+          <motion.div key={rec.id} variants={item} className="rounded-lg border-l-2 border-l-cyan-500 border border-white/[0.04] bg-white/[0.01] p-3 flex items-start gap-3">
+            <div className={`rounded-full p-1.5 shrink-0 ${rec.priority === 'critical' ? 'bg-red-500/20' : rec.priority === 'high' ? 'bg-orange-500/20' : 'bg-cyan-500/20'}`}>
+              <span className={`text-[10px] ${rec.priority === 'critical' ? 'text-red-400' : rec.priority === 'high' ? 'text-orange-400' : 'text-cyan-400'}`}>{rec.priority === 'critical' ? '!' : rec.priority === 'high' ? '\u25B3' : '\u2713'}</span>
             </div>
-            <div className="border-t border-white/[0.04] pt-2 mt-2 space-y-0.5">
-              <div className="flex items-center justify-between text-[8px] font-mono"><span className="text-slate-600">Impact:</span><span className="text-emerald-400/80">{cat.impact}</span></div>
-              <div className="flex items-center justify-between text-[8px] font-mono"><span className="text-slate-600">Savings:</span><span className="text-amber-400/80">{cat.savings}</span></div>
-              <div className="flex items-center justify-between text-[8px] font-mono"><span className="text-slate-600">Confidence:</span><span className="text-cyan-400/80">{cat.confidence}</span></div>
+            <div className="min-w-0 flex-1">
+              <div className="flex items-center gap-2 mb-1"><span className={`text-[9px] font-bold uppercase tracking-wider ${rec.priority === 'critical' ? 'text-red-400' : rec.priority === 'high' ? 'text-orange-400' : 'text-cyan-400'}`}>{rec.title}</span><span className="text-[8px] font-mono text-slate-700">{String(rec.priority ?? '').toUpperCase()}</span></div>
+              <p className="text-[10px] text-slate-400">{rec.description}</p>
+              <div className="flex items-center gap-3 mt-1"><span className="text-[8px] font-mono text-slate-700">Confidence: {rec.confidence}</span><span className="text-[8px] font-mono text-emerald-400/80">Impact: {rec.impact}</span></div>
             </div>
           </motion.div>
         ))}
@@ -1273,138 +1387,80 @@ function ExecutiveRecommendations() {
     </motion.div>
   )
 }
+
 function LiveSystemTopology() {
-  const topology = mockData.systemTopology
-  const { nodes, edges } = topology
-  const [animDots, setAnimDots] = useState([])
-  const animRef = useRef()
-  useEffect(() => {
-    const dots = edges.map((e, i) => {
-      const from = nodes.find(n => n.id === e.from)
-      const to = nodes.find(n => n.id === e.to)
-      return { edgeIdx: i, progress: Math.random(), speed: 0.003 + Math.random() * 0.005, from, to, critical: e.critical }
-    })
-    let running = true
-    const animate = () => {
-      if (!running) return
-      setAnimDots(prev => prev.map(d => ({ ...d, progress: (d.progress + d.speed) % 1 })))
-      animRef.current = requestAnimationFrame(animate)
-    }
-    setAnimDots(dots)
-    animRef.current = requestAnimationFrame(animate)
-    return () => { running = false; if (animRef.current) cancelAnimationFrame(animRef.current) }
-  }, [])
+  const nodes = mockData.systemTopology || []
   return (
-    <motion.div variants={item} className="rounded-xl border border-white/[0.06] bg-gradient-to-br from-slate-900 to-slate-900/50 p-3 sm:p-4 overflow-hidden">
+    <motion.div variants={item} className="rounded-xl border border-white/[0.06] bg-gradient-to-br from-slate-900 to-slate-900/50 p-3 sm:p-4">
       <div className="flex items-center justify-between mb-2.5">
         <h2 className="text-[11px] font-semibold text-slate-400 uppercase tracking-[0.15em] font-mono">Live System Topology</h2>
-        <div className="flex items-center gap-2"><StatusBadge status="info" label="ANIMATED" /><span className="relative flex h-2 w-2"><span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-cyan-500 opacity-75" /><span className="relative inline-flex h-2 w-2 rounded-full bg-cyan-500" /></span></div>
+        <div className="flex items-center gap-2"><StatusBadge status="info" label="REALTIME" /><span className="relative flex h-2 w-2"><span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-500 opacity-75" /><span className="relative inline-flex h-2 w-2 rounded-full bg-emerald-500" /></span></div>
       </div>
-      <svg viewBox="0 0 600 280" className="w-full h-auto max-h-[300px]">
-        <defs>
-          {edges.map((e, i) => {
-            const from = nodes.find(n => n.id === e.from); const to = nodes.find(n => n.id === e.to)
-            return <linearGradient key={i} id={`edgeGrad${i}`}><stop offset="0%" stopColor={e.critical ? '#ef4444' : '#334155'} /><stop offset="100%" stopColor={e.critical ? '#ef4444' : '#475569'} /></linearGradient>
-          })}
-        </defs>
-        {edges.map((e, i) => {
-          const from = nodes.find(n => n.id === e.from); const to = nodes.find(n => n.id === e.to)
-          if (!from || !to) return null
-          return <line key={i} x1={from.x} y1={from.y} x2={to.x} y2={to.y} stroke={`url(#edgeGrad${i})`} strokeWidth={e.critical ? 2 : 1} strokeDasharray={e.critical ? '4,3' : 'none'} opacity="0.6" />
+      <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-2">
+        {nodes.map((node, idx) => {
+          if (!node) return null
+          const dotColor = node.status === 'healthy' ? 'bg-emerald-500' : node.status === 'degraded' ? 'bg-amber-500' : 'bg-red-500'
+          const borderColor = node.status === 'healthy' ? 'border-emerald-500/20' : node.status === 'degraded' ? 'border-amber-500/20' : 'border-red-500/20'
+          return (
+            <motion.div key={node.name || idx} variants={item} className={`rounded-lg border ${borderColor} bg-white/[0.01] p-2 hover:bg-white/[0.03] transition-all cursor-pointer`}>
+              <div className="flex items-center gap-1 mb-1"><span className={`h-2 w-2 rounded-full ${dotColor} ${node.status === 'healthy' ? 'animate-pulse' : ''}`} /><span className="text-[8px] font-mono text-slate-600 truncate">{node.service || '-'}</span></div>
+              <p className="text-[9px] text-slate-200 font-medium truncate">{node.name || '-'}</p>
+              <p className="text-[7px] font-mono text-slate-700 truncate">{node.details || ''}</p>
+              <MiniGauge value={node.cpu ?? 0} suffix="%" danger={(node.cpu ?? 0) > 85} warn={(node.cpu ?? 0) > 60} width={40} height={16} fontSize={5} strokeWidth={2} />
+            </motion.div>
+          )
         })}
-        {nodes.map((n) => (
-          <g key={n.id}>
-            <circle cx={n.x} cy={n.y} r="18" fill="#0f172a" stroke={n.status === 'healthy' ? '#34d399' : n.status === 'degraded' ? '#fbbf24' : '#ef4444'} strokeWidth="2" />
-            <circle cx={n.x} cy={n.y} r="6" fill={n.status === 'healthy' ? '#34d399' : n.status === 'degraded' ? '#fbbf24' : '#ef4444'} />
-            <text x={n.x} y={n.y + 34} textAnchor="middle" fill="#94a3b8" fontSize="9" fontFamily="monospace">{n.label}</text>
-          </g>
-        ))}
-        {animDots.map((d, i) => {
-          if (!d.from || !d.to) return null
-          const x = d.from.x + (d.to.x - d.from.x) * d.progress
-          const y = d.from.y + (d.to.y - d.from.y) * d.progress
-          return <circle key={i} cx={x} cy={y} r="3" fill={d.critical ? '#ef4444' : '#22d3ee'} opacity="0.8" />
-        })}
-      </svg>
+      </div>
       <div className="flex items-center justify-between mt-2 pt-2 border-t border-white/[0.04] text-[8px] font-mono text-slate-700">
-        <div className="flex items-center gap-3">
-          <span className="flex items-center gap-1"><span className="h-1.5 w-1.5 rounded-full bg-emerald-500" /> Healthy</span>
-          <span className="flex items-center gap-1"><span className="h-1.5 w-1.5 rounded-full bg-amber-500" /> Degraded</span>
-          <span className="flex items-center gap-1"><span className="h-1.5 w-1.5 rounded-full bg-red-500" /> Critical</span>
-        </div>
-        <span>{nodes.length} nodes | {edges.length} connections</span>
+        <span>Total Services: {nodes.filter(n => n && n.status).length}</span>
+        <span className="flex items-center gap-1"><span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />{nodes.filter(n => n && n.status === 'healthy').length} Healthy</span>
+        <span className="flex items-center gap-1"><span className="h-1.5 w-1.5 rounded-full bg-amber-500" />{nodes.filter(n => n && n.status === 'degraded').length} Degraded</span>
+        <span className="flex items-center gap-1"><span className="h-1.5 w-1.5 rounded-full bg-red-500" />{nodes.filter(n => n && n.status === 'critical').length} Critical</span>
       </div>
     </motion.div>
   )
 }
 
 function DeploymentForecast() {
-  const data = mockData.deploymentForecast
+  const forecast = mockData.deploymentForecast
   return (
     <motion.div variants={item} className="rounded-xl border border-white/[0.06] bg-gradient-to-br from-slate-900 to-slate-900/50 p-3 sm:p-4">
       <div className="flex items-center justify-between mb-2.5">
         <h2 className="text-[11px] font-semibold text-slate-400 uppercase tracking-[0.15em] font-mono">Deployment Forecast</h2>
-        <div className="flex items-center gap-2"><StatusBadge status="info" label="PREDICTIVE ANALYSIS" /><span className="relative flex h-2 w-2"><span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-violet-500 opacity-75" /><span className="relative inline-flex h-2 w-2 rounded-full bg-violet-500" /></span></div>
+        <StatusBadge status="info" label="7-DAY OUTLOOK" />
       </div>
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-        {data.map((d, idx) => {
-          const count = useCounter(parseFloat(d.value), idx * 80, 1500)
-          const trendIcon = d.trend === 'improving' ? '\u2191' : d.trend === 'declining' ? '\u2193' : '\u2192'
-          const trendColor = d.trend === 'improving' ? 'text-emerald-400' : d.trend === 'declining' && d.label === 'Rollback Probability' ? 'text-emerald-400' : d.trend === 'declining' ? 'text-red-400' : 'text-slate-500'
-          return (
-            <motion.div key={d.label} variants={item} className="rounded-lg border border-white/[0.04] bg-white/[0.01] p-3 hover:bg-white/[0.03] transition-all group">
-              <div className="flex items-center justify-between mb-1.5">
-                <span className="text-[8px] font-mono text-slate-600 uppercase tracking-wider truncate">{d.label}</span>
-                <MiniSparkline data={d.sparkData} color={d.color} width={40} height={12} />
-              </div>
-              <div className="flex items-baseline gap-1">
-                <span className={`text-lg sm:text-xl font-bold font-mono ${d.textColor}`}>{typeof count === 'number' ? (d.value % 1 === 0 ? count : count.toFixed(1)) : count}{d.unit}</span>
-              </div>
-              <p className="text-[8px] text-slate-600 mt-0.5">{d.description}</p>
-              <div className="flex items-center gap-1 mt-1.5">
-                <span className={`text-[8px] font-mono ${trendColor}`}>{trendIcon}</span>
-                <span className="text-[8px] font-mono text-slate-700">{d.trend.charAt(0).toUpperCase() + d.trend.slice(1)}</span>
-              </div>
-            </motion.div>
-          )
-        })}
+      <div className="grid grid-cols-7 gap-2">
+        {forecast.map((day, idx) => (
+          <motion.div key={day.day} variants={item} className="rounded-lg border border-white/[0.04] bg-white/[0.01] p-2 text-center hover:bg-white/[0.03] transition-all">
+            <div className="text-[8px] font-mono text-slate-600 uppercase">{day.day}</div>
+            <div className="text-sm sm:text-base font-bold font-mono text-cyan-400 my-1">{day.value}</div>
+            <div className="w-6 h-12 mx-auto relative bg-white/[0.02] rounded-sm overflow-hidden"><motion.div initial={{ height: 0 }} whileInView={{ height: `${day.pct}%` }} viewport={{ once: true }} transition={{ duration: 0.8, delay: idx * 0.08 }} className="absolute bottom-0 w-full rounded-sm bg-gradient-to-t from-cyan-600 to-cyan-400" style={{ height: `${day.pct}%` }} /></div>
+            <div className="text-[7px] font-mono text-slate-700 mt-1">{day.events} deploys</div>
+          </motion.div>
+        ))}
       </div>
     </motion.div>
   )
 }
 
 function BoardroomView() {
-  const bv = mockData.boardroomView
-  const sections = [bv.ctoShouldKnow, bv.requiresAttention, bv.canWait, bv.highestROI]
-  const colors = [
-    { border: 'border-red-500/20', icon: 'text-red-400', header: 'text-red-300' },
-    { border: 'border-amber-500/20', icon: 'text-amber-400', header: 'text-amber-300' },
-    { border: 'border-cyan-500/20', icon: 'text-cyan-400', header: 'text-cyan-300' },
-    { border: 'border-emerald-500/20', icon: 'text-emerald-400', header: 'text-emerald-300' },
-  ]
+  const items = mockData.boardroomMetrics
   return (
     <motion.div variants={item} className="rounded-xl border border-white/[0.06] bg-gradient-to-br from-slate-900 to-slate-900/50 p-3 sm:p-4">
       <div className="flex items-center justify-between mb-2.5">
         <h2 className="text-[11px] font-semibold text-slate-400 uppercase tracking-[0.15em] font-mono">Boardroom View</h2>
-        <div className="flex items-center gap-2"><StatusBadge status="info" label="EXECUTIVE SUMMARY" /><span className="h-1.5 w-1.5 rounded-full bg-amber-500 animate-pulse" /></div>
+        <StatusBadge status="success" label="EXECUTIVE" />
       </div>
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-        {sections.map((sec, idx) => {
-          const c = colors[idx]
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-3">
+        {items.map((m, idx) => {
+          const trendIcon = m.trend === 'up' ? '\u2191' : '\u2193'
+          const trendColor = m.trend === 'up' ? 'text-emerald-400' : 'text-red-400'
           return (
-            <motion.div key={sec.title} variants={item} className={`rounded-lg border ${c.border} bg-white/[0.01] p-3 hover:bg-white/[0.03] transition-all group`}>
-              <div className="flex items-center gap-2 mb-2">
-                <svg className={`h-4 w-4 ${c.icon}`} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}><path strokeLinecap="round" strokeLinejoin="round" d={sec.icon} /></svg>
-                <span className={`text-[10px] font-mono font-medium ${c.header}`}>{sec.title}</span>
-              </div>
-              <div className="space-y-1.5">
-                {sec.items.map((item, ii) => (
-                  <div key={ii} className="flex items-start gap-1.5">
-                    <span className={`h-1 w-1 rounded-full ${c.icon.replace('text-', 'bg-').replace('400', '500')} mt-1.5 shrink-0`} />
-                    <span className="text-[9px] text-slate-400 leading-relaxed">{item}</span>
-                  </div>
-                ))}
-              </div>
+            <motion.div key={m.label} variants={item} className="rounded-lg border border-white/[0.04] bg-white/[0.01] p-3 hover:bg-white/[0.03] transition-all group">
+              <div className="flex items-center gap-1.5 mb-1.5"><span className="h-2 w-2 rounded-full" style={{ backgroundColor: m.dot }} /><span className="text-[8px] font-mono text-slate-600 uppercase tracking-wider">{m.label}</span></div>
+              <div className={`text-lg sm:text-xl font-bold font-mono ${m.color} truncate`}>{m.prefix}{m.value}{m.suffix}</div>
+              <div className="flex items-center gap-1.5 mt-0.5"><span className={`text-[9px] font-mono ${trendColor}`}>{trendIcon} {m.pct}%</span></div>
+              <p className="text-[8px] text-slate-600 mt-1">{m.change}</p>
             </motion.div>
           )
         })}
@@ -1412,439 +1468,244 @@ function BoardroomView() {
     </motion.div>
   )
 }
-export default function Dashboard() {
-  return (
-    <Layout>
-      <motion.div variants={container} initial="hidden" animate="show" className="space-y-4 pb-8">
-        <CommandHeader />
-        <DailyBriefingExpanded />
-        <div>
-          <div className="flex items-center justify-between mb-2.5">
-            <h2 className="text-[11px] font-semibold text-slate-400 uppercase tracking-[0.15em] font-mono">Executive Summary</h2>
-            <div className="flex items-center gap-2">
-              <StatusBadge status="info" label="Auto-Refresh 30s" />
-              <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse" />
-            </div>
-          </div>
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2.5">
-            {mockData.kpis.map((kpi, idx) => (<AnimatedKPI key={kpi.label} kpi={kpi} idx={idx} />))}
-          </div>
-        </div>
-        <ExecutiveInsightsExpanded />
-        <div>
-          <div className="flex items-center justify-between mb-2.5">
-            <h2 className="text-[11px] font-semibold text-slate-400 uppercase tracking-[0.15em] font-mono">Live Operational Metrics</h2>
-            <div className="flex items-center gap-1.5">
-              <span className="relative flex h-2 w-2"><span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-cyan-500 opacity-75" /><span className="relative inline-flex h-2 w-2 rounded-full bg-cyan-500" /></span>
-              <span className="text-[9px] font-mono text-cyan-400/70">STREAMING</span>
-            </div>
-          </div>
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
-            {mockData.gauges.map((gauge, idx) => (<AnimatedGauge key={gauge.label} gauge={gauge} history={mockData.gaugeHistory[idx].data} idx={idx} />))}
-          </div>
-        </div>
-        <RiskAnalyticsDashboard />
-        <PredictionWallExpanded />
-        <RiskLeaderboardExpanded />
-        <RootCauseExpanded />
-        <RecommendationsExpanded />
-        <div className="grid gap-3 lg:grid-cols-2">
-          <RiskHeatmap />
-          <AlertsFeed />
-        </div>
-        <TopologyExpanded />
-        <div>
-          <div className="flex items-center justify-between mb-2.5">
-            <h2 className="text-[11px] font-semibold text-slate-400 uppercase tracking-[0.15em] font-mono">Service Health Overview</h2>
-            <div className="flex items-center gap-2">
-              <StatusBadge status="success" label={`${mockData.services.filter(s => s.status === 'healthy').length} Healthy`} />
-              <StatusBadge status="warning" label={`${mockData.services.filter(s => s.status !== 'healthy').length} Degraded`} />
-            </div>
-          </div>
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2.5">
-            {mockData.services.map((service, idx) => (<ServiceHealthCard key={service.name} service={service} idx={idx} />))}
-          </div>
-        </div>
-        <ForecastExpanded />
-        <div className="grid gap-3 lg:grid-cols-2">
-          <DeploymentTimeline />
-          <ActivityTimeline />
-        </div>
-        <BoardroomExpanded />
-        <VelocityBarChart />
-        <div className="grid gap-3 lg:grid-cols-2">
-          <IncidentsByService />
-          <SloSummary />
-        </div>
-        <div className="grid gap-3 lg:grid-cols-2">
-          <ChangeFailureRate />
-          <OnCallBanner />
-        </div>
-        <PredictionCards />
-        <BusinessImpactCalculator />
-        <StatusTicker />
-        <QuickActionPanel />
-        <FooterBar />
-      </motion.div>
-    </Layout>
-  )
-}
-// Additional mock data for AI confidence indicators and analysis timestamps
-// Extended analytics fields for the executive dashboard
-
-mockData.aiConfidenceIndicators = {
-  briefing: 94,
-  executiveInsights: [94, 89, 92],
-  predictions: [91, 89, 87, 93],
-  riskScores: [96, 88, 91, 85, 79, 82],
-  recommendations: [94, 89, 87],
-  rootCauses: [94, 89, 92],
-  forecasts: [91, 87, 85, 93],
-}
-
-mockData.refreshIntervals = {
-  briefing: '30s',
-  executiveSummary: '30s',
-  liveMetrics: '10s',
-  alerts: '5s',
-  topology: '15s',
-  predictions: '60s',
-  riskLeaderboard: '120s',
-}
-
-mockData.lastAnalysis = {
-  briefing: '14:24:00 UTC',
-  executiveInsights: '14:23:15 UTC',
-  riskLeaderboard: '14:22:30 UTC',
-  predictions: '14:20:00 UTC',
-  recommendations: '14:18:45 UTC',
-}
-
-mockData.briefingStats = {
-  totalDeployments: 847,
-  emergingRisks: 3,
-  predictedDegradations: 1,
-  recommendedActions: 4,
-  riskDetectionAccuracy: 94,
-  potentialSavings: 288000,
-  meanTimeToDetection: '4.2m',
-  meanTimeToResolution: '18.7m',
-  servicesScanned: 47,
-  dataPointsProcessed: '2.4M',
-  mlModelVersion: 'v4.2.1',
-  lastTrainingCycle: '3 hours ago',
-}
-
-mockData.executiveSummaryExpanded = {
-  revenueProtected: '$2.4M',
-  incidentsPrevented: 18,
-  automatedActions: 47,
-  manualInterventions: 12,
-  aiAccuracy: '94.2%',
-  systemReliability: '99.97%',
-  meanTimeToAcknowledge: '48s',
-  meanTimeToResolve: '18.7m',
-}
-
-mockData.riskTrends = {
-  weekOverWeek: { current: 72, previous: 68, change: '+5.9%' },
-  monthOverMonth: { current: 72, previous: 58, change: '+24.1%' },
-  quarterOverQuarter: { current: 72, previous: 45, change: '+60.0%' },
-  projectedNextWeek: 78,
-  projectedNextMonth: 85,
-}
-
-mockData.costAnalysis = {
-  currentBurnRate: 4500,
-  projectedMonthlyBurn: 135000,
-  annualizedRiskExposure: 1620000,
-  riskMitigationSavings: 288000,
-  roifromActions: '5.3x',
-  breakEvenHorizon: '12 days',
-}
-
-mockData.dependencyGraph = {
-  criticalPaths: 3,
-  upstreamDependencies: 47,
-  downstreamDependents: 128,
-  singlePointsOfFailure: 2,
-  redundancyCoverage: '84%',
-  faultToleranceScore: '72/100',
-}
 function DailyBriefingExpanded() {
-  const bs = mockData.briefingStats
-  const [animVal, setAnimVal] = useState(0)
-  useEffect(() => { const t = setTimeout(() => setAnimVal(100), 500); return () => clearTimeout(t) }, [])
+  const db = mockData.dailyBriefing
+  const risks = mockData.executiveInsights || []
+  const recommendations = mockData.recommendations || []
   return (
-    <motion.div variants={item} className="rounded-xl border border-white/[0.06] bg-gradient-to-br from-slate-900 to-slate-900/50 p-3 sm:p-4">
-      <div className="flex items-center justify-between mb-2.5">
-        <h2 className="text-[11px] font-semibold text-slate-400 uppercase tracking-[0.15em] font-mono">Briefing Analytics Deep Dive</h2>
-        <div className="flex items-center gap-1.5"><span className="h-1.5 w-1.5 rounded-full bg-cyan-500 animate-pulse" /><span className="text-[9px] font-mono text-cyan-400/70">LIVE ANALYSIS</span></div>
-      </div>
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 mb-2">
-        <div className="rounded-lg bg-white/[0.02] border border-white/[0.04] p-2"><span className="text-[8px] font-mono text-slate-600 uppercase tracking-wider">Deployments</span><div className="text-[13px] font-bold font-mono text-cyan-400">{bs.totalDeployments}</div></div>
-        <div className="rounded-lg bg-white/[0.02] border border-white/[0.04] p-2"><span className="text-[8px] font-mono text-slate-600 uppercase tracking-wider">Emerging Risks</span><div className="text-[13px] font-bold font-mono text-red-400">{bs.emergingRisks}</div></div>
-        <div className="rounded-lg bg-white/[0.02] border border-white/[0.04] p-2"><span className="text-[8px] font-mono text-slate-600 uppercase tracking-wider">Degradations</span><div className="text-[13px] font-bold font-mono text-amber-400">{bs.predictedDegradations}</div></div>
-        <div className="rounded-lg bg-white/[0.02] border border-white/[0.04] p-2"><span className="text-[8px] font-mono text-slate-600 uppercase tracking-wider">Actions Rec</span><div className="text-[13px] font-bold font-mono text-emerald-400">{bs.recommendedActions}</div></div>
-      </div>
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 mb-2">
-        <div className="rounded-lg bg-white/[0.02] border border-white/[0.04] p-2"><span className="text-[8px] font-mono text-slate-600 uppercase tracking-wider">Services Scanned</span><div className="text-[11px] font-bold font-mono text-slate-300">{bs.servicesScanned}</div></div>
-        <div className="rounded-lg bg-white/[0.02] border border-white/[0.04] p-2"><span className="text-[8px] font-mono text-slate-600 uppercase tracking-wider">Data Points</span><div className="text-[11px] font-bold font-mono text-slate-300">{bs.dataPointsProcessed}</div></div>
-        <div className="rounded-lg bg-white/[0.02] border border-white/[0.04] p-2"><span className="text-[8px] font-mono text-slate-600 uppercase tracking-wider">ML Model</span><div className="text-[11px] font-bold font-mono text-slate-300">{bs.mlModelVersion}</div></div>
-        <div className="rounded-lg bg-white/[0.02] border border-white/[0.04] p-2"><span className="text-[8px] font-mono text-slate-600 uppercase tracking-wider">Last Training</span><div className="text-[11px] font-bold font-mono text-slate-300">{bs.lastTrainingCycle}</div></div>
-      </div>
-      <div className="flex items-center justify-between pt-2 border-t border-white/[0.04] text-[8px] font-mono text-slate-700">
-        <span>Detection Accuracy: <span className="text-emerald-400/80">{bs.riskDetectionAccuracy}%</span></span>
-        <span>MTTD: <span className="text-cyan-400/80">{bs.meanTimeToDetection}</span></span>
-        <span>MTTR: <span className="text-amber-400/80">{bs.meanTimeToResolution}</span></span>
+    <motion.div variants={item} className="relative overflow-hidden rounded-xl border border-white/[0.08] bg-gradient-to-br from-slate-900 via-slate-900/90 to-slate-900/50 p-2 sm:p-3 group hover:border-cyan-500/30 transition-all duration-500">
+      <div className="absolute inset-0 bg-[linear-gradient(rgba(6,182,212,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(6,182,212,0.03)_1px,transparent_1px)] bg-[size:32px_32px]" />
+      <div className="relative z-10">
+        <div className="flex items-center justify-between mb-2 flex-wrap gap-1.5">
+          <div className="flex items-center gap-2">
+            <div className="relative flex h-7 w-7 items-center justify-center rounded-lg border border-cyan-500/30 bg-cyan-500/10">
+              <svg className="h-3.5 w-3.5 text-cyan-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}><path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75m-3-7.036A11.959 11.959 0 013.598 6 11.99 11.99 0 003 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285z" /></svg>
+            </div>
+            <div><h2 className="text-xs font-bold text-cyan-400 uppercase tracking-[0.15em] font-mono">Daily AI Briefing</h2><p className="text-[7px] font-mono text-cyan-400/60">AI Generated Intelligence Report</p></div>
+          </div>
+          <div className="flex items-center gap-1.5">
+            <span className="relative flex h-2 w-2"><span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-cyan-500 opacity-75" /><span className="relative inline-flex h-2 w-2 rounded-full bg-cyan-500" /></span>
+            <span className="text-[8px] font-mono text-cyan-400/80 tracking-wider uppercase">Live</span>
+            <StatusBadge status="info" label="AI" />
+          </div>
+        </div>
+        <div className="mb-1.5"><span className="text-xs font-semibold text-slate-200">{db.greeting} {db.body}</span></div>
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-1.5 mb-2">
+          <div className="rounded-lg bg-white/[0.03] border border-white/[0.05] p-1.5"><span className="text-[7px] font-mono text-slate-600 uppercase tracking-wider">Analyzed</span><div className="text-xs font-bold font-mono text-cyan-400">{db.analyzed}</div></div>
+          <div className="rounded-lg bg-white/[0.03] border border-white/[0.05] p-1.5"><span className="text-[7px] font-mono text-slate-600 uppercase tracking-wider">Accuracy</span><div className="text-xs font-bold font-mono text-emerald-400">{db.accuracy}</div></div>
+          <div className="rounded-lg bg-white/[0.03] border border-white/[0.05] p-1.5"><span className="text-[7px] font-mono text-slate-600 uppercase tracking-wider">Savings</span><div className="text-xs font-bold font-mono text-amber-400">{db.savings}</div></div>
+          <div className="rounded-lg bg-white/[0.03] border border-white/[0.05] p-1.5"><span className="text-[7px] font-mono text-slate-600 uppercase tracking-wider">Confidence</span><div className="text-xs font-bold font-mono text-emerald-400">{db.confidence}%</div></div>
+        </div>
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-1.5">
+          <div className="rounded-lg border border-red-500/15 bg-red-500/[0.03] p-1.5">
+            <div className="flex items-center gap-1 mb-1"><span className="h-1.5 w-1.5 rounded-full bg-red-500 animate-ping" /><span className="text-[7px] font-mono text-red-400 uppercase tracking-wider font-semibold">Critical Risks</span></div>
+            <p className="text-[9px] text-slate-400 leading-tight">{recommendations[0]?.title || 'Scale Payment Worker Pool'}</p>
+          </div>
+          <div className="rounded-lg border border-amber-500/15 bg-amber-500/[0.03] p-1.5">
+            <div className="flex items-center gap-1 mb-1"><svg className="h-2.5 w-2.5 text-amber-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m9-.75a9 9 0 11-18 0 9 9 0 0118 0zm-9 3.75h.008v.008H12v-.008z" /></svg><span className="text-[7px] font-mono text-amber-400 uppercase tracking-wider font-semibold">Predicted Incidents</span></div>
+            <p className="text-[9px] text-slate-400 leading-tight">{risks[1]?.title || 'Redis memory predicts cache instability'}</p>
+          </div>
+          <div className="rounded-lg border border-cyan-500/15 bg-cyan-500/[0.03] p-1.5">
+            <div className="flex items-center gap-1 mb-1"><svg className="h-2.5 w-2.5 text-cyan-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75m-3-7.036A11.959 11.959 0 013.598 6 11.99 11.99 0 003 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285z" /></svg><span className="text-[7px] font-mono text-cyan-400 uppercase tracking-wider font-semibold">AI Recommendations</span></div>
+            <p className="text-[9px] text-slate-400 leading-tight">{recommendations[1]?.title || 'Increase Redis Memory Limit'}</p>
+          </div>
+          <div className="rounded-lg border border-emerald-500/15 bg-emerald-500/[0.03] p-1.5">
+            <div className="flex items-center gap-1 mb-1"><svg className="h-2.5 w-2.5 text-emerald-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M3.75 13.5l10.5-11.25L12 10.5h8.25L9.75 21.75 12 13.5H3.75z" /></svg><span className="text-[7px] font-mono text-emerald-400 uppercase tracking-wider font-semibold">Executive Actions</span></div>
+            <p className="text-[9px] text-slate-400 leading-tight">{recommendations[2]?.title || 'Hold Billing Deployments'}</p>
+          </div>
+        </div>
       </div>
     </motion.div>
   )
 }
 
 function ExecutiveInsightsExpanded() {
-  const insights = mockData.executiveInsights
-  const ais = mockData.aiConfidenceIndicators
+  const findings = mockData.executiveInsights
   return (
     <motion.div variants={item} className="rounded-xl border border-white/[0.06] bg-gradient-to-br from-slate-900 to-slate-900/50 p-3 sm:p-4">
-      <div className="flex items-center justify-between mb-2.5">
-        <h2 className="text-[11px] font-semibold text-slate-400 uppercase tracking-[0.15em] font-mono">Insight Confidence Breakdown</h2>
-        <div className="flex items-center gap-2"><StatusBadge status="info" label="CONFIDENCE SCORES" /></div>
+      <div className="flex items-center justify-between mb-3">
+        <div className="flex items-center gap-2">
+          <svg className="h-4 w-4 text-amber-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}><path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" /></svg>
+          <h2 className="text-sm font-semibold text-amber-400 uppercase tracking-[0.15em] font-mono">Executive Intelligence</h2>
+          <StatusBadge status="warning" label="AI" />
+        </div>
       </div>
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-        {insights.map((ins, idx) => {
-          const conf = ais.executiveInsights[idx] || 0
-          const barColor = conf >= 92 ? 'bg-emerald-500' : conf >= 88 ? 'bg-amber-500' : 'bg-orange-500'
-          const textColor = conf >= 92 ? 'text-emerald-400' : conf >= 88 ? 'text-amber-400' : 'text-orange-400'
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+        {findings.map((f, idx) => {
+          const sevCfg = { critical: { borderL: 'border-l-red-500', text: 'text-red-400', badge: 'critical', dot: 'bg-red-500' }, high: { borderL: 'border-l-orange-500', text: 'text-orange-400', badge: 'warning', dot: 'bg-orange-500' } }
+          const c = sevCfg[f.severity] || sevCfg.high
           return (
-            <motion.div key={`conf-${ins.id}`} variants={item} className="rounded-lg border border-white/[0.04] bg-white/[0.01] p-3">
-              <div className="flex items-center justify-between mb-1.5"><span className="text-[9px] font-mono text-slate-500">Finding #{ins.id}</span><span className={`text-[10px] font-bold font-mono ${textColor}`}>{conf}%</span></div>
-              <p className="text-[9px] text-slate-400 mb-2 truncate">{ins.title}</p>
-              <div className="h-1.5 rounded-full bg-slate-800 overflow-hidden">
-                <motion.div initial={{ width: 0 }} animate={{ width: `${conf}%` }} transition={{ duration: 1, delay: idx * 0.15 }} className={`h-full rounded-full ${barColor}`} />
+            <motion.div key={f.id} variants={item} className={`rounded-xl border border-white/[0.05] border-l-2 ${c.borderL} bg-white/[0.02] p-4 hover:bg-white/[0.04] transition-all group`}>
+              <div className="flex items-center gap-2 mb-2.5">
+                <span className={`h-2.5 w-2.5 rounded-full ${c.dot} ${f.severity === 'critical' ? 'animate-ping' : ''}`} />
+                <StatusBadge status={c.badge} label={f.severity === 'critical' ? 'Critical' : 'High'} />
               </div>
-              <div className="flex items-center gap-2 mt-1.5 text-[8px] font-mono">
-                <span className="text-slate-600">Impact:</span>
-                <span className={ins.severity === 'critical' ? 'text-red-400' : 'text-orange-400'}>{ins.impact}</span>
+              <p className="text-sm font-medium text-slate-200 mb-3 leading-relaxed">{f.title}</p>
+              <div className="space-y-2 mb-3">
+                <div className="flex items-center gap-2 text-[11px] font-mono text-slate-500"><svg className="h-3.5 w-3.5 text-red-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}><path strokeLinecap="round" strokeLinejoin="round" d="M2.25 18.75a60.07 60.07 0 0115.797 2.101c.727.198 1.453-.342 1.453-1.096V18.75M3.75 4.5v.75A.75.75 0 013 6h-.75m0 0v-.375c0-.621.504-1.125 1.125-1.125H20.25M2.25 6v9m18-10.5v.75c0 .414.336.75.75.75h.75m-1.5-1.5h.375c.621 0 1.125.504 1.125 1.125v9.75c0 .621-.504 1.125-1.125 1.125h-.375m1.5-1.5H21a.75.75 0 00-.75.75v.75m0 0H3.75m0 0h-.375a1.125 1.125 0 01-1.125-1.125V15m1.5 1.5v-.75A.75.75 0 003 15h-.75M15 10.5a3 3 0 11-6 0 3 3 0 016 0zm3 0h.008v.008H18V10.5zm-12 0h.008v.008H6V10.5z" /></svg>Impact: <span className={c.text}>{f.impact}</span></div>
+                <div className="flex items-center gap-2 text-[11px] font-mono text-slate-500"><svg className="h-3.5 w-3.5 text-cyan-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}><path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75m-3-7.036A11.959 11.959 0 013.598 6 11.99 11.99 0 003 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285z" /></svg>Confidence: <span className="text-emerald-400">{f.confidence}</span></div>
+                <div className="flex items-center gap-2 text-[11px] font-mono text-slate-500"><svg className="h-3.5 w-3.5 text-amber-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}><path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m9-.75a9 9 0 11-18 0 9 9 0 0118 0zm-9 3.75h.008v.008H12v-.008z" /></svg>Action: <span className="text-slate-300">{f.action}</span></div>
               </div>
             </motion.div>
           )
         })}
       </div>
-      <div className="flex items-center justify-between mt-2 pt-2 border-t border-white/[0.04] text-[8px] font-mono text-slate-700">
-        <span>Average AI Confidence: <span className="text-cyan-400/80">91.7%</span></span>
-        <span>High Confidence Findings: <span className="text-emerald-400/80">2 of 3</span></span>
-        <span>Recommendation Health: <span className="text-amber-400/80">Action Required</span></span>
+    </motion.div>
+  )
+}
+
+function BusinessImpactCenterExpanded() {
+  const items = mockData.businessImpactCenter
+  return (
+    <motion.div variants={item} className="rounded-xl border border-white/[0.06] bg-gradient-to-br from-slate-900 to-slate-900/50 p-3 sm:p-4">
+      <div className="flex items-center justify-between mb-3">
+        <div className="flex items-center gap-2">
+          <svg className="h-4 w-4 text-amber-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}><path strokeLinecap="round" strokeLinejoin="round" d="M3.75 13.5l10.5-11.25L12 10.5h8.25L9.75 21.75 12 13.5H3.75z" /></svg>
+          <h2 className="text-sm font-semibold text-amber-400 uppercase tracking-[0.15em] font-mono">Business Impact Center</h2>
+          <StatusBadge status="warning" label="Risk" />
+        </div>
+      </div>
+      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3">
+        {items.map((biz, idx) => {
+          const val = useCounter(biz.value, idx * 60, 1500, biz.value >= 1000)
+          const displayVal = typeof val === 'string' ? val : val.toLocaleString()
+          return (
+            <motion.div key={biz.label} variants={item} className="rounded-xl border border-white/[0.04] bg-white/[0.02] p-3 hover:bg-white/[0.04] transition-all group">
+              <div className="flex items-center gap-1.5 mb-1.5"><span className={`h-2 w-2 rounded-full ${biz.dotColor}`} /><span className="text-[9px] font-mono text-slate-600 uppercase tracking-wider">{biz.label}</span></div>
+              <div className={`text-lg sm:text-xl font-bold font-mono ${biz.color} truncate`}>{biz.prefix}{displayVal}{biz.suffix}</div>
+              <div className="flex items-center gap-1.5 mt-0.5"><span className={`text-[10px] font-mono ${biz.trend === 'up' ? 'text-red-400' : 'text-emerald-400'}`}>{biz.trend === 'up' ? '\u2191' : '\u2193'} {biz.pct}%</span></div>
+              <p className="text-[8px] text-slate-600 mt-1">{biz.description}</p>
+            </motion.div>
+          )
+        })}
       </div>
     </motion.div>
   )
 }
 
-function RiskAnalyticsDashboard() {
-  const trends = mockData.riskTrends
-  const costs = mockData.costAnalysis
-  const summary = mockData.executiveSummaryExpanded
-  const deps = mockData.dependencyGraph
-  return (
-    <motion.div variants={item} className="rounded-xl border border-white/[0.06] bg-gradient-to-br from-slate-900 to-slate-900/50 p-3 sm:p-4">
-      <div className="flex items-center justify-between mb-2.5">
-        <h2 className="text-[11px] font-semibold text-slate-400 uppercase tracking-[0.15em] font-mono">Risk Analytics & Cost Intelligence</h2>
-        <div className="flex items-center gap-2"><StatusBadge status="warning" label="QUANTITATIVE ANALYSIS" /><span className="h-1.5 w-1.5 rounded-full bg-amber-500 animate-pulse" /></div>
-      </div>
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 mb-3">
-        <div className="rounded-lg border border-red-500/20 bg-red-500/5 p-3">
-          <span className="text-[8px] font-mono text-slate-600 uppercase tracking-wider">Current Risk</span>
-          <div className="flex items-baseline gap-1"><span className="text-lg font-bold font-mono text-red-400">{trends.weekOverWeek.current}</span><span className="text-[9px] font-mono text-slate-600">/100</span></div>
-          <span className="text-[8px] font-mono text-red-400/80">{trends.weekOverWeek.change} WoW</span>
-        </div>
-        <div className="rounded-lg border border-amber-500/20 bg-amber-500/5 p-3">
-          <span className="text-[8px] font-mono text-slate-600 uppercase tracking-wider">Projected Risk</span>
-          <div className="flex items-baseline gap-1"><span className="text-lg font-bold font-mono text-amber-400">{trends.projectedNextWeek}</span><span className="text-[9px] font-mono text-slate-600">next week</span></div>
-          <span className="text-[8px] font-mono text-amber-400/80">{trends.projectedNextMonth} next month</span>
-        </div>
-        <div className="rounded-lg border border-emerald-500/20 bg-emerald-500/5 p-3">
-          <span className="text-[8px] font-mono text-slate-600 uppercase tracking-wider">Annual Risk Exposure</span>
-          <div className="text-lg font-bold font-mono text-emerald-400">$1.62M</div>
-          <span className="text-[8px] font-mono text-emerald-400/80">{costs.riskMitigationSavings}K savings identified</span>
-        </div>
-        <div className="rounded-lg border border-cyan-500/20 bg-cyan-500/5 p-3">
-          <span className="text-[8px] font-mono text-slate-600 uppercase tracking-wider">ROI on Actions</span>
-          <div className="text-lg font-bold font-mono text-cyan-400">{costs.roifromActions}</div>
-          <span className="text-[8px] font-mono text-cyan-400/80">Break-even: {costs.breakEvenHorizon}</span>
-        </div>
-      </div>
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 mb-3">
-        <div className="rounded-lg bg-white/[0.02] border border-white/[0.04] p-2"><span className="text-[8px] font-mono text-slate-600 uppercase tracking-wider">Revenue Protected</span><div className="text-[11px] font-bold font-mono text-emerald-400">{summary.revenueProtected}</div></div>
-        <div className="rounded-lg bg-white/[0.02] border border-white/[0.04] p-2"><span className="text-[8px] font-mono text-slate-600 uppercase tracking-wider">Incidents Prevented</span><div className="text-[11px] font-bold font-mono text-cyan-400">{summary.incidentsPrevented}</div></div>
-        <div className="rounded-lg bg-white/[0.02] border border-white/[0.04] p-2"><span className="text-[8px] font-mono text-slate-600 uppercase tracking-wider">Auto Actions</span><div className="text-[11px] font-bold font-mono text-emerald-400">{summary.automatedActions}</div></div>
-        <div className="rounded-lg bg-white/[0.02] border border-white/[0.04] p-2"><span className="text-[8px] font-mono text-slate-600 uppercase tracking-wider">AI Accuracy</span><div className="text-[11px] font-bold font-mono text-amber-400">{summary.aiAccuracy}</div></div>
-      </div>
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
-        <div className="rounded-lg bg-white/[0.02] border border-white/[0.04] p-2">
-          <span className="text-[8px] font-mono text-slate-600 uppercase tracking-wider">Critical Paths</span>
-          <div className="text-[11px] font-bold font-mono text-red-400">{deps.criticalPaths}</div>
-          <span className="text-[7px] font-mono text-slate-700">Single points of failure: {deps.singlePointsOfFailure}</span>
-        </div>
-        <div className="rounded-lg bg-white/[0.02] border border-white/[0.04] p-2">
-          <span className="text-[8px] font-mono text-slate-600 uppercase tracking-wider">Dependencies</span>
-          <div className="text-[11px] font-bold font-mono text-cyan-400">{deps.upstreamDependencies} up / {deps.downstreamDependents} down</div>
-          <span className="text-[7px] font-mono text-slate-700">Redundancy coverage: {deps.redundancyCoverage}</span>
-        </div>
-        <div className="rounded-lg bg-white/[0.02] border border-white/[0.04] p-2">
-          <span className="text-[8px] font-mono text-slate-600 uppercase tracking-wider">Fault Tolerance</span>
-          <div className="text-[11px] font-bold font-mono text-amber-400">{deps.faultToleranceScore}</div>
-          <span className="text-[7px] font-mono text-slate-700">Target: 85/100</span>
-        </div>
-      </div>
-    </motion.div>
-  )
-}
 function PredictionWallExpanded() {
-  const preds = mockData.aiPredictions
-  const ais = mockData.aiConfidenceIndicators
+  const predictions = mockData.aiPredictions
   return (
     <motion.div variants={item} className="rounded-xl border border-white/[0.06] bg-gradient-to-br from-slate-900 to-slate-900/50 p-3 sm:p-4">
-      <div className="flex items-center justify-between mb-2.5">
-        <h2 className="text-[11px] font-semibold text-slate-400 uppercase tracking-[0.15em] font-mono">Prediction Model Performance</h2>
-        <div className="flex items-center gap-2"><StatusBadge status="info" label="MODEL HEALTH" /></div>
+      <div className="flex items-center justify-between mb-3">
+        <div className="flex items-center gap-2">
+          <svg className="h-4 w-4 text-cyan-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}><path strokeLinecap="round" strokeLinejoin="round" d="M3.75 3v11.25A2.25 2.25 0 006 16.5h2.25M3.75 3h-1.5m1.5 0h16.5m0 0h1.5m-1.5 0v11.25A2.25 2.25 0 0118 16.5h-2.25m-7.5 0h7.5m-7.5 0l-1 3m8.5-3l1 3m0 0l.5 1.5m-.5-1.5h-9.5m0 0l-.5 1.5m.75-9l3-3 2.148 2.148A12.061 12.061 0 0116.5 7.605" /></svg>
+          <h2 className="text-sm font-semibold text-cyan-400 uppercase tracking-[0.15em] font-mono">AI Prediction Wall</h2>
+          <StatusBadge status="info" label="Forecast" />
+        </div>
       </div>
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-        {preds.map((p, idx) => {
-          const conf = ais.predictions[idx] || 85
-          const barColor = conf >= 90 ? 'bg-emerald-500' : conf >= 85 ? 'bg-amber-500' : 'bg-red-500'
+      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
+        {predictions.map((p, idx) => {
+          const count = useCounter(parseInt(p.value), idx * 80, 1500)
           return (
-            <motion.div key={`perf-${p.title}`} variants={item} className="rounded-lg border border-white/[0.04] bg-white/[0.01] p-3">
-              <div className="flex items-center justify-between mb-1"><span className="text-[8px] font-mono text-slate-600 uppercase tracking-wider">{p.title}</span><span className={`text-[9px] font-bold font-mono ${p.textColor}`}>{conf}%</span></div>
-              <div className="h-1.5 rounded-full bg-slate-800 overflow-hidden mb-1.5">
-                <motion.div initial={{ width: 0 }} animate={{ width: `${conf}%` }} transition={{ duration: 0.8, delay: idx * 0.1 }} className={`h-full rounded-full ${barColor}`} />
+            <motion.div key={p.title} variants={item} className="rounded-xl border border-white/[0.04] bg-white/[0.02] p-4 hover:bg-white/[0.04] transition-all group">
+              <div className="flex items-center justify-between mb-2">
+                <div className="flex items-center gap-1.5"><span className="h-2 w-2 rounded-full" style={{ backgroundColor: p.color }} /><span className="text-[9px] font-mono text-slate-500 uppercase tracking-wider">{p.title}</span></div>
+                <MiniSparkline data={p.sparkData} color={p.color} width={56} height={14} />
               </div>
-              <div className="flex items-center gap-1 text-[8px] font-mono text-slate-600">
-                <span>Value: {p.value}{p.unit}</span>
-                <span className="text-slate-700">|</span>
-                <span className={p.trend === 'declining' ? 'text-red-400/70' : 'text-slate-600'}>{p.trend}</span>
+              <div className="flex items-baseline gap-1"><span className={`text-2xl font-bold font-mono ${p.textColor}`}>{count}{p.unit}</span></div>
+              <p className="text-[9px] text-slate-600 mt-1">{p.description}</p>
+              <div className="flex items-center gap-2 mt-2">
+                <span className="h-1 w-1 rounded-full" style={{ backgroundColor: p.trend === 'declining' ? '#ef4444' : p.trend === 'stable' ? '#22d3ee' : '#34d399' }} />
+                <span className="text-[8px] font-mono text-slate-700">{String(p.trend ?? '').charAt(0).toUpperCase() + String(p.trend ?? '').slice(1)}</span>
               </div>
+              <div className="flex flex-wrap gap-1 mt-2 pt-2 border-t border-white/[0.03]">{p.factors.map((f, fi) => (<span key={fi} className="rounded-md bg-white/[0.02] border border-white/[0.03] px-1.5 py-0.5 text-[7px] font-mono text-slate-700">{f}</span>))}</div>
             </motion.div>
           )
         })}
       </div>
-      <div className="flex items-center justify-between mt-2 pt-2 border-t border-white/[0.04] text-[8px] font-mono text-slate-700">
-        <span>Model Drift: <span className="text-emerald-400/80">None Detected</span></span>
-        <span>Data Quality: <span className="text-emerald-400/80">98.3%</span></span>
-        <span>Feature Drift: <span className="text-amber-400/80">Monitoring Active</span></span>
-        <span>Retrain Needed: <span className="text-emerald-400/80">14 days</span></span>
+      <div className="mt-3 pt-3 border-t border-white/[0.04] flex items-center justify-between text-[10px] font-mono">
+        <span className="text-slate-500">Risk Direction: <span className="text-red-400">Increasing</span></span>
+        <span className="text-amber-400/80">Recommend proactive mitigation in 3 service areas</span>
+        <span className="text-slate-700">AI Confidence: 91%</span>
       </div>
     </motion.div>
   )
 }
-
-function RiskLeaderboardExpanded() {
-  const risks = mockData.topRisks
-  const ais = mockData.aiConfidenceIndicators
+function TopRisksLeaderboardExpanded() {
+  const risks = mockData.topRisksLeaderboard
+  const riskColors = { critical: 'text-red-400 border-red-500/30', high: 'text-orange-400 border-orange-500/30', medium: 'text-amber-400 border-amber-500/30', low: 'text-emerald-400 border-emerald-500/30' }
   return (
     <motion.div variants={item} className="rounded-xl border border-white/[0.06] bg-gradient-to-br from-slate-900 to-slate-900/50 p-3 sm:p-4">
-      <div className="flex items-center justify-between mb-2.5">
-        <h2 className="text-[11px] font-semibold text-slate-400 uppercase tracking-[0.15em] font-mono">Risk Score Confidence Intervals</h2>
-        <div className="flex items-center gap-2"><StatusBadge status="info" label="STATISTICAL ANALYSIS" /></div>
+      <div className="flex items-center justify-between mb-3">
+        <div className="flex items-center gap-2">
+          <svg className="h-4 w-4 text-red-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}><path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" /></svg>
+          <h2 className="text-sm font-semibold text-red-400 uppercase tracking-[0.15em] font-mono">Top Risks Leaderboard</h2>
+          <StatusBadge status="critical" label="Priority" />
+        </div>
       </div>
       <div className="space-y-2">
         {risks.map((r, idx) => {
-          const conf = ais.riskScores[idx] || 80
-          const lowBound = Math.max(0, r.riskScore - (100 - conf) * 0.5)
-          const highBound = Math.min(100, r.riskScore + (100 - conf) * 0.5)
+          const rc = riskColors[r.severity] || riskColors.medium
           return (
-            <motion.div key={`ci-${r.rank}`} initial={{ opacity: 0, x: -8 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: idx * 0.05 }} className="flex items-center gap-3">
-              <span className="text-[9px] font-mono text-slate-500 w-6 shrink-0">#{r.rank}</span>
-              <span className="text-[9px] font-mono text-slate-300 w-28 shrink-0 truncate">{r.service}</span>
-              <div className="flex-1 relative h-3">
-                <div className="absolute inset-0 rounded-full bg-slate-800" />
-                <motion.div initial={{ width: 0 }} animate={{ width: `${r.riskScore}%` }} transition={{ duration: 0.8, delay: idx * 0.05 }} className={`absolute left-0 top-0 h-full rounded-full ${r.riskScore >= 80 ? 'bg-red-500/80' : r.riskScore >= 60 ? 'bg-amber-500/80' : r.riskScore >= 40 ? 'bg-orange-500/80' : 'bg-emerald-500/80'}`} style={{ width: `${r.riskScore}%` }} />
-                <div className="absolute top-0 h-full rounded-full border border-dashed border-white/20" style={{ left: `${lowBound}%`, width: `${highBound - lowBound}%` }} />
+            <motion.div key={r.id} variants={item} className={`rounded-xl border ${rc} bg-white/[0.02] p-3 hover:bg-white/[0.04] transition-all`}>
+              <div className="flex items-start justify-between gap-3">
+                <div className="flex items-center gap-2 min-w-0">
+                  <span className={`w-6 h-6 rounded-full ${r.severity === 'critical' ? 'bg-red-500/20 text-red-400' : r.severity === 'high' ? 'bg-orange-500/20 text-orange-400' : r.severity === 'medium' ? 'bg-amber-500/20 text-amber-400' : 'bg-emerald-500/20 text-emerald-400'} flex items-center justify-center text-[10px] font-mono font-bold shrink-0`}>{idx + 1}</span>
+                  <div className="min-w-0"><p className="text-sm font-medium text-slate-200 truncate">{r.title}</p><div className="flex items-center gap-2"><span className="text-[10px] font-mono text-slate-600">{r.service}</span><span className={`text-[10px] font-mono ${r.severity === 'critical' ? 'text-red-400' : r.severity === 'high' ? 'text-orange-400' : r.severity === 'medium' ? 'text-amber-400' : 'text-emerald-400'}`}>{String(r.severity ?? '').toUpperCase()}</span></div></div>
+                </div>
+                <div className="text-right shrink-0"><span className="text-lg font-bold font-mono text-red-400">{r.score}</span><span className="text-[9px] text-slate-700 block">Risk Score</span></div>
               </div>
-              <span className={`text-[9px] font-mono font-bold w-8 text-right ${r.riskScore >= 80 ? 'text-red-400' : r.riskScore >= 60 ? 'text-amber-400' : r.riskScore >= 40 ? 'text-orange-400' : 'text-emerald-400'}`}>{r.riskScore}</span>
-              <span className="text-[7px] font-mono text-slate-700 w-16 text-right">CI: {Math.round(lowBound)}-{Math.round(highBound)}</span>
+              <div className="flex items-center gap-3 mt-2"><span className="text-[9px] font-mono text-slate-600">{r.impact}</span><span className="text-slate-800">|</span><span className="text-[9px] font-mono text-cyan-400/60">P{idx + 1}</span></div>
+              <div className="w-full h-1.5 bg-white/[0.03] rounded-full mt-2 overflow-hidden"><motion.div initial={{ width: 0 }} whileInView={{ width: `${r.score}%` }} viewport={{ once: true }} transition={{ duration: 1, delay: idx * 0.1 }} className="h-full rounded-full bg-gradient-to-r from-red-600 to-red-400" style={{ width: `${r.score}%` }} /></div>
             </motion.div>
           )
         })}
-      </div>
-      <div className="flex items-center justify-between mt-2 pt-2 border-t border-white/[0.04] text-[8px] font-mono text-slate-700">
-        <span>Average Confidence: <span className="text-cyan-400/80">86.8%</span></span>
-        <span>P95 Risk Score: <span className="text-red-400/80">89.4</span></span>
-        <span>Risk Distribution: <span className="text-amber-400/80">Skewed High</span></span>
       </div>
     </motion.div>
   )
 }
 
-function RootCauseExpanded() {
+function RootCauseSnapshotsExpanded() {
   const causes = mockData.rootCauses
   return (
     <motion.div variants={item} className="rounded-xl border border-white/[0.06] bg-gradient-to-br from-slate-900 to-slate-900/50 p-3 sm:p-4">
-      <div className="flex items-center justify-between mb-2.5">
-        <h2 className="text-[11px] font-semibold text-slate-400 uppercase tracking-[0.15em] font-mono">Investigation Timeline & Blast Radius</h2>
-        <div className="flex items-center gap-2"><StatusBadge status="info" label="IMPACT ANALYSIS" /></div>
+      <div className="flex items-center justify-between mb-3">
+        <div className="flex items-center gap-2">
+          <svg className="h-4 w-4 text-cyan-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}><path strokeLinecap="round" strokeLinejoin="round" d="M20.25 8.511c.884.284 1.5 1.128 1.5 2.097v4.286c0 1.136-.847 2.1-1.98 2.193-.34.027-.68.052-1.02.072v3.091l-3-3c-1.354 0-2.694-.055-4.02-.163a2.115 2.115 0 01-.825-.242m9.345-8.334a2.126 2.126 0 00-.476-.095 48.64 48.64 0 00-8.048 0c-1.131.094-1.976 1.057-1.976 2.192v4.286c0 .837.46 1.58 1.155 1.951m9.345-8.334V6.637c0-1.621-1.152-3.026-2.76-3.235A48.455 48.455 0 0011.25 3c-2.115 0-4.198.137-6.24.402-1.608.209-2.76 1.614-2.76 3.235v6.226c0 1.621 1.152 3.026 2.76 3.235.577.075 1.157.14 1.74.194V21l4.155-4.155" /></svg>
+          <h2 className="text-sm font-semibold text-cyan-400 uppercase tracking-[0.15em] font-mono">Root Cause Snapshots</h2>
+          <StatusBadge status="warning" label="Analysis" />
+        </div>
       </div>
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-        {causes.map((rc, idx) => {
-          const blastRadius = rc.severity === 'critical' ? '5 services' : '3 services'
-          const estimatedFixTime = rc.severity === 'critical' ? '4-6 hours' : '2-3 hours'
-          const affectedEndpoints = rc.severity === 'critical' ? '12 endpoints' : '7 endpoints'
-          return (
-            <motion.div key={`invest-${rc.service}`} variants={item} className="rounded-lg border border-white/[0.04] bg-white/[0.01] p-3">
-              <div className="flex items-center gap-1.5 mb-2">
-                <span className={`h-2 w-2 rounded-full ${rc.severity === 'critical' ? 'bg-red-500' : 'bg-amber-500'}`} />
-                <span className="text-[9px] font-mono text-slate-300 font-medium">{rc.service}</span>
-              </div>
-              <div className="space-y-1.5 mb-2">
-                <div className="flex items-center justify-between text-[8px]"><span className="text-slate-600">Blast Radius:</span><span className="text-slate-400 font-mono">{blastRadius}</span></div>
-                <div className="flex items-center justify-between text-[8px]"><span className="text-slate-600">Est. Fix Time:</span><span className="text-amber-400/70 font-mono">{estimatedFixTime}</span></div>
-                <div className="flex items-center justify-between text-[8px]"><span className="text-slate-600">Endpoints:</span><span className="text-slate-400 font-mono">{affectedEndpoints}</span></div>
-                <div className="flex items-center justify-between text-[8px]"><span className="text-slate-600">Confidence:</span><span className="text-emerald-400/70 font-mono">{rc.confidence}%</span></div>
-              </div>
-              <div className="rounded-md bg-white/[0.02] border border-white/[0.04] p-1.5">
-                <span className="text-[7px] font-mono text-slate-600">Root Cause: {rc.cause}</span>
-              </div>
-            </motion.div>
-          )
-        })}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+        {causes.map((rc, idx) => (
+          <motion.div key={rc.id} variants={item} className="rounded-xl border border-white/[0.04] bg-white/[0.02] p-4 hover:bg-white/[0.04] transition-all group">
+            <div className="flex items-center gap-1.5 mb-2">
+              <span className="h-2 w-2 rounded-full bg-cyan-400" />
+              <span className="text-[9px] font-mono text-slate-600 uppercase tracking-wider">{rc.service}</span>
+              <span className="text-[9px] font-mono text-slate-700 ml-auto">{rc.duration}</span>
+            </div>
+            <p className="text-sm font-medium text-slate-200 mb-3">{rc.cause}</p>
+            <div className="flex items-center justify-between"><span className="text-[10px] font-mono text-slate-700">Confidence: {rc.confidence}</span><span className="text-[10px] font-mono text-red-400">{rc.impact}</span></div>
+            <div className="flex items-center gap-2 mt-2"><MiniSparkline data={rc.sparkData} color="#22d3ee" width={64} height={14} /></div>
+          </motion.div>
+        ))}
       </div>
     </motion.div>
   )
 }
 
-function RecommendationsExpanded() {
-  const recs = mockData.executiveRecommendations
-  const categories = [recs.immediate, recs.nextSprint, recs.strategic]
-  const riskReduction = ['$202K', '$120K', '$400K']
-  const effortLevels = ['Low', 'Medium', 'High']
-  const timeframes = ['12 hours', '1 week', '30 days']
-  const owners = ['SRE Team', 'Platform Team', 'Architecture Team']
-  const headers = ['text-emerald-400', 'text-cyan-400', 'text-violet-400']
+function ExecutiveRecommendationsExpanded() {
+  const recommendations = mockData.recommendations
   return (
     <motion.div variants={item} className="rounded-xl border border-white/[0.06] bg-gradient-to-br from-slate-900 to-slate-900/50 p-3 sm:p-4">
-      <div className="flex items-center justify-between mb-2.5">
-        <h2 className="text-[11px] font-semibold text-slate-400 uppercase tracking-[0.15em] font-mono">Action Plan Execution Tracker</h2>
-        <div className="flex items-center gap-2"><StatusBadge status="info" label="EXECUTION STATUS" /></div>
+      <div className="flex items-center justify-between mb-3">
+        <div className="flex items-center gap-2">
+          <svg className="h-4 w-4 text-cyan-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}><path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75m-3-7.036A11.959 11.959 0 013.598 6 11.99 11.99 0 003 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285z" /></svg>
+          <h2 className="text-sm font-semibold text-cyan-400 uppercase tracking-[0.15em] font-mono">Executive Recommendations</h2>
+          <StatusBadge status="info" label="AI-Driven" />
+        </div>
       </div>
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-        {categories.map((cat, idx) => (
-          <motion.div key={`track-${cat.title}`} variants={item} className="rounded-lg border border-white/[0.04] bg-white/[0.01] p-3">
-            <div className="flex items-center gap-1.5 mb-2">
-              <span className={`h-2 w-2 rounded-full ${headers[idx].replace('text-', 'bg-').replace('400', '500')}`} />
-              <span className={`text-[8px] font-mono font-medium ${headers[idx]}`}>{cat.title}</span>
+      <div className="space-y-3">
+        {recommendations.map((rec, idx) => (
+          <motion.div key={rec.id} variants={item} className="rounded-xl border-l-2 border-l-cyan-500 border border-white/[0.04] bg-white/[0.02] p-4 flex items-start gap-3 hover:bg-white/[0.04] transition-all">
+            <div className={`rounded-full p-2 shrink-0 ${rec.priority === 'critical' ? 'bg-red-500/20' : rec.priority === 'high' ? 'bg-orange-500/20' : 'bg-cyan-500/20'}`}>
+              <span className={`text-sm ${rec.priority === 'critical' ? 'text-red-400' : rec.priority === 'high' ? 'text-orange-400' : 'text-cyan-400'}`}>{rec.priority === 'critical' ? '!' : rec.priority === 'high' ? '\u25B3' : '\u2713'}</span>
             </div>
-            <div className="space-y-1 mb-2">
-              {cat.items.map((item, ii) => (
-                <div key={ii} className="flex items-start gap-1.5">
-                  <span className="h-1 w-1 rounded-full bg-slate-600 mt-1 shrink-0" />
-                  <span className="text-[8px] text-slate-400">{item}</span>
-                </div>
-              ))}
-            </div>
-            <div className="border-t border-white/[0.04] pt-1.5 mt-1.5 space-y-0.5 text-[7px] font-mono">
-              <div className="flex justify-between"><span className="text-slate-600">Effort:</span><span className="text-slate-400">{effortLevels[idx]}</span></div>
-              <div className="flex justify-between"><span className="text-slate-600">Timeline:</span><span className="text-amber-400/70">{timeframes[idx]}</span></div>
-              <div className="flex justify-between"><span className="text-slate-600">Owner:</span><span className="text-cyan-400/70">{owners[idx]}</span></div>
-              <div className="flex justify-between"><span className="text-slate-600">Risk Reduction:</span><span className="text-emerald-400/70">{riskReduction[idx]}</span></div>
+            <div className="min-w-0 flex-1">
+              <div className="flex items-center gap-2 mb-1"><span className={`text-[11px] font-bold uppercase tracking-wider ${rec.priority === 'critical' ? 'text-red-400' : rec.priority === 'high' ? 'text-orange-400' : 'text-cyan-400'}`}>{rec.title}</span><span className="text-[9px] font-mono text-slate-700">{String(rec.priority ?? '').toUpperCase()}</span></div>
+              <p className="text-sm text-slate-400 mb-2">{rec.description}</p>
+              <div className="flex items-center gap-3"><span className="text-[10px] font-mono text-slate-700">Confidence: {rec.confidence}</span><span className="text-[10px] font-mono text-emerald-400/80">Impact: {rec.impact}</span></div>
             </div>
           </motion.div>
         ))}
@@ -1852,94 +1713,90 @@ function RecommendationsExpanded() {
     </motion.div>
   )
 }
-function TopologyExpanded() {
-  const topo = mockData.systemTopology
-  const { nodes, edges } = topo
-  const healthy = nodes.filter(n => n.status === 'healthy').length
-  const degraded = nodes.filter(n => n.status === 'degraded').length
-  const critical = nodes.filter(n => n.status === 'critical').length
-  const criticalEdges = edges.filter(e => e.critical).length
+
+function LiveSystemTopologyExpanded() {
+  const nodes = mockData.systemTopology || []
   return (
     <motion.div variants={item} className="rounded-xl border border-white/[0.06] bg-gradient-to-br from-slate-900 to-slate-900/50 p-3 sm:p-4">
-      <div className="flex items-center justify-between mb-2.5">
-        <h2 className="text-[11px] font-semibold text-slate-400 uppercase tracking-[0.15em] font-mono">Topology Health Metrics</h2>
-        <div className="flex items-center gap-2"><StatusBadge status="info" label="NETWORK ANALYSIS" /></div>
-      </div>
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 mb-2">
-        <div className="rounded-lg bg-emerald-500/5 border border-emerald-500/20 p-2 text-center">
-          <span className="text-[8px] font-mono text-emerald-400/70 uppercase tracking-wider">Healthy</span>
-          <div className="text-lg font-bold font-mono text-emerald-400">{healthy}</div>
-          <span className="text-[7px] font-mono text-slate-600">nodes</span>
-        </div>
-        <div className="rounded-lg bg-amber-500/5 border border-amber-500/20 p-2 text-center">
-          <span className="text-[8px] font-mono text-amber-400/70 uppercase tracking-wider">Degraded</span>
-          <div className="text-lg font-bold font-mono text-amber-400">{degraded}</div>
-          <span className="text-[7px] font-mono text-slate-600">nodes</span>
-        </div>
-        <div className="rounded-lg bg-red-500/5 border border-red-500/20 p-2 text-center">
-          <span className="text-[8px] font-mono text-red-400/70 uppercase tracking-wider">Critical</span>
-          <div className="text-lg font-bold font-mono text-red-400">0</div>
-          <span className="text-[7px] font-mono text-slate-600">nodes</span>
-        </div>
-        <div className="rounded-lg bg-cyan-500/5 border border-cyan-500/20 p-2 text-center">
-          <span className="text-[8px] font-mono text-cyan-400/70 uppercase tracking-wider">Critical Paths</span>
-          <div className="text-lg font-bold font-mono text-cyan-400">{criticalEdges}</div>
-          <span className="text-[7px] font-mono text-slate-600">connections</span>
+      <div className="flex items-center justify-between mb-3">
+        <div className="flex items-center gap-2">
+          <svg className="h-4 w-4 text-emerald-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}><path strokeLinecap="round" strokeLinejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" /></svg>
+          <h2 className="text-sm font-semibold text-emerald-400 uppercase tracking-[0.15em] font-mono">Live System Topology</h2>
+          <StatusBadge status="success" label="Realtime" />
         </div>
       </div>
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-        <div className="rounded-lg bg-white/[0.02] border border-white/[0.04] p-2">
-          <span className="text-[8px] font-mono text-slate-600 uppercase tracking-wider">Traffic Flow</span>
-          <div className="flex items-center gap-2 mt-1">
-            <div className="flex-1 h-1.5 rounded-full bg-slate-800 overflow-hidden">
-              <motion.div initial={{ width: 0 }} animate={{ width: '100%' }} transition={{ duration: 2 }} className="h-full rounded-full bg-gradient-to-r from-emerald-500 via-amber-500 to-red-500" />
-            </div>
-          </div>
-          <div className="flex justify-between text-[7px] font-mono text-slate-700 mt-0.5"><span>Normal: 72%</span><span>Degraded: 22%</span><span>Critical: 6%</span></div>
-        </div>
-        <div className="rounded-lg bg-white/[0.02] border border-white/[0.04] p-2">
-          <span className="text-[8px] font-mono text-slate-600 uppercase tracking-wider">Redundancy Status</span>
-          <div className="flex items-center gap-2 mt-1">
-            <div className="flex-1 h-1.5 rounded-full bg-slate-800 overflow-hidden">
-              <motion.div initial={{ width: 0 }} animate={{ width: '84%' }} transition={{ duration: 1.5 }} className="h-full rounded-full bg-emerald-500" />
-            </div>
-            <span className="text-[9px] font-mono text-emerald-400">84%</span>
-          </div>
-          <span className="text-[7px] font-mono text-slate-700">Target: 95% — 3 nodes need redundancy</span>
-        </div>
+      <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8 gap-2">
+        {nodes.map((node, idx) => {
+          if (!node) return null
+          const dotColor = node.status === 'healthy' ? 'bg-emerald-500' : node.status === 'degraded' ? 'bg-amber-500' : 'bg-red-500'
+          const borderColor = node.status === 'healthy' ? 'border-emerald-500/20' : node.status === 'degraded' ? 'border-amber-500/20' : 'border-red-500/20'
+          return (
+            <motion.div key={node.name || idx} variants={item} className={`rounded-lg border ${borderColor} bg-white/[0.02] p-2 hover:bg-white/[0.04] transition-all cursor-pointer`}>
+              <div className="flex items-center gap-1 mb-1"><span className={`h-2 w-2 rounded-full ${dotColor} ${node.status === 'healthy' ? 'animate-pulse' : ''}`} /><span className="text-[8px] font-mono text-slate-600 truncate">{node.service || '-'}</span></div>
+              <p className="text-[10px] text-slate-200 font-medium truncate">{node.name || '-'}</p>
+              <p className="text-[8px] font-mono text-slate-700 truncate">{node.details || ''}</p>
+              <MiniGauge value={node.cpu ?? 0} suffix="%" danger={(node.cpu ?? 0) > 85} warn={(node.cpu ?? 0) > 60} width={40} height={16} fontSize={5} strokeWidth={2} />
+            </motion.div>
+          )
+        })}
+      </div>
+      <div className="flex items-center justify-between mt-3 pt-3 border-t border-white/[0.04] text-[10px] font-mono text-slate-700">
+        <span>Total: {nodes.length}</span>
+        <span className="flex items-center gap-1"><span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />{nodes.filter(n => n && n.status === 'healthy').length} Healthy</span>
+        <span className="flex items-center gap-1"><span className="h-1.5 w-1.5 rounded-full bg-amber-500" />{nodes.filter(n => n && n.status === 'degraded').length} Degraded</span>
+        <span className="flex items-center gap-1"><span className="h-1.5 w-1.5 rounded-full bg-red-500" />{nodes.filter(n => n && n.status === 'critical').length} Critical</span>
       </div>
     </motion.div>
   )
 }
 
-function ForecastExpanded() {
-  const forecastData = mockData.deploymentForecast
+function DeploymentForecastExpanded() {
+  const forecast = mockData.deploymentForecast || []
   return (
     <motion.div variants={item} className="rounded-xl border border-white/[0.06] bg-gradient-to-br from-slate-900 to-slate-900/50 p-3 sm:p-4">
-      <div className="flex items-center justify-between mb-2.5">
-        <h2 className="text-[11px] font-semibold text-slate-400 uppercase tracking-[0.15em] font-mono">Forecast Trend Analysis</h2>
-        <div className="flex items-center gap-2"><StatusBadge status="info" label="6-WEEK HISTORY" /></div>
+      <div className="flex items-center justify-between mb-3">
+        <div className="flex items-center gap-2">
+          <svg className="h-4 w-4 text-cyan-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}><path strokeLinecap="round" strokeLinejoin="round" d="M3.75 3v11.25A2.25 2.25 0 006 16.5h2.25M3.75 3h-1.5m1.5 0h16.5m0 0h1.5m-1.5 0v11.25A2.25 2.25 0 0118 16.5h-2.25m-7.5 0h7.5m-7.5 0l-1 3m8.5-3l1 3m0 0l.5 1.5m-.5-1.5h-9.5m0 0l-.5 1.5m.75-9l3-3 2.148 2.148A12.061 12.061 0 0116.5 7.605" /></svg>
+          <h2 className="text-sm font-semibold text-cyan-400 uppercase tracking-[0.15em] font-mono">Deployment Forecast</h2>
+          <StatusBadge status="info" label="7-Day Outlook" />
+        </div>
       </div>
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-        {forecastData.map((d, idx) => {
-          const trendValues = d.sparkData
-          const avg = trendValues.reduce((s, v) => s + v, 0) / trendValues.length
-          const delta = trendValues[trendValues.length - 1] - trendValues[0]
-          const deltaColor = delta > 0 ? 'text-emerald-400' : delta < 0 ? 'text-red-400' : 'text-slate-500'
+      <div className="grid grid-cols-7 gap-3">
+        {forecast.map((day, idx) => (
+          <motion.div key={day?.day || idx} variants={item} className="rounded-xl border border-white/[0.04] bg-white/[0.02] p-3 text-center hover:bg-white/[0.04] transition-all">
+            <div className="text-[10px] font-mono text-slate-600 uppercase">{day?.day || '-'}</div>
+            <div className="text-base sm:text-lg font-bold font-mono text-cyan-400 my-2">{day?.value ?? '-'}</div>
+            <div className="w-8 h-16 mx-auto relative bg-white/[0.02] rounded-sm overflow-hidden"><motion.div initial={{ height: 0 }} whileInView={{ height: `${day?.pct || 0}%` }} viewport={{ once: true }} transition={{ duration: 0.8, delay: idx * 0.08 }} className="absolute bottom-0 w-full rounded-sm bg-gradient-to-t from-cyan-600 to-cyan-400" style={{ height: `${day?.pct || 0}%` }} /></div>
+            <div className="text-[8px] font-mono text-slate-700 mt-1">{day?.events ?? 0} deploys</div>
+          </motion.div>
+        ))}
+      </div>
+    </motion.div>
+  )
+}
+
+function BoardroomViewExpanded() {
+  const items = mockData.boardroomMetrics || []
+  return (
+    <motion.div variants={item} className="rounded-xl border border-white/[0.06] bg-gradient-to-br from-slate-900 to-slate-900/50 p-3 sm:p-4">
+      <div className="flex items-center justify-between mb-3">
+        <div className="flex items-center gap-2">
+          <svg className="h-4 w-4 text-emerald-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}><path strokeLinecap="round" strokeLinejoin="round" d="M3.75 6.75h16.5M3.75 12H12m-8.25 5.25h16.5" /></svg>
+          <h2 className="text-sm font-semibold text-emerald-400 uppercase tracking-[0.15em] font-mono">Boardroom View</h2>
+          <StatusBadge status="success" label="Executive" />
+        </div>
+      </div>
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-3">
+        {items.map((m, idx) => {
+          if (!m) return null
+          const trendIcon = m.trend === 'up' ? '\u2191' : '\u2193'
+          const trendColor = m.trend === 'up' ? 'text-emerald-400' : 'text-red-400'
           return (
-            <motion.div key={`fta-${d.label}`} variants={item} className="rounded-lg border border-white/[0.04] bg-white/[0.01] p-3">
-              <div className="flex items-center justify-between mb-1">
-                <span className="text-[8px] font-mono text-slate-600 uppercase tracking-wider">{d.label}</span>
-                <span className={`text-[8px] font-mono ${deltaColor}`}>{delta > 0 ? '+' : ''}{delta.toFixed(1)}{d.unit}</span>
-              </div>
-              <div className="flex items-center gap-3 mb-1">
-                <span className={`text-base font-bold font-mono ${d.textColor}`}>{d.value}{d.unit}</span>
-                <MiniSparkline data={trendValues} color={d.color} width={48} height={14} />
-              </div>
-              <div className="flex items-center justify-between text-[7px] font-mono text-slate-700">
-                <span>6wk avg: {avg.toFixed(1)}{d.unit}</span>
-                <span className={deltaColor}>{delta > 0 ? '+Trend' : delta < 0 ? '-Trend' : 'Stable'}</span>
-              </div>
+            <motion.div key={m.label || idx} variants={item} className="rounded-xl border border-white/[0.04] bg-white/[0.02] p-4 hover:bg-white/[0.04] transition-all group">
+              <div className="flex items-center gap-1.5 mb-1.5"><span className="h-2 w-2 rounded-full" style={{ backgroundColor: m.dot || '#64748b' }} /><span className="text-[9px] font-mono text-slate-600 uppercase tracking-wider">{m.label || '-'}</span></div>
+              <div className={`text-lg sm:text-xl font-bold font-mono ${m.color || 'text-white'} truncate`}>{m.prefix || ''}{m.value ?? '-'}{m.suffix || ''}</div>
+              <div className="flex items-center gap-1.5 mt-0.5"><span className={`text-[10px] font-mono ${trendColor}`}>{trendIcon} {m.pct ?? 0}%</span></div>
+              <p className="text-[9px] text-slate-600 mt-1">{m.change || ''}</p>
             </motion.div>
           )
         })}
@@ -1947,42 +1804,208 @@ function ForecastExpanded() {
     </motion.div>
   )
 }
+function SectionInsightBanner({ id, severity, text }) {
+  const sevColors = { critical: 'border-l-red-500 bg-red-500/5 text-red-400', high: 'border-l-orange-500 bg-orange-500/5 text-orange-400', medium: 'border-l-amber-500 bg-amber-500/5 text-amber-400', low: 'border-l-emerald-500 bg-emerald-500/5 text-emerald-400' }
+  const sevIcons = { critical: 'M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z', high: 'M12 9v3.75m9-.75a9 9 0 11-18 0 9 9 0 0118 0zm-9 3.75h.008v.008H12v-.008z', medium: 'M8.625 12a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0H8.25m4.125 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0H12m4.125 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0h-.375M21 12c0 4.556-4.03 8.25-9 8.25a9.764 9.764 0 01-2.555-.337A5.972 5.972 0 015.41 20.97a5.969 5.969 0 01-.474-.065 4.48 4.48 0 00.978-2.025c.09-.457-.133-.901-.467-1.226C3.93 16.178 3 14.189 3 12c0-4.556 4.03-8.25 9-8.25s9 3.694 9 8.25z', low: 'M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z' }
+  return (
+    <motion.div key={id} variants={item} className={`rounded-lg border border-white/[0.04] border-l-2 ${sevColors[severity] || sevColors.low} p-3 flex items-start gap-3`}>
+      <svg className="h-4 w-4 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}><path strokeLinecap="round" strokeLinejoin="round" d={sevIcons[severity] || sevIcons.low} /></svg>
+      <p className="text-[11px] leading-relaxed text-slate-400">{text}</p>
+    </motion.div>
+  )
+}
 
-function BoardroomExpanded() {
-  const aiConf = mockData.aiConfidenceIndicators
-  const avgConf = Math.round(aiConf.executiveInsights.reduce((s, v) => s + v, 0) / aiConf.executiveInsights.length)
+function RiskAnalyticsDashboard() {
+  const riskImpact = mockData.businessImpactCenter || []
+  const riskMetrics = mockData.aiRiskMetrics || []
   return (
     <motion.div variants={item} className="rounded-xl border border-white/[0.06] bg-gradient-to-br from-slate-900 to-slate-900/50 p-3 sm:p-4">
-      <div className="flex items-center justify-between mb-2.5">
-        <h2 className="text-[11px] font-semibold text-slate-400 uppercase tracking-[0.15em] font-mono">Boardroom Decision Support</h2>
-        <div className="flex items-center gap-2"><StatusBadge status="info" label="AI-ADVISED DECISIONS" /></div>
-      </div>
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-3">
-        <div className="rounded-lg bg-emerald-500/5 border border-emerald-500/20 p-2 text-center">
-          <div className="text-lg font-bold font-mono text-emerald-400">{avgConf}%</div>
-          <span className="text-[7px] font-mono text-slate-600 uppercase tracking-wider">Avg AI Confidence</span>
-        </div>
-        <div className="rounded-lg bg-cyan-500/5 border border-cyan-500/20 p-2 text-center">
-          <div className="text-lg font-bold font-mono text-cyan-400">12</div>
-          <span className="text-[7px] font-mono text-slate-600 uppercase tracking-wider">Decisions Today</span>
-        </div>
-        <div className="rounded-lg bg-amber-500/5 border border-amber-500/20 p-2 text-center">
-          <div className="text-lg font-bold font-mono text-amber-400">4</div>
-          <span className="text-[7px] font-mono text-slate-600 uppercase tracking-wider">Requires Approval</span>
-        </div>
-        <div className="rounded-lg bg-violet-500/5 border border-violet-500/20 p-2 text-center">
-          <div className="text-lg font-bold font-mono text-violet-400">8</div>
-          <span className="text-[7px] font-mono text-slate-600 uppercase tracking-wider">Auto-Executed</span>
+      <div className="flex items-center justify-between mb-3">
+        <div className="flex items-center gap-2">
+          <svg className="h-4 w-4 text-red-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}><path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" /></svg>
+          <h2 className="text-sm font-semibold text-red-400 uppercase tracking-[0.15em] font-mono">Risk Analytics Dashboard</h2>
+          <StatusBadge status="critical" label="Real-Time" />
         </div>
       </div>
-      <div className="rounded-lg bg-amber-500/5 border border-amber-500/20 p-2.5">
-        <div className="flex items-center gap-2 mb-1">
-          <svg className="h-3 w-3 text-amber-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}><path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m9-.75a9 9 0 11-18 0 9 9 0 0118 0zm-9 3.75h.008v.008H12v-.008z" /></svg>
-          <span className="text-[9px] font-mono text-amber-300 uppercase tracking-wider">Executive Summary</span>
-        </div>
-        <p className="text-[9px] text-slate-400 leading-relaxed">AI analysis indicates improving operational stability with 3 critical areas requiring executive attention. Payment service and Redis cache represent the highest risk exposure this week. Recommended actions are estimated to reduce aggregate risk by 32% with a projected ROI of 5.3x within 12 days.</p>
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+        {riskMetrics.map((rm, idx) => {
+          if (!rm) return null
+          const val = useCounter(parseInt(String(rm.value ?? '0')), idx * 80, 1500, Number(rm.value) >= 1000)
+          const displayVal = typeof val === 'string' ? val : val.toLocaleString()
+          return (
+            <motion.div key={rm.label || idx} variants={item} className="rounded-xl border border-white/[0.04] bg-white/[0.02] p-3 hover:bg-white/[0.04] transition-all">
+              <div className="flex items-center gap-1.5 mb-1.5"><span className={`h-2 w-2 rounded-full ${rm.dot || 'bg-slate-500'}`} /><span className="text-[9px] font-mono text-slate-600 uppercase tracking-wider">{rm.label || '-'}</span></div>
+              <div className={`text-lg sm:text-xl font-bold font-mono ${rm.color || 'text-white'}`}>{rm.prefix || ''}{displayVal}{rm.suffix || ''}</div>
+              <div className="flex items-center gap-1.5 mt-0.5"><span className={`text-[10px] font-mono ${rm.trend === 'up' ? 'text-red-400' : 'text-emerald-400'}`}>{rm.trend === 'up' ? '\u2191' : '\u2193'} {rm.pct ?? 0}%</span></div>
+            </motion.div>
+          )
+        })}
+      </div>
+      <div className="mt-3 pt-3 border-t border-white/[0.04] flex items-center justify-between text-[10px] font-mono">
+        <span className="text-slate-500">Aggregate Risk Score</span>
+        <span className="text-red-400 font-bold">{riskMetrics.reduce((a, b) => a + (typeof b.value === 'number' ? b.value : parseInt(String(b.value ?? '0').replace(/,/g, '')) || 0), 0)}</span>
+        <span className="text-amber-400/80">Threshold: 75</span>
       </div>
     </motion.div>
   )
 }
 
+function SkeletonBlock({ className }) {
+  return <div className={`animate-pulse rounded-xl bg-white/[0.03] ${className || ''}`} />
+}
+
+function DashboardSkeleton() {
+  return (
+    <div className="min-h-screen bg-slate-950">
+      <div className="fixed inset-0 pointer-events-none">
+        <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.015)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.015)_1px,transparent_1px)] bg-[size:40px_40px]" />
+      </div>
+      <div className="relative z-10 max-w-[2000px] mx-auto px-2 sm:px-4 lg:px-6 py-3 sm:py-4 lg:py-6 space-y-1.5 sm:space-y-2">
+        <SkeletonBlock className="h-12 w-full" />
+        <SkeletonBlock className="h-8 w-full" />
+        <SkeletonBlock className="h-48 w-full" />
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-1.5 sm:gap-2">
+          {[1,2,3,4,5,6].map(i => <SkeletonBlock key={i} className="h-28" />)}
+        </div>
+        <SkeletonBlock className="h-64 w-full" />
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-1.5 sm:gap-2">
+          {[1,2,3,4].map(i => <SkeletonBlock key={i} className="h-24" />)}
+        </div>
+        <SkeletonBlock className="h-48 w-full" />
+        <SkeletonBlock className="h-48 w-full" />
+        <SkeletonBlock className="h-48 w-full" />
+        <SkeletonBlock className="h-48 w-full" />
+        <SkeletonBlock className="h-48 w-full" />
+        <SkeletonBlock className="h-64 w-full" />
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-1.5 sm:gap-2">
+          {[1,2,3].map(i => <SkeletonBlock key={i} className="h-32" />)}
+        </div>
+        <SkeletonBlock className="h-48 w-full" />
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-1.5 sm:gap-2">
+          <SkeletonBlock className="h-48" /><SkeletonBlock className="h-48" />
+        </div>
+        <SkeletonBlock className="h-48 w-full" />
+        <SkeletonBlock className="h-48 w-full" />
+      </div>
+    </div>
+  )
+}
+
+function KpiRibbon() {
+  const kpis = mockData.kpis
+  const icons = {
+    'System Health': 'M9 12.75L11.25 15 15 9.75m-3-7.036A11.959 11.959 0 013.598 6 11.99 11.99 0 003 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285z',
+    'Active Incidents': 'M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z',
+    'MTTR (min)': 'M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0zm-4.5 4.5h.008v.008H12v-.008z',
+    'Services Monitored': 'M9 17.25v1.007a3 3 0 01-.879 2.122L7.5 21h9l-.621-.621A3 3 0 0115 18.257V17.25m6-12V15a2.25 2.25 0 01-2.25 2.25H5.25A2.25 2.25 0 013 15V5.25m18 0A2.25 2.25 0 0018.75 3H5.25A2.25 2.25 0 003 5.25m18 0V12a2.25 2.25 0 01-2.25 2.25H5.25A2.25 2.25 0 013 12V5.25',
+    'Uptime': 'M3.75 13.5l10.5-11.25L12 10.5h8.25L9.75 21.75 12 13.5H3.75z',
+    'Risk Score': 'M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z',
+  }
+  return (
+    <motion.div variants={item} className="rounded-lg border border-white/[0.06] bg-slate-900/50 py-1 px-2">
+      <div className="flex items-center gap-1 overflow-x-auto scrollbar-none">
+        {kpis.map((k, i) => (
+          <div key={k.label} className="flex items-center gap-1 shrink-0 rounded-md bg-white/[0.02] border border-white/[0.04] px-1.5 py-0.5">
+            <svg className={`h-2.5 w-2.5 ${k.color}`} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <path strokeLinecap="round" strokeLinejoin="round" d={icons[k.label] || icons['System Health']} />
+            </svg>
+            <span className={`text-[10px] font-bold font-mono leading-none ${k.color}`}>
+              {k.label === 'Uptime' ? '99.97' : k.value}{k.format === '%' ? '%' : k.format === 'm' ? 'm' : ''}
+            </span>
+            <span className="text-[7px] font-mono text-slate-600 truncate max-w-[52px] hidden sm:block">{k.label}</span>
+            <span className={`text-[7px] font-mono ${k.trend === 'up' ? 'text-red-400' : k.trend === 'down' ? 'text-emerald-400' : 'text-slate-600'}`}>
+              {k.trend === 'up' ? '\u2191' : k.trend === 'down' ? '\u2193' : '\u2192'}
+            </span>
+          </div>
+        ))}
+      </div>
+    </motion.div>
+  )
+}
+
+export default function Dashboard() {
+  const [mounted, setMounted] = useState(false)
+  useEffect(() => { setMounted(true) }, [])
+  if (!mounted) return <DashboardSkeleton />
+  return (
+    <div className="min-h-screen bg-slate-950">
+      <div className="fixed inset-0 pointer-events-none">
+        <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.015)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.015)_1px,transparent_1px)] bg-[size:40px_40px]" />
+      </div>
+      <motion.div initial="hidden" animate="show" variants={container} className="relative z-10 max-w-[2000px] mx-auto px-2 sm:px-4 lg:px-6 py-3 sm:py-4 lg:py-6 space-y-1.5 sm:space-y-2">
+        <CommandHeader />
+        <StatusTicker />
+        <KpiRibbon />
+        <DailyBriefingExpanded />
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-1.5 sm:gap-2">
+          {[
+            { label: 'Total Incidents', value: 1423, suffix: '', prefix: '~', color: 'text-red-400', dot: 'bg-red-500', trend: 'up', pct: 3.7, description: 'Across all service tiers', sparkData: [54,82,73,91,68,87,78,95,84,92] },
+            { label: 'Uptime', value: 99.97, suffix: '%', prefix: '', color: 'text-emerald-400', dot: 'bg-emerald-500', trend: 'up', pct: 0.02, description: 'Current uptime across services', sparkData: [99.95,99.96,99.97,99.96,99.97,99.98,99.97,99.97,99.96,99.97] },
+            { label: 'Active Alerts', value: 342, suffix: '', prefix: '', color: 'text-amber-400', dot: 'bg-amber-500', trend: 'down', pct: 14.2, description: 'Requires immediate attention', sparkData: [45,52,38,61,44,49,33,41,36,29] },
+            { label: 'SLA Compliance', value: 98.7, suffix: '%', prefix: '', color: 'text-cyan-400', dot: 'bg-cyan-500', trend: 'up', pct: 0.8, description: 'Against contractual targets', sparkData: [97.2,97.8,98.1,98.4,98.6,98.5,98.7,98.7,98.6,98.7] },
+            { label: 'Deployment Freq', value: '14', suffix: '/d', prefix: '', color: 'text-violet-400', dot: 'bg-violet-500', trend: 'up', pct: 7.5, description: 'Average daily deployment count', sparkData: [10,12,11,13,14,13,15,14,14,14] },
+            { label: 'Mean MTTR', value: '24', suffix: 'm', prefix: '', color: 'text-rose-400', dot: 'bg-rose-500', trend: 'down', pct: 12.5, description: 'Average resolution cycle time', sparkData: [35,32,30,28,26,25,25,24,24,24] },
+          ].map((kpi, idx) => (
+            <motion.div key={kpi.label} variants={item} className="rounded-xl border border-white/[0.05] bg-gradient-to-br from-slate-900/90 to-slate-900/30 p-3 sm:p-4 hover:border-white/[0.08] transition-all duration-300 group">
+              <div className="flex items-center gap-1.5 mb-2"><span className={`h-2 w-2 rounded-full ${kpi.dot} ${kpi.label === 'Active Alerts' ? 'animate-ping' : ''} ${kpi.trend === 'up' && kpi.label === 'Total Incidents' ? 'animate-ping' : ''}`} /><span className="text-[10px] font-mono text-slate-500 uppercase tracking-wider">{kpi.label}</span></div>
+              <div className="flex items-center justify-between gap-2">
+                <div className="min-w-0"><div className={`text-xl sm:text-2xl font-bold font-mono ${kpi.color} truncate`}>{kpi.prefix}{kpi.value}{kpi.suffix}</div></div>
+                <MiniSparkline data={kpi.sparkData} color={kpi.color.includes('red') ? '#ef4444' : kpi.color.includes('emerald') ? '#34d399' : kpi.color.includes('amber') ? '#f59e0b' : kpi.color.includes('cyan') ? '#22d3ee' : kpi.color.includes('violet') ? '#8b5cf6' : '#f43f5e'} width={72} height={20} />
+              </div>
+              <div className="flex items-center gap-1.5 mt-1"><span className={`text-[10px] font-mono ${kpi.trend === 'up' ? (kpi.label === 'Total Incidents' || kpi.label === 'Active Alerts' ? 'text-red-400' : 'text-emerald-400') : 'text-emerald-400'}`}>{kpi.trend === 'up' ? '\u2191' : '\u2193'} {kpi.pct}%</span></div>
+              <p className="text-[9px] text-slate-600 mt-1">{kpi.description}</p>
+              <p className="text-[8px] text-slate-700 mt-0.5">{kpi.trend === 'up' ? (kpi.label === 'Total Incidents' || kpi.label === 'Active Alerts' ? 'Needs attention' : 'Positive trend') : 'Improving'}</p>
+            </motion.div>
+          ))}
+        </div>
+        <ExecutiveInsightsExpanded />
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-1.5 sm:gap-2">
+          {[
+            { label: 'System Health', value: 87.2, color: 'text-emerald-400', pct: 2.1, trend: 'up', icon: 'M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z' },
+            { label: 'Incident Density', value: 42.8, color: 'text-amber-400', pct: 8.3, trend: 'down', icon: 'M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z' },
+            { label: 'Error Budget', value: 82.1, color: 'text-cyan-400', pct: 1.5, trend: 'up', icon: 'M3.75 13.5l10.5-11.25L12 10.5h8.25L9.75 21.75 12 13.5H3.75z' },
+            { label: 'SLO Attainment', value: 94.3, color: 'text-violet-400', pct: 0.5, trend: 'up', icon: 'M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636' },
+          ].map((g, idx) => (
+            <motion.div key={g.label} variants={item} className="rounded-xl border border-white/[0.05] bg-gradient-to-br from-slate-900/90 to-slate-900/30 p-3 sm:p-4 hover:border-white/[0.08] transition-all duration-300 group">
+              <div className="flex items-center gap-1.5 mb-2"><svg className={`h-3.5 w-3.5 ${g.color}`} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}><path strokeLinecap="round" strokeLinejoin="round" d={g.icon} /></svg><span className="text-[10px] font-mono text-slate-500 uppercase tracking-wider">{g.label}</span></div>
+              <div className={`text-xl sm:text-2xl font-bold font-mono ${g.color}`}>{g.value}%</div>
+              <div className="flex items-center gap-1.5 mt-1"><span className={`text-[10px] font-mono ${g.trend === 'up' ? 'text-emerald-400' : 'text-red-400'}`}>{g.trend === 'up' ? '\u2191' : '\u2193'} {g.pct}%</span></div>
+            </motion.div>
+          ))}
+        </div>
+        <RiskAnalyticsDashboard />
+        <PredictionWallExpanded />
+        <TopRisksLeaderboardExpanded />
+        <RootCauseSnapshotsExpanded />
+        <ExecutiveRecommendationsExpanded />
+        <RiskHeatmap />
+        <AlertsFeed />
+        <LiveSystemTopologyExpanded />
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-1.5 sm:gap-2">
+          {(mockData.serviceHealthCards || []).map((svc, idx) => (
+            <ServiceHealthCard key={svc?.name || idx} svc={svc} idx={idx} />
+          ))}
+        </div>
+        <DeploymentForecastExpanded />
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-1.5 sm:gap-2">
+          <DeploymentTimeline />
+          <ActivityTimeline />
+        </div>
+        <BoardroomViewExpanded />
+        <VelocityBarChart />
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-1.5 sm:gap-2">
+          <IncidentsByService />
+          <SloSummary />
+        </div>
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-1.5 sm:gap-2">
+          <ChangeFailureRate />
+          <OnCallBanner />
+        </div>
+        <PredictionCards />
+        <BusinessImpactCalculator />
+        <QuickActionPanel />
+        <FooterBar />
+      </motion.div>
+    </div>
+  )
+}

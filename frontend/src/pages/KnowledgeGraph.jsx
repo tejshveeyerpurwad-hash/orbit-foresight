@@ -1,20 +1,20 @@
-import { useCallback, useState, useMemo, useEffect } from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
-import ReactFlow, { Background, Controls, MiniMap, useNodesState, useEdgesState, MarkerType } from 'reactflow'
+import { useCallback, useState, useMemo, useEffect, useRef } from 'react'
+import { motion } from 'framer-motion'
+import ReactFlow, { Background, Controls, MiniMap, useNodesState, useEdgesState, MarkerType, useReactFlow, ReactFlowProvider } from 'reactflow'
 import 'reactflow/dist/style.css'
 import Layout from '../components/Layout'
 
 const initialNodes = [
-  { id: 'gateway', position: { x: 400, y: 0 }, data: { label: 'API Gateway', type: 'API', risk: 'medium', team: 'Platform', deps: ['Payments', 'Auth', 'Billing'] } },
-  { id: 'auth', position: { x: 100, y: 150 }, data: { label: 'Auth Service', type: 'Service', risk: 'low', team: 'Security', deps: [] } },
-  { id: 'payments', position: { x: 350, y: 150 }, data: { label: 'Payment Service', type: 'Service', risk: 'high', team: 'Payments', deps: ['Auth', 'Database'] } },
-  { id: 'billing', position: { x: 600, y: 150 }, data: { label: 'Billing Service', type: 'Service', risk: 'medium', team: 'Billing', deps: ['Auth', 'Cache'] } },
-  { id: 'notifications', position: { x: 0, y: 320 }, data: { label: 'Notification Service', type: 'Service', risk: 'low', team: 'Platform', deps: ['Auth'] } },
-  { id: 'webhooks', position: { x: 200, y: 320 }, data: { label: 'Webhook Service', type: 'Service', risk: 'medium', team: 'Platform', deps: ['Payments'] } },
-  { id: 'cache', position: { x: 500, y: 320 }, data: { label: 'Redis Cache', type: 'Database', risk: 'low', team: 'Infra', deps: [] } },
-  { id: 'db', position: { x: 700, y: 320 }, data: { label: 'PostgreSQL', type: 'Database', risk: 'low', team: 'Infra', deps: [] } },
-  { id: 'ci-pipeline', position: { x: 350, y: 470 }, data: { label: 'CI Pipeline', type: 'Pipeline', risk: 'low', team: 'DevOps', deps: ['Gateway'] } },
-  { id: 'cd-pipeline', position: { x: 550, y: 470 }, data: { label: 'CD Pipeline', type: 'Pipeline', risk: 'low', team: 'DevOps', deps: ['CI Pipeline'] } },
+  { id: 'gateway', position: { x: 475, y: 50 }, data: { label: 'API Gateway', type: 'API', risk: 'medium', team: 'Platform', deps: ['Payments', 'Auth', 'Billing'] } },
+  { id: 'auth', position: { x: 150, y: 200 }, data: { label: 'Auth Service', type: 'Service', risk: 'low', team: 'Security', deps: [] } },
+  { id: 'payments', position: { x: 400, y: 200 }, data: { label: 'Payment Service', type: 'Service', risk: 'high', team: 'Payments', deps: ['Auth', 'Database'] } },
+  { id: 'billing', position: { x: 750, y: 200 }, data: { label: 'Billing Service', type: 'Service', risk: 'medium', team: 'Billing', deps: ['Auth', 'Cache'] } },
+  { id: 'notifications', position: { x: 50, y: 400 }, data: { label: 'Notification Service', type: 'Service', risk: 'low', team: 'Platform', deps: ['Auth'] } },
+  { id: 'webhooks', position: { x: 275, y: 400 }, data: { label: 'Webhook Service', type: 'Service', risk: 'medium', team: 'Platform', deps: ['Payments'] } },
+  { id: 'cache', position: { x: 600, y: 400 }, data: { label: 'Redis Cache', type: 'Database', risk: 'low', team: 'Infra', deps: [] } },
+  { id: 'db', position: { x: 850, y: 400 }, data: { label: 'PostgreSQL', type: 'Database', risk: 'low', team: 'Infra', deps: [] } },
+  { id: 'ci-pipeline', position: { x: 400, y: 600 }, data: { label: 'CI Pipeline', type: 'Pipeline', risk: 'low', team: 'DevOps', deps: ['Gateway'] } },
+  { id: 'cd-pipeline', position: { x: 650, y: 600 }, data: { label: 'CD Pipeline', type: 'Pipeline', risk: 'low', team: 'DevOps', deps: ['CI Pipeline'] } },
 ]
 
 const initialEdges = [
@@ -61,7 +61,7 @@ const teams = [
   { name: 'DevOps', id: 'devops', services: ['ci-pipeline', 'cd-pipeline'], members: 5, risk: 68, lead: 'James Kim', color: '#8b5cf6' },
 ]
 
-const insights = [
+const allInsights = [
   { id: 'i-1', text: 'Payment Service is a critical hub — failure impacts 3 downstream services', priority: 'high', icon: 'hub', category: 'Architecture' },
   { id: 'i-2', text: 'Auth Service has zero dependencies — single point of failure risk if compromised', priority: 'high', icon: 'vulnerability', category: 'Security' },
   { id: 'i-3', text: 'API Gateway connects all services — highest blast radius in the topology', priority: 'critical', icon: 'blast', category: 'Resilience' },
@@ -117,22 +117,6 @@ function ShieldIcon({ className }) {
   )
 }
 
-function HubIcon({ className }) {
-  return (
-    <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-      <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 6A2.25 2.25 0 016 3.75h2.25A2.25 2.25 0 0110.5 6v2.25a2.25 2.25 0 01-2.25 2.25H6a2.25 2.25 0 01-2.25-2.25V6zM3.75 15.75A2.25 2.25 0 016 13.5h2.25a2.25 2.25 0 012.25 2.25V18a2.25 2.25 0 01-2.25 2.25H6A2.25 2.25 0 013.75 18v-2.25zM13.5 6a2.25 2.25 0 012.25-2.25H18A2.25 2.25 0 0120.25 6v2.25A2.25 2.25 0 0118 10.5h-2.25a2.25 2.25 0 01-2.25-2.25V6zM13.5 15.75a2.25 2.25 0 012.25-2.25H18a2.25 2.25 0 012.25 2.25V18A2.25 2.25 0 0118 20.25h-2.25A2.25 2.25 0 0113.5 18v-2.25z" />
-    </svg>
-  )
-}
-
-function ArrowPath({ className }) {
-  return (
-    <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-      <path strokeLinecap="round" strokeLinejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182" />
-    </svg>
-  )
-}
-
 function BoltIcon({ className }) {
   return (
     <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
@@ -149,15 +133,23 @@ function ExclamationCircle({ className }) {
   )
 }
 
+function ArrowPath({ className }) {
+  return (
+    <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+      <path strokeLinecap="round" strokeLinejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182" />
+    </svg>
+  )
+}
+
 const typeIcons = {
-  Service: '⚙️',
-  API: '🔌',
-  Database: '🗄️',
-  Pipeline: '🔄',
+  Service: '\u2699\uFE0F',
+  API: '\uD83D\uDD0C',
+  Database: '\uD83D\uDDFC\uFE0F',
+  Pipeline: '\uD83D\uDD04',
 }
 
 const insightIconMap = {
-  hub: HubIcon,
+  hub: NetworkIcon,
   vulnerability: ShieldIcon,
   blast: BoltIcon,
   pipeline: ArrowPath,
@@ -171,18 +163,17 @@ function CustomNode({ data }) {
     <motion.div
       whileHover={{ scale: 1.08 }}
       transition={{ type: 'spring', stiffness: 400, damping: 15 }}
-      className="rounded-xl border-2 px-4 py-3 text-center shadow-lg backdrop-blur-xl min-w-[130px] cursor-pointer relative overflow-hidden group"
+      className="rounded-xl border-2 px-3 py-2.5 text-center shadow-lg backdrop-blur-xl min-w-[120px] cursor-pointer relative overflow-hidden group"
       style={{ backgroundColor: c.bg, borderColor: c.border, boxShadow: c.glow }}
-      title={`${data.label} (${data.risk} risk) - Team: ${data.team}`}
     >
       <div className="absolute inset-0 bg-gradient-to-b from-white/[0.03] to-transparent pointer-events-none" />
-      <div className="text-xs mb-1 relative">{typeIcons[data.type] || '📦'}</div>
+      <div className="text-[10px] mb-0.5 relative">{typeIcons[data.type] || '\uD83D\uDCE6'}</div>
       <div className="relative">
-        <div className="text-xs font-semibold" style={{ color: c.text }}>{data.label}</div>
-        <div className="text-[8px] text-slate-500 mt-0.5">{data.type} · {data.team}</div>
+        <div className="text-[11px] font-semibold" style={{ color: c.text }}>{data.label}</div>
+        <div className="text-[7px] text-slate-500 mt-px">{data.type} \u00B7 {data.team}</div>
       </div>
       {data.risk === 'high' && (
-        <div className="absolute -top-1 -right-1 w-2.5 h-2.5 rounded-full bg-red-500 animate-pulse" />
+        <div className="absolute -top-1 -right-1 w-2 h-2 rounded-full bg-red-500 animate-pulse" />
       )}
     </motion.div>
   )
@@ -190,43 +181,40 @@ function CustomNode({ data }) {
 
 const nodeTypes = { custom: CustomNode }
 
-const container = { hidden: {}, show: { transition: { staggerChildren: 0.05 } } }
-const item = { hidden: { opacity: 0, y: 20 }, show: { opacity: 1, y: 0 } }
+function SearchFilterBar({ search, setSearch, activeFilter, setActiveFilter, drawerOpen, setDrawerOpen }) {
+  const filters = [
+    { key: 'all', label: 'All' },
+    { key: 'high', label: 'High Risk' },
+    { key: 'medium', label: 'Medium Risk' },
+    { key: 'low', label: 'Low Risk' },
+    { key: 'Service', label: 'Services' },
+    { key: 'Database', label: 'Databases' },
+    { key: 'Pipeline', label: 'Pipelines' },
+  ]
 
-const filters = [
-  { key: 'all', label: 'All' },
-  { key: 'high', label: 'High Risk' },
-  { key: 'medium', label: 'Medium Risk' },
-  { key: 'low', label: 'Low Risk' },
-  { key: 'Service', label: 'Services' },
-  { key: 'Database', label: 'Databases' },
-  { key: 'Pipeline', label: 'Pipelines' },
-]
-
-function SearchFilterBar({ search, setSearch, activeFilter, setActiveFilter }) {
   return (
-    <motion.div variants={item} className="flex flex-col sm:flex-row items-start sm:items-center gap-3">
-      <div className="relative flex-1 w-full sm:max-w-xs">
-        <svg className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-slate-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+    <div className="flex items-center gap-2 flex-shrink-0">
+      <div className="relative flex-1 min-w-0 max-w-[200px]">
+        <svg className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3 w-3 text-slate-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
           <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
         </svg>
         <input
           value={search}
           onChange={e => setSearch(e.target.value)}
-          placeholder="Search nodes by name, team, or type..."
-          className="w-full rounded-lg border border-white/[0.06] bg-white/[0.03] py-2 pl-9 pr-3 text-xs text-slate-300 placeholder-slate-600 outline-none focus:border-cyan-500/40 focus:bg-white/[0.06] transition-all"
+          placeholder="Search nodes..."
+          className="w-full rounded-lg border border-white/[0.06] bg-white/[0.03] py-1.5 pl-8 pr-2.5 text-[10px] text-slate-300 placeholder-slate-600 outline-none focus:border-cyan-500/40 focus:bg-white/[0.06] transition-all"
         />
       </div>
-      <div className="flex flex-wrap gap-1.5">
-        {filters.map(f => {
+      <div className="hidden sm:flex gap-1">
+        {filters.slice(0, 4).map(f => {
           const active = activeFilter === f.key
           return (
             <button
               key={f.key}
               onClick={() => setActiveFilter(f.key)}
-              className={`rounded-lg border px-2.5 py-1 text-[10px] font-medium transition-all ${
+              className={`rounded-lg border px-2 py-1 text-[9px] font-medium transition-all ${
                 active
-                  ? 'border-cyan-400/40 bg-cyan-400/10 text-cyan-300 shadow-[0_0_12px_rgba(6,182,212,0.15)]'
+                  ? 'border-cyan-400/40 bg-cyan-400/10 text-cyan-300'
                   : 'border-white/[0.06] text-slate-500 hover:border-white/[0.12] hover:text-slate-400'
               }`}
             >
@@ -235,470 +223,22 @@ function SearchFilterBar({ search, setSearch, activeFilter, setActiveFilter }) {
           )
         })}
       </div>
-    </motion.div>
-  )
-}
-
-function DetailPanel({ selectedNode, onClose, onBlastToggle, blastMode }) {
-  if (!selectedNode) return null
-  const { id, data } = selectedNode
-  const detail = serviceDetails[id] || {}
-  const c = riskColors[data.risk] || riskColors.low
-  const connectedEdges = dependencies.filter(d => d.source === id || d.target === id)
-  const connectedServiceIds = new Set()
-  connectedEdges.forEach(e => { connectedServiceIds.add(e.source); connectedServiceIds.add(e.target) })
-  connectedServiceIds.delete(id)
-  const connectedServices = Array.from(connectedServiceIds).map(nid => {
-    const node = initialNodes.find(n => n.id === nid)
-    return node ? node.data.label : nid
-  })
-
-  return (
-    <motion.div
-      initial={{ opacity: 0, x: 40, height: 0 }}
-      animate={{ opacity: 1, x: 0, height: 'auto' }}
-      exit={{ opacity: 0, x: 40, height: 0 }}
-      transition={{ type: 'spring', stiffness: 200, damping: 25 }}
-      className="rounded-xl border border-white/[0.08] bg-slate-900/70 backdrop-blur-xl overflow-hidden"
-    >
-      <div className="p-5 space-y-4">
-        <div className="flex items-start justify-between">
-          <div className="flex items-center gap-3">
-            <div className="w-9 h-9 rounded-lg flex items-center justify-center text-lg" style={{ backgroundColor: c.bg, border: `1px solid ${c.border}` }}>
-              {typeIcons[data.type] || '📦'}
-            </div>
-            <div>
-              <h3 className="text-sm font-semibold text-white">{data.label}</h3>
-              <p className="text-[10px] text-slate-500">{detail.description || `${data.type} service managed by ${data.team}`}</p>
-            </div>
-          </div>
-          <div className="flex items-center gap-2">
-            <button
-              onClick={onBlastToggle}
-              className={`rounded-lg border px-2.5 py-1 text-[10px] font-medium transition-all ${
-                blastMode
-                  ? 'border-cyan-400/40 bg-cyan-400/10 text-cyan-300'
-                  : 'border-white/[0.06] text-slate-500 hover:border-white/[0.12]'
-              }`}
-            >
-              {blastMode ? 'Blast On' : 'Blast Radius'}
-            </button>
-            <button
-              onClick={onClose}
-              className="rounded-lg border border-white/[0.06] p-1 text-slate-500 hover:border-white/[0.12] hover:text-slate-400 transition-all"
-            >
-              <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
-              </svg>
-            </button>
-          </div>
-        </div>
-
-        <div className="flex flex-wrap gap-2">
-          <span className={`rounded-md border px-2 py-0.5 text-[10px] font-semibold ${c.badge}`}>{data.risk.toUpperCase()} RISK</span>
-          <span className="rounded-md border border-white/[0.06] bg-white/[0.04] px-2 py-0.5 text-[10px] text-slate-400">{data.type}</span>
-          <span className="rounded-md border border-white/[0.06] bg-white/[0.04] px-2 py-0.5 text-[10px] text-slate-400">Team: {data.team}</span>
-          <span className="rounded-md border border-white/[0.06] bg-white/[0.04] px-2 py-0.5 text-[10px] text-slate-400">ID: {id}</span>
-        </div>
-
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-          {[
-            { label: 'Uptime', value: `${detail.uptime || '-'}%`, color: (detail.uptime || 0) >= 99.9 ? 'text-emerald-400' : (detail.uptime || 0) >= 99 ? 'text-amber-400' : 'text-red-400' },
-            { label: 'Response Time', value: detail.responseTime || '-', color: 'text-cyan-400' },
-            { label: 'Error Rate', value: detail.errorRate != null ? `${detail.errorRate}%` : '-', color: (detail.errorRate || 0) < 0.5 ? 'text-emerald-400' : (detail.errorRate || 0) < 1 ? 'text-amber-400' : 'text-red-400' },
-            { label: 'Incidents (30d)', value: detail.incidents != null ? String(detail.incidents) : '-', color: (detail.incidents || 0) === 0 ? 'text-emerald-400' : (detail.incidents || 0) < 5 ? 'text-amber-400' : 'text-red-400' },
-          ].map(s => (
-            <div key={s.label} className="rounded-lg border border-white/[0.06] bg-white/[0.03] p-2.5">
-              <div className="text-[9px] text-slate-600 mb-0.5">{s.label}</div>
-              <div className={`text-sm font-bold ${s.color}`}>{s.value}</div>
-            </div>
-          ))}
-        </div>
-
-        {connectedServices.length > 0 && (
-          <div>
-            <div className="text-[10px] font-medium text-slate-500 mb-2">Connected Services ({connectedServices.length})</div>
-            <div className="flex flex-wrap gap-1.5">
-              {connectedServices.map(s => (
-                <span key={s} className="rounded-md border border-white/[0.06] bg-white/[0.04] px-2 py-0.5 text-[10px] text-slate-400">{s}</span>
-              ))}
-            </div>
-          </div>
-        )}
-
-        {data.deps?.length > 0 && (
-          <div>
-            <div className="text-[10px] font-medium text-slate-500 mb-2">Dependencies</div>
-            <div className="flex flex-wrap gap-1.5">
-              {data.deps.map((d, i) => (
-                <span key={d} className="flex items-center gap-1">
-                  <span className="rounded-md border border-white/[0.06] bg-white/[0.04] px-2 py-0.5 text-[10px] text-slate-400">{d}</span>
-                  {i < data.deps.length - 1 && <span className="text-slate-700 text-[10px]">→</span>}
-                </span>
-              ))}
-            </div>
-          </div>
-        )}
-
-        <div className="rounded-lg border border-cyan-400/15 bg-cyan-400/5 p-3">
-          <div className="flex items-start gap-2">
-            <ShieldIcon className="w-4 h-4 text-cyan-400 mt-0.5 shrink-0" />
-            <div>
-              <div className="text-[10px] font-semibold text-cyan-300 mb-0.5">AI Risk Assessment</div>
-              <p className="text-[10px] text-slate-400 leading-relaxed">
-                {data.risk === 'high'
-                  ? `Critical service with elevated risk. Direct failure impact on ${connectedServices.length} downstream services. Recommended: implement circuit breakers and redundancy.`
-                  : data.risk === 'medium'
-                  ? `Moderate risk profile. Service has ${connectedServices.length} connections. Monitor latency trends and error budgets.`
-                  : `Low risk service with stable metrics. ${connectedServices.length > 0 ? `Connected to ${connectedServices.length} services.` : 'No downstream dependencies — consider if this service is still needed.'}`}
-              </p>
-            </div>
-          </div>
-        </div>
-      </div>
-    </motion.div>
-  )
-}
-
-function DependencyCards({ depSearch, setDepSearch }) {
-  const filteredDeps = useMemo(() => {
-    if (!depSearch) return dependencies
-    const q = depSearch.toLowerCase()
-    return dependencies.filter(d => {
-      const src = initialNodes.find(n => n.id === d.source)?.data.label || d.source
-      const tgt = initialNodes.find(n => n.id === d.target)?.data.label || d.target
-      return src.toLowerCase().includes(q) || tgt.toLowerCase().includes(q) || d.type.toLowerCase().includes(q) || d.status.toLowerCase().includes(q) || d.risk.toLowerCase().includes(q)
-    })
-  }, [depSearch])
-
-  return (
-    <motion.div variants={item} className="rounded-xl border border-white/[0.06] bg-slate-900/50 p-4">
-      <div className="flex items-center justify-between mb-3">
-        <div className="flex items-center gap-2">
-          <NetworkIcon className="w-4 h-4 text-cyan-400" />
-          <h3 className="text-sm font-semibold text-white">Dependency Explorer</h3>
-          <span className="rounded-md bg-white/[0.04] px-1.5 py-0.5 text-[9px] text-slate-500">{dependencies.length} dependencies</span>
-        </div>
-        <input
-          value={depSearch}
-          onChange={e => setDepSearch(e.target.value)}
-          placeholder="Filter dependencies..."
-          className="w-44 rounded-lg border border-white/[0.06] bg-white/[0.03] py-1.5 pl-2.5 pr-2.5 text-[10px] text-slate-300 placeholder-slate-600 outline-none focus:border-cyan-500/30 focus:bg-white/[0.06] transition-all"
-        />
-      </div>
-      <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-        {filteredDeps.map(d => {
-          const srcLabel = initialNodes.find(n => n.id === d.source)?.data.label || d.source
-          const tgtLabel = initialNodes.find(n => n.id === d.target)?.data.label || d.target
-          const rc = riskColors[d.risk] || riskColors.low
-          return (
-            <motion.div
-              key={d.id}
-              initial={{ opacity: 0, scale: 0.95 }}
-              animate={{ opacity: 1, scale: 1 }}
-              className="rounded-lg border border-white/[0.06] bg-white/[0.03] p-3 hover:border-white/[0.12] hover:bg-white/[0.05] transition-all"
-            >
-              <div className="flex items-center justify-between mb-2">
-                <div className="flex items-center gap-1.5 text-xs text-slate-300">
-                  <span className="font-medium text-white">{srcLabel}</span>
-                  <svg className="w-3 h-3 text-slate-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
-                  </svg>
-                  <span className="font-medium text-white">{tgtLabel}</span>
-                </div>
-                <span className={`rounded px-1.5 py-0.5 text-[8px] font-semibold ${rc.badge}`}>{d.risk}</span>
-              </div>
-              <div className="flex items-center gap-3 text-[9px] text-slate-500">
-                <span className="flex items-center gap-1">
-                  <span className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: statusDots[d.status] }} />
-                  {d.status}
-                </span>
-                <span>{d.type}</span>
-                <span>{d.latency}</span>
-              </div>
-              <div className="mt-2 pt-2 border-t border-white/[0.04] flex items-center justify-between text-[9px]">
-                <span className="text-slate-600">Failure propagation</span>
-                <div className="flex items-center gap-1.5">
-                  <div className="w-16 h-1.5 rounded-full bg-white/[0.06] overflow-hidden">
-                    <div
-                      className="h-full rounded-full transition-all duration-500"
-                      style={{
-                        width: `${d.propagation}%`,
-                        backgroundColor: d.propagation > 70 ? '#ef4444' : d.propagation > 30 ? '#f59e0b' : '#22c55e'
-                      }}
-                    />
-                  </div>
-                  <span className={`font-semibold ${d.propagation > 70 ? 'text-red-400' : d.propagation > 30 ? 'text-amber-400' : 'text-emerald-400'}`}>
-                    {d.propagation}%
-                  </span>
-                </div>
-              </div>
-            </motion.div>
-          )
-        })}
-      </div>
-      {filteredDeps.length === 0 && (
-        <div className="text-center py-8">
-          <p className="text-xs text-slate-600">No dependencies matching "<span className="text-slate-400">{depSearch}</span>"</p>
-        </div>
-      )}
-    </motion.div>
-  )
-}
-
-function TeamCards() {
-  return (
-    <motion.div variants={item} className="rounded-xl border border-white/[0.06] bg-slate-900/50 p-4">
-      <div className="flex items-center gap-2 mb-4">
-        <svg className="w-4 h-4 text-emerald-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-          <path strokeLinecap="round" strokeLinejoin="round" d="M15 19.128a9.38 9.38 0 002.625.372 9.337 9.337 0 004.121-.952 4.125 4.125 0 00-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 018.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0111.964-3.07M12 6.375a3.375 3.375 0 11-6.75 0 3.375 3.375 0 016.75 0zm8.25 2.25a2.625 2.625 0 11-5.25 0 2.625 2.625 0 015.25 0z" />
+      <button
+        onClick={() => setDrawerOpen(!drawerOpen)}
+        className={`lg:hidden rounded-lg border p-1.5 transition-all ${
+          drawerOpen ? 'border-cyan-400/40 bg-cyan-400/10 text-cyan-300' : 'border-white/[0.06] text-slate-500 hover:text-slate-400'
+        }`}
+      >
+        <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+          <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
         </svg>
-        <h3 className="text-sm font-semibold text-white">Ownership Mapping</h3>
-        <span className="rounded-md bg-white/[0.04] px-1.5 py-0.5 text-[9px] text-slate-500">{teams.length} teams</span>
-      </div>
-      <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-        {teams.map(team => (
-          <motion.div
-            key={team.id}
-            whileHover={{ y: -2 }}
-            className="rounded-lg border border-white/[0.06] bg-white/[0.03] p-3 hover:border-white/[0.12] transition-all"
-          >
-            <div className="flex items-center gap-2 mb-2">
-              <div className="w-7 h-7 rounded-md flex items-center justify-center text-[10px] font-bold text-white" style={{ backgroundColor: `${team.color}22`, border: `1px solid ${team.color}44` }}>
-                {team.name.slice(0, 2).toUpperCase()}
-              </div>
-              <div>
-                <div className="text-xs font-semibold text-white">{team.name}</div>
-                <div className="text-[9px] text-slate-500">Lead: {team.lead}</div>
-              </div>
-            </div>
-            <div className="flex items-center justify-between text-[10px] text-slate-500 mb-2">
-              <span>{team.services.length} service{team.services.length !== 1 ? 's' : ''}</span>
-              <span>{team.members} member{team.members !== 1 ? 's' : ''}</span>
-            </div>
-            <div className="flex flex-wrap gap-1 mb-2">
-              {team.services.map(sid => {
-                const svc = initialNodes.find(n => n.id === sid)
-                return svc ? (
-                  <span key={sid} className="rounded bg-white/[0.04] px-1.5 py-0.5 text-[8px] text-slate-400">{svc.data.label}</span>
-                ) : null
-              })}
-            </div>
-            <div className="pt-2 border-t border-white/[0.04]">
-              <div className="flex items-center justify-between">
-                <span className="text-[9px] text-slate-600">Risk Exposure</span>
-                <div className="flex items-center gap-1.5">
-                  <div className="w-16 h-1.5 rounded-full bg-white/[0.06] overflow-hidden">
-                    <div
-                      className="h-full rounded-full transition-all"
-                      style={{
-                        width: `${team.risk}%`,
-                        backgroundColor: team.risk > 65 ? '#ef4444' : team.risk > 35 ? '#f59e0b' : '#22c55e'
-                      }}
-                    />
-                  </div>
-                  <span className={`text-[10px] font-semibold ${team.risk > 65 ? 'text-red-400' : team.risk > 35 ? 'text-amber-400' : 'text-emerald-400'}`}>
-                    {team.risk}%
-                  </span>
-                </div>
-              </div>
-            </div>
-          </motion.div>
-        ))}
-      </div>
-    </motion.div>
+      </button>
+    </div>
   )
 }
 
-function PropagationPaths() {
-  const [selectedPath, setSelectedPath] = useState(null)
-
-  return (
-    <motion.div variants={item} className="rounded-xl border border-white/[0.08] bg-slate-900/60 p-4">
-      <div className="flex items-center gap-2 mb-4">
-        <AlertTriangle className="w-4 h-4 text-red-400" />
-        <h3 className="text-sm font-semibold text-white">Risk Propagation Analysis</h3>
-        <span className="rounded-md bg-white/[0.04] px-1.5 py-0.5 text-[9px] text-slate-500">Payment Service failure simulation</span>
-      </div>
-
-      <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
-        {propagationPaths.map((p, idx) => {
-          const srcLabel = initialNodes.find(n => n.id === p.from)?.data.label || p.from
-          const tgtLabel = initialNodes.find(n => n.id === p.to)?.data.label || p.to
-          const stepLabels = p.steps.map(s => initialNodes.find(n => n.id === s)?.data.label || s)
-          const isSelected = selectedPath === idx
-
-          return (
-            <motion.div
-              key={p.label}
-              whileHover={{ scale: 1.02 }}
-              onClick={() => setSelectedPath(isSelected ? null : idx)}
-              className={`rounded-lg border p-3 cursor-pointer transition-all ${
-                isSelected
-                  ? 'border-red-400/40 bg-red-500/5'
-                  : 'border-white/[0.06] bg-white/[0.03] hover:border-white/[0.12]'
-              }`}
-            >
-              <div className="flex items-center gap-1.5 text-xs font-medium mb-2 flex-wrap">
-                {stepLabels.map((label, si) => (
-                  <span key={si} className="flex items-center gap-1">
-                    <span className={`rounded px-1.5 py-0.5 ${
-                      label.toLowerCase().includes('payment') ? 'bg-red-500/10 text-red-300' : 'bg-white/[0.04] text-slate-300'
-                    }`}>{label}</span>
-                    {si < stepLabels.length - 1 && (
-                      <svg className="w-3 h-3 text-slate-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
-                      </svg>
-                    )}
-                  </span>
-                ))}
-              </div>
-              <div className="flex items-center justify-between">
-                <span className="text-[9px] text-slate-600">Propagation risk</span>
-                <div className="flex items-center gap-1.5">
-                  <div className="w-20 h-2 rounded-full bg-white/[0.06] overflow-hidden">
-                    <div
-                      className="h-full rounded-full animate-pulse transition-all"
-                      style={{
-                        width: `${p.risk}%`,
-                        backgroundColor: p.risk > 70 ? '#ef4444' : p.risk > 30 ? '#f59e0b' : '#22c55e'
-                      }}
-                    />
-                  </div>
-                  <span className={`text-xs font-bold ${p.risk > 70 ? 'text-red-400' : p.risk > 30 ? 'text-amber-400' : 'text-emerald-400'}`}>
-                    {p.risk}%
-                  </span>
-                </div>
-              </div>
-              {isSelected && (
-                <motion.div
-                  initial={{ opacity: 0, height: 0 }}
-                  animate={{ opacity: 1, height: 'auto' }}
-                  className="mt-2 pt-2 border-t border-red-400/20"
-                >
-                  <p className="text-[9px] text-slate-500 leading-relaxed">
-                    Failure of <span className="text-red-300">{srcLabel}</span> propagates to <span className="text-red-300">{tgtLabel}</span> with <span className="text-red-400 font-semibold">{p.risk}%</span> probability.
-                    {p.risk > 70 ? ' Critical cascading failure risk — immediate mitigation recommended.' : p.risk > 30 ? ' Moderate propagation risk — monitor closely.' : ' Low propagation risk — standard monitoring sufficient.'}
-                  </p>
-                </motion.div>
-              )}
-            </motion.div>
-          )
-        })}
-      </div>
-    </motion.div>
-  )
-}
-
-function InsightsSection() {
-  return (
-    <motion.div variants={item} className="rounded-xl border border-white/[0.06] bg-slate-900/50 p-4">
-      <div className="flex items-center gap-2 mb-4">
-        <svg className="w-4 h-4 text-cyan-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-          <path strokeLinecap="round" strokeLinejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09zM18.259 8.715L18 9.75l-.259-1.035a3.375 3.375 0 00-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 002.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 002.455 2.456L21.75 6l-1.036.259a3.375 3.375 0 00-2.455 2.456zM16.894 20.567L16.5 21.75l-.394-1.183a2.25 2.25 0 00-1.423-1.423L13.5 18.75l1.183-.394a2.25 2.25 0 001.423-1.423l.394-1.183.394 1.183a2.25 2.25 0 001.423 1.423l1.183.394-1.183.394a2.25 2.25 0 00-1.423 1.423z" />
-        </svg>
-        <h3 className="text-sm font-semibold text-white">AI-Powered Insights</h3>
-        <span className="rounded-md bg-white/[0.04] px-1.5 py-0.5 text-[9px] text-slate-500">{insights.length} recommendations</span>
-      </div>
-      <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-        {insights.map(inx => {
-          const IconComp = insightIconMap[inx.icon] || ExclamationCircle
-          const p = inx.priority
-          const pColor = p === 'critical' ? 'text-red-400 border-red-500/30 bg-red-500/10'
-            : p === 'high' ? 'text-amber-400 border-amber-500/30 bg-amber-500/10'
-            : p === 'medium' ? 'text-cyan-400 border-cyan-500/30 bg-cyan-500/10'
-            : 'text-slate-400 border-white/[0.06] bg-white/[0.04]'
-          const pLabel = p.charAt(0).toUpperCase() + p.slice(1)
-
-          return (
-            <motion.div
-              key={inx.id}
-              whileHover={{ y: -2, borderColor: 'rgba(6,182,212,0.3)' }}
-              className="rounded-lg border border-white/[0.06] bg-white/[0.03] p-3 transition-all"
-            >
-              <div className="flex items-start gap-2.5">
-                <div className={`w-7 h-7 rounded-md flex items-center justify-center shrink-0 ${
-                  p === 'critical' ? 'bg-red-500/10 text-red-400'
-                    : p === 'high' ? 'bg-amber-500/10 text-amber-400'
-                    : p === 'medium' ? 'bg-cyan-500/10 text-cyan-400'
-                    : 'bg-white/[0.04] text-slate-500'
-                }`}>
-                  <IconComp className="w-3.5 h-3.5" />
-                </div>
-                <div className="min-w-0 flex-1">
-                  <div className="flex items-center gap-1.5 mb-1">
-                    <span className={`rounded border px-1.5 py-0.5 text-[8px] font-semibold ${pColor}`}>{pLabel}</span>
-                    <span className="text-[8px] text-slate-600">{inx.category}</span>
-                  </div>
-                  <p className="text-[10px] text-slate-300 leading-relaxed">{inx.text}</p>
-                </div>
-              </div>
-            </motion.div>
-          )
-        })}
-      </div>
-    </motion.div>
-  )
-}
-
-function AnimatedEdge({ id, source, target, style, markerEnd, data }) {
-  const edgePath = `M0,0 L100,0`
-  const isHighRisk = style?.stroke === '#ef4444'
-
-  return (
-    <>
-      {isHighRisk && (
-        <motion.path
-          d={edgePath}
-          stroke="rgba(239,68,68,0.15)"
-          strokeWidth="6"
-          fill="none"
-          animate={{
-            strokeOpacity: [0.1, 0.3, 0.1],
-          }}
-          transition={{
-            duration: 2,
-            repeat: Infinity,
-            ease: 'easeInOut',
-          }}
-        />
-      )}
-      <path
-        id={id}
-        d={edgePath}
-        style={{
-          ...style,
-          stroke: isHighRisk ? '#ef4444' : style?.stroke || '#475569',
-          strokeWidth: isHighRisk ? 2.5 : style?.strokeWidth || 1.5,
-        }}
-        className="react-flow__edge-path"
-        markerEnd={markerEnd}
-      />
-      {isHighRisk && (
-        <motion.path
-          d={edgePath}
-          stroke="#ef4444"
-          strokeWidth={1}
-          fill="none"
-          strokeDasharray="4 4"
-          animate={{
-            strokeDashoffset: [0, -8],
-          }}
-          transition={{
-            duration: 1,
-            repeat: Infinity,
-            ease: 'linear',
-          }}
-          className="react-flow__edge-path"
-        />
-      )}
-    </>
-  )
-}
-
-const edgeTypes = { animated: AnimatedEdge }
-
-export default function KnowledgeGraph() {
+function GraphInside() {
+  const reactFlowInstance = useReactFlow()
   const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes.map(n => ({ ...n, type: 'custom' })))
   const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges.map(e => {
     const dep = dependencies.find(d => d.source === e.source && d.target === e.target)
@@ -714,13 +254,24 @@ export default function KnowledgeGraph() {
   const [search, setSearch] = useState('')
   const [activeFilter, setActiveFilter] = useState('all')
   const [blastMode, setBlastMode] = useState(false)
-  const [depSearch, setDepSearch] = useState('')
+  const [drawerOpen, setDrawerOpen] = useState(false)
+  const graphRef = useRef(null)
+
+  useEffect(() => {
+    if (reactFlowInstance) {
+      const t = setTimeout(() => {
+        reactFlowInstance.fitView({ padding: 0.06 })
+      }, 150)
+      return () => clearTimeout(t)
+    }
+  }, [reactFlowInstance])
 
   const onNodeClick = useCallback((_, node) => {
     setSelectedNode(node)
   }, [])
 
   const onPaneClick = useCallback(() => {
+    setSelectedNode(null)
   }, [])
 
   const filteredNodes = useMemo(() => {
@@ -751,64 +302,61 @@ export default function KnowledgeGraph() {
   }, [nodes, selectedNode, blastMode, edges])
 
   const displayNodes = blastNodes || filteredNodes
-
   const highCount = nodes.filter(n => n.data.risk === 'high').length
   const mediumCount = nodes.filter(n => n.data.risk === 'medium').length
   const lowCount = nodes.filter(n => n.data.risk === 'low').length
-
   const uniqueTeams = [...new Set(nodes.map(n => n.data.team))]
+  const selectedDetail = selectedNode ? serviceDetails[selectedNode.id] || {} : null
 
   return (
-    <Layout>
-      <motion.div variants={container} initial="hidden" animate="show" className="space-y-6 pb-8">
-        <motion.div variants={item} className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-cyan-500/20 to-emerald-500/20 border border-cyan-400/30 flex items-center justify-center">
-              <NetworkIcon className="w-5 h-5 text-cyan-400" />
-            </div>
-            <div>
-              <h1 className="text-xl sm:text-2xl font-bold text-white tracking-tight flex items-center gap-2">
-                Engineering Intelligence Graph
-                <span className="rounded-md bg-cyan-400/10 border border-cyan-400/30 px-1.5 py-0.5 text-[8px] text-cyan-300 font-medium">v2.0</span>
-              </h1>
-              <p className="text-xs text-slate-500 mt-0.5">Interactive Service Dependency & Risk Map • {nodes.length} services • {edges.length} dependencies</p>
-            </div>
+    <div className="flex flex-col h-full">
+      <div className="flex items-center justify-between gap-2 px-3 py-2 border-b border-white/[0.06] flex-shrink-0">
+        <div className="flex items-center gap-2 min-w-0">
+          <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-cyan-500/20 to-emerald-500/20 border border-cyan-400/30 flex items-center justify-center shrink-0">
+            <NetworkIcon className="w-3.5 h-3.5 text-cyan-400" />
           </div>
-          <div className="flex items-center gap-2">
+          <div className="min-w-0">
+            <h2 className="text-xs font-bold text-white truncate">Knowledge Graph</h2>
+            <p className="text-[8px] text-slate-600 truncate">{nodes.length} services \u00B7 {edges.length} deps</p>
+          </div>
+        </div>
+        <div className="flex items-center gap-1.5">
+          <button
+            onClick={() => setBlastMode(!blastMode)}
+            className={`rounded-lg border px-2 py-1 text-[9px] font-medium transition-all flex items-center gap-1 ${
+              blastMode
+                ? 'border-cyan-400/40 bg-cyan-400/10 text-cyan-300'
+                : 'border-white/[0.06] text-slate-500 hover:border-white/[0.12]'
+            }`}
+          >
+            <AlertTriangle className="w-2.5 h-2.5" />
+            <span className="hidden sm:inline">Blast</span>
+          </button>
+          {reactFlowInstance && (
             <button
-              onClick={() => setBlastMode(!blastMode)}
-              className={`rounded-lg border px-3 py-1.5 text-[10px] font-medium transition-all flex items-center gap-1.5 ${
-                blastMode
-                  ? 'border-cyan-400/40 bg-cyan-400/10 text-cyan-300 shadow-[0_0_12px_rgba(6,182,212,0.15)]'
-                  : 'border-white/[0.06] text-slate-500 hover:border-white/[0.12] hover:text-slate-400'
-              }`}
+              onClick={() => reactFlowInstance.fitView({ padding: 0.06 })}
+              className="rounded-lg border border-white/[0.06] p-1.5 text-slate-500 hover:border-white/[0.12] hover:text-slate-400 transition-all"
+              title="Fit view"
             >
-              <AlertTriangle className="w-3 h-3" />
-              {blastMode ? 'Exit Blast Radius' : 'Blast Radius'}
+              <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 3.75v4.5m0-4.5h4.5m-4.5 0L9 9M3.75 20.25v-4.5m0 4.5h4.5m-4.5 0L9 15M20.25 3.75h-4.5m4.5 0v4.5m0-4.5L15 9m5.25 11.25h-4.5m4.5 0v-4.5m0 4.5L15 15" />
+              </svg>
             </button>
-          </div>
-        </motion.div>
+          )}
+        </div>
+      </div>
 
-        <motion.div variants={item} className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-2">
-          {[
-            { label: 'Services', value: nodes.length, color: 'text-cyan-400', detail: `${uniqueTeams.length} teams` },
-            { label: 'Dependencies', value: edges.length, color: 'text-emerald-400', detail: `${dependencies.filter(d => d.risk === 'high').length} high risk` },
-            { label: 'Teams', value: uniqueTeams.length, color: 'text-violet-400', detail: `${nodes.length} total services` },
-            { label: 'High Risk', value: highCount, color: 'text-red-400', detail: `${((highCount / nodes.length) * 100).toFixed(0)}% of services` },
-            { label: 'Medium Risk', value: mediumCount, color: 'text-amber-400', detail: `${((mediumCount / nodes.length) * 100).toFixed(0)}% of services` },
-            { label: 'Low Risk', value: lowCount, color: 'text-emerald-400', detail: `${((lowCount / nodes.length) * 100).toFixed(0)}% of services` },
-          ].map(s => (
-            <div key={s.label} className="rounded-lg border border-white/[0.06] bg-white/[0.03] p-3">
-              <div className="text-[9px] text-slate-600 mb-0.5">{s.label}</div>
-              <div className={`text-lg font-bold ${s.color}`}>{s.value}</div>
-              <div className="text-[8px] text-slate-600 mt-0.5">{s.detail}</div>
-            </div>
-          ))}
-        </motion.div>
+      <div className="flex items-center gap-2 px-3 py-1.5 border-b border-white/[0.04] flex-shrink-0">
+        <SearchFilterBar search={search} setSearch={setSearch} activeFilter={activeFilter} setActiveFilter={setActiveFilter} drawerOpen={drawerOpen} setDrawerOpen={setDrawerOpen} />
+        <div className="hidden md:flex items-center gap-2 ml-auto text-[8px] text-slate-700">
+          <span className="flex items-center gap-1"><span className="w-1.5 h-1.5 rounded-full bg-red-500" />{highCount}</span>
+          <span className="flex items-center gap-1"><span className="w-1.5 h-1.5 rounded-full bg-amber-500" />{mediumCount}</span>
+          <span className="flex items-center gap-1"><span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />{lowCount}</span>
+        </div>
+      </div>
 
-        <SearchFilterBar search={search} setSearch={setSearch} activeFilter={activeFilter} setActiveFilter={setActiveFilter} />
-
-        <motion.div variants={item} className="relative h-[450px] md:h-[550px] rounded-xl border border-white/[0.06] overflow-hidden bg-slate-950">
+      <div className="flex flex-1 min-h-0 relative">
+        <div className="flex-1 min-w-0 relative" ref={graphRef}>
           <ReactFlow
             nodes={displayNodes}
             edges={edges}
@@ -818,12 +366,13 @@ export default function KnowledgeGraph() {
             onPaneClick={onPaneClick}
             nodeTypes={nodeTypes}
             edgeTypes={edgeTypes}
-            fitView
             className="bg-slate-950"
-            minZoom={0.3}
-            maxZoom={2.5}
+            minZoom={0.1}
+            maxZoom={4}
+            fitView={false}
+            defaultEdgeOptions={{ animated: false }}
           >
-            <Background color="#1e293b" gap={24} size={1} />
+            <Background color="#1e293b" gap={20} size={1} />
             <Controls className="bg-slate-900 border border-white/[0.06] rounded-lg [&>button]:border-white/[0.06] [&>button]:text-slate-400 [&>button]:hover:bg-white/[0.04]" />
             <MiniMap
               nodeColor={(n) => riskColors[n.data?.risk]?.border || '#475569'}
@@ -832,39 +381,279 @@ export default function KnowledgeGraph() {
               style={{ backgroundColor: '#0f172a' }}
             />
           </ReactFlow>
-
           {search && filteredNodes.length === 0 && (
             <div className="absolute inset-0 flex items-center justify-center bg-slate-950/80 backdrop-blur-sm">
               <div className="text-center">
-                <svg className="w-8 h-8 text-slate-700 mx-auto mb-2" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+                <svg className="w-6 h-6 text-slate-700 mx-auto mb-1.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
                   <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
                 </svg>
-                <p className="text-xs text-slate-600">No nodes matching "<span className="text-slate-400">{search}</span>"</p>
-                <p className="text-[9px] text-slate-700 mt-1">Try a different search term or clear filters</p>
+                <p className="text-[10px] text-slate-600">No nodes matching "<span className="text-slate-400">{search}</span>"</p>
               </div>
             </div>
           )}
-        </motion.div>
+        </div>
 
-        <AnimatePresence>
-          {selectedNode && (
-            <DetailPanel
-              selectedNode={selectedNode}
-              onClose={() => setSelectedNode(null)}
-              onBlastToggle={() => setBlastMode(!blastMode)}
-              blastMode={blastMode}
-            />
-          )}
-        </AnimatePresence>
+        <aside className="hidden lg:block border-l border-white/[0.06] bg-slate-950/95 overflow-y-auto flex-shrink-0 w-[280px]"
+          style={{ maxHeight: '100%' }}
+        >
+          <div className="p-3 space-y-3 min-w-[280px]">
+            {selectedNode && selectedDetail ? (
+              <div>
+                <div className="flex items-center justify-between mb-2">
+                  <h3 className="text-xs font-semibold text-white">{selectedNode.data.label}</h3>
+                  <button onClick={() => setSelectedNode(null)} className="text-slate-600 hover:text-slate-400">
+                    <svg className="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                  </button>
+                </div>
+                <p className="text-[9px] text-slate-500 mb-2">{selectedDetail.description || ''}</p>
+                <div className="flex flex-wrap gap-1 mb-2">
+                  <span className={`rounded border px-1.5 py-0.5 text-[8px] font-semibold ${riskColors[selectedNode.data.risk]?.badge || riskColors.low.badge}`}>
+                    {selectedNode.data.risk.toUpperCase()}
+                  </span>
+                  <span className="rounded border border-white/[0.06] bg-white/[0.04] px-1.5 py-0.5 text-[8px] text-slate-400">{selectedNode.data.type}</span>
+                </div>
+                <div className="grid grid-cols-2 gap-1.5 mb-3">
+                  {[
+                    { label: 'Uptime', value: `${selectedDetail.uptime ?? '-'}%`, color: (selectedDetail.uptime ?? 0) >= 99.9 ? 'text-emerald-400' : 'text-amber-400' },
+                    { label: 'Resp Time', value: selectedDetail.responseTime || '-', color: 'text-cyan-400' },
+                    { label: 'Error Rate', value: selectedDetail.errorRate != null ? `${selectedDetail.errorRate}%` : '-', color: (selectedDetail.errorRate ?? 0) < 0.5 ? 'text-emerald-400' : 'text-red-400' },
+                    { label: 'Incidents', value: selectedDetail.incidents != null ? String(selectedDetail.incidents) : '-', color: (selectedDetail.incidents ?? 0) === 0 ? 'text-emerald-400' : 'text-amber-400' },
+                  ].map(s => (
+                    <div key={s.label} className="rounded border border-white/[0.06] bg-white/[0.03] p-1.5">
+                      <div className="text-[7px] text-slate-600">{s.label}</div>
+                      <div className={`text-[10px] font-bold ${s.color}`}>{s.value}</div>
+                    </div>
+                  ))}
+                </div>
+                <div className="rounded-lg border border-cyan-400/15 bg-cyan-400/5 p-2 mb-3">
+                  <p className="text-[8px] text-slate-500 leading-relaxed">
+                    {selectedNode.data.risk === 'high'
+                      ? 'Critical service. Implement circuit breakers and redundancy.'
+                      : selectedNode.data.risk === 'medium'
+                      ? 'Moderate risk. Monitor latency and error budgets.'
+                      : 'Low risk. Standard monitoring sufficient.'}
+                  </p>
+                </div>
+              </div>
+            ) : null}
 
-        <DependencyCards depSearch={depSearch} setDepSearch={setDepSearch} />
+            <div>
+              <h4 className="text-[9px] font-semibold text-slate-500 uppercase tracking-wider mb-1.5">Graph Stats</h4>
+              <div className="grid grid-cols-2 gap-1.5">
+                {[
+                  { label: 'Services', value: nodes.length },
+                  { label: 'Dependencies', value: edges.length },
+                  { label: 'Teams', value: uniqueTeams.length },
+                  { label: 'High Risk', value: highCount },
+                ].map(s => (
+                  <div key={s.label} className="rounded border border-white/[0.06] bg-white/[0.03] p-1.5 text-center">
+                    <div className="text-[9px] font-bold text-white">{s.value}</div>
+                    <div className="text-[7px] text-slate-600">{s.label}</div>
+                  </div>
+                ))}
+              </div>
+            </div>
 
-        <TeamCards />
+            <div>
+              <h4 className="text-[9px] font-semibold text-slate-500 uppercase tracking-wider mb-1.5">Dependencies</h4>
+              <div className="space-y-1 max-h-[200px] overflow-y-auto">
+                {dependencies.slice(0, 6).map(d => {
+                  const src = initialNodes.find(n => n.id === d.source)?.data.label || d.source
+                  const tgt = initialNodes.find(n => n.id === d.target)?.data.label || d.target
+                  return (
+                    <div key={d.id} className="flex items-center gap-1 rounded border border-white/[0.04] bg-white/[0.02] px-1.5 py-1">
+                      <span className="text-[8px] text-slate-300 min-w-0 truncate flex-1">{src} \u2192 {tgt}</span>
+                      <span className={`w-1.5 h-1.5 rounded-full shrink-0 ${d.status === 'healthy' ? 'bg-emerald-500' : d.status === 'degraded' ? 'bg-amber-500' : 'bg-red-500'}`} />
+                    </div>
+                  )
+                })}
+              </div>
+            </div>
 
-        <PropagationPaths />
+            <div>
+              <h4 className="text-[9px] font-semibold text-slate-500 uppercase tracking-wider mb-1.5">AI Insights</h4>
+              <div className="space-y-1 max-h-[180px] overflow-y-auto">
+                {allInsights.slice(0, 4).map(inx => (
+                  <div key={inx.id} className="rounded border border-white/[0.04] bg-white/[0.02] p-1.5">
+                    <div className="flex items-center gap-1 mb-0.5">
+                      <span className={`text-[7px] font-semibold px-1 py-px rounded ${
+                        inx.priority === 'critical' ? 'bg-red-500/10 text-red-400' :
+                        inx.priority === 'high' ? 'bg-amber-500/10 text-amber-400' :
+                        inx.priority === 'medium' ? 'bg-cyan-500/10 text-cyan-400' :
+                        'bg-white/[0.04] text-slate-500'
+                      }`}>{inx.priority}</span>
+                      <span className="text-[7px] text-slate-600">{inx.category}</span>
+                    </div>
+                    <p className="text-[8px] text-slate-400 leading-relaxed">{inx.text}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
 
-        <InsightsSection />
-      </motion.div>
+            <div>
+              <h4 className="text-[9px] font-semibold text-slate-500 uppercase tracking-wider mb-1.5">Teams</h4>
+              <div className="space-y-1">
+                {teams.map(t => (
+                  <div key={t.id} className="flex items-center justify-between rounded border border-white/[0.04] bg-white/[0.02] px-1.5 py-1">
+                    <div className="flex items-center gap-1.5 min-w-0">
+                      <div className="w-4 h-4 rounded flex items-center justify-center text-[6px] font-bold" style={{ backgroundColor: `${t.color}22`, border: `1px solid ${t.color}44`, color: t.color }}>{t.name.slice(0, 2)}</div>
+                      <span className="text-[8px] text-slate-300 truncate">{t.name}</span>
+                    </div>
+                    <span className="text-[7px] text-slate-600">{t.members}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </aside>
+
+        {drawerOpen && (
+          <motion.aside
+            initial={{ x: '100%' }}
+            animate={{ x: 0 }}
+            exit={{ x: '100%' }}
+            className="lg:hidden fixed inset-x-0 bottom-0 z-50 max-h-[60vh] rounded-t-xl border border-white/[0.06] bg-slate-950/95 backdrop-blur-2xl overflow-y-auto"
+          >
+            <div className="sticky top-0 bg-slate-950/95 backdrop-blur-sm flex items-center justify-between px-3 py-2 border-b border-white/[0.06]">
+              <span className="text-[10px] font-semibold text-slate-300">Intelligence</span>
+              <button onClick={() => setDrawerOpen(false)} className="text-slate-600 hover:text-slate-400"><svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" /></svg></button>
+            </div>
+            <div className="p-3 space-y-3">
+              {selectedNode && selectedDetail && (
+                <div className="rounded-lg border border-white/[0.06] bg-white/[0.03] p-2">
+                  <div className="flex items-center justify-between mb-1">
+                    <span className="text-[10px] font-semibold text-white">{selectedNode.data.label}</span>
+                    <span className={`rounded border px-1 py-px text-[7px] font-semibold ${riskColors[selectedNode.data.risk]?.badge}`}>{selectedNode.data.risk}</span>
+                  </div>
+                  <div className="grid grid-cols-4 gap-1">
+                    <div className="text-center"><div className="text-[9px] font-bold text-white">{selectedDetail.uptime ?? '-'}%</div><div className="text-[6px] text-slate-600">Uptime</div></div>
+                    <div className="text-center"><div className="text-[9px] font-bold text-cyan-400">{selectedDetail.responseTime || '-'}</div><div className="text-[6px] text-slate-600">Resp</div></div>
+                    <div className="text-center"><div className="text-[9px] font-bold" style={{ color: (selectedDetail.errorRate ?? 0) < 0.5 ? '#22c55e' : '#ef4444' }}>{selectedDetail.errorRate ?? '-'}%</div><div className="text-[6px] text-slate-600">Err</div></div>
+                    <div className="text-center"><div className="text-[9px] font-bold text-white">{selectedDetail.incidents ?? '-'}</div><div className="text-[6px] text-slate-600">Inc</div></div>
+                  </div>
+                </div>
+              )}
+              <div className="grid grid-cols-4 gap-1">
+                {[
+                  { label: 'Svc', value: nodes.length },
+                  { label: 'Deps', value: edges.length },
+                  { label: 'Teams', value: uniqueTeams.length },
+                  { label: 'High', value: highCount },
+                ].map(s => (
+                  <div key={s.label} className="rounded border border-white/[0.06] bg-white/[0.03] p-1 text-center"><div className="text-[9px] font-bold text-white">{s.value}</div><div className="text-[6px] text-slate-600">{s.label}</div></div>
+                ))}
+              </div>
+              <div><h4 className="text-[8px] font-semibold text-slate-500 uppercase tracking-wider mb-1">Dependencies</h4><div className="space-y-1">{dependencies.slice(0, 5).map(d => { const src = initialNodes.find(n => n.id === d.source)?.data.label || d.source; const tgt = initialNodes.find(n => n.id === d.target)?.data.label || d.target; return <div key={d.id} className="flex items-center gap-1 rounded border border-white/[0.04] bg-white/[0.02] px-1.5 py-1"><span className="text-[8px] text-slate-300 flex-1 truncate">{src} → {tgt}</span><span className={`w-1.5 h-1.5 rounded-full shrink-0 ${d.status === 'healthy' ? 'bg-emerald-500' : d.status === 'degraded' ? 'bg-amber-500' : 'bg-red-500'}`} /></div> })}</div></div>
+              <div><h4 className="text-[8px] font-semibold text-slate-500 uppercase tracking-wider mb-1">Insights</h4><div className="space-y-1">{allInsights.slice(0, 3).map(inx => <div key={inx.id} className="rounded border border-white/[0.04] bg-white/[0.02] p-1.5"><p className="text-[8px] text-slate-400">{inx.text}</p></div>)}</div></div>
+            </div>
+          </motion.aside>
+        )}
+      </div>
+
+      <div className="border-t border-white/[0.06] bg-slate-950 flex-shrink-0">
+        <div className="flex flex-col sm:flex-row">
+          <div className="flex-1 border-b sm:border-b-0 sm:border-r border-white/[0.04] p-2.5">
+            <div className="flex items-center gap-1.5 mb-1.5">
+              <BoltIcon className="w-3 h-3 text-red-400" />
+              <h4 className="text-[9px] font-semibold text-slate-400 uppercase tracking-wider">Blast Radius & Propagation</h4>
+            </div>
+            <div className="flex gap-1.5 overflow-x-auto pb-1">
+              {propagationPaths.slice(0, 4).map(p => {
+                const src = initialNodes.find(n => n.id === p.from)?.data.label || p.from
+                const tgt = initialNodes.find(n => n.id === p.to)?.data.label || p.to
+                return (
+                  <div key={p.label} className="shrink-0 rounded border border-white/[0.06] bg-white/[0.03] p-1.5 min-w-[130px]">
+                    <div className="flex items-center gap-1 text-[8px] text-slate-300 mb-1">
+                      <span className="truncate">{src}</span>
+                      <svg className="w-2 h-2 text-slate-600 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" /></svg>
+                      <span className="truncate">{tgt}</span>
+                    </div>
+                    <div className="flex items-center gap-1">
+                      <div className="flex-1 h-1 rounded-full bg-white/[0.06] overflow-hidden">
+                        <div className="h-full rounded-full" style={{ width: `${p.risk}%`, backgroundColor: p.risk > 70 ? '#ef4444' : p.risk > 30 ? '#f59e0b' : '#22c55e' }} />
+                      </div>
+                      <span className={`text-[8px] font-semibold ${p.risk > 70 ? 'text-red-400' : p.risk > 30 ? 'text-amber-400' : 'text-emerald-400'}`}>{p.risk}%</span>
+                    </div>
+                  </div>
+                )
+              })}
+            </div>
+          </div>
+
+          <div className="flex-shrink-0 p-2.5 min-w-[200px]">
+            <div className="flex items-center gap-1.5 mb-1.5">
+              <svg className="w-3 h-3 text-emerald-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><path strokeLinecap="round" strokeLinejoin="round" d="M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v6.75C7.5 20.496 6.996 21 6.375 21h-2.25A1.125 1.125 0 013 19.875v-6.75zM9.75 8.625c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125v11.25c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V8.625zM16.5 4.125c0-.621.504-1.125 1.125-1.125h2.25C20.496 3 21 3.504 21 4.125v15.75c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V4.125z" /></svg>
+              <h4 className="text-[9px] font-semibold text-slate-400 uppercase tracking-wider">Dependency Stats</h4>
+            </div>
+            <div className="grid grid-cols-3 gap-2">
+              <div className="text-center"><div className="text-[11px] font-bold text-white">{dependencies.length}</div><div className="text-[7px] text-slate-600">Total</div></div>
+              <div className="text-center"><div className="text-[11px] font-bold text-red-400">{dependencies.filter(d => d.risk === 'high').length}</div><div className="text-[7px] text-slate-600">Critical</div></div>
+              <div className="text-center"><div className="text-[11px] font-bold text-emerald-400">{dependencies.filter(d => d.status === 'healthy').length}</div><div className="text-[7px] text-slate-600">Healthy</div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+function AnimatedEdge({ id, source, target, style, markerEnd, data }) {
+  const edgePath = `M0,0 L100,0`
+  const isHighRisk = style?.stroke === '#ef4444'
+
+  return (
+    <>
+      {isHighRisk && (
+        <motion.path
+          d={edgePath}
+          stroke="rgba(239,68,68,0.15)"
+          strokeWidth="6"
+          fill="none"
+          animate={{ strokeOpacity: [0.1, 0.3, 0.1] }}
+          transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
+        />
+      )}
+      <path
+        id={id}
+        d={edgePath}
+        style={{
+          ...style,
+          stroke: isHighRisk ? '#ef4444' : style?.stroke || '#475569',
+          strokeWidth: isHighRisk ? 2.5 : style?.strokeWidth || 1.5,
+        }}
+        className="react-flow__edge-path"
+        markerEnd={markerEnd}
+      />
+      {isHighRisk && (
+        <motion.path
+          d={edgePath}
+          stroke="#ef4444"
+          strokeWidth={1}
+          fill="none"
+          strokeDasharray="4 4"
+          animate={{ strokeDashoffset: [0, -8] }}
+          transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
+          className="react-flow__edge-path"
+        />
+      )}
+    </>
+  )
+}
+
+const edgeTypes = { animated: AnimatedEdge }
+
+export default function KnowledgeGraph() {
+  return (
+    <Layout>
+      <div className="-m-4 sm:-m-6 lg:-m-8" style={{ height: 'calc(100vh - 3.5rem)', maxWidth: '100vw' }}>
+        <div className="flex flex-col h-full">
+          <ReactFlowProvider>
+            <GraphInside />
+          </ReactFlowProvider>
+        </div>
+      </div>
     </Layout>
   )
 }
