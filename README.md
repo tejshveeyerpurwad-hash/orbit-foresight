@@ -9,12 +9,22 @@
 </p>
 
 <p align="center">
+  <a href="https://frontend-phi-beige-51.vercel.app" target="_blank"><img src="https://img.shields.io/badge/Live_Demo-06b6d4?style=for-the-badge&logo=vercel&labelColor=0f172a&color=06b6d4" alt="Live Demo"/></a>
+  <a href="https://vercel.com"><img src="https://img.shields.io/badge/Deployed_on_Vercel-000?style=for-the-badge&logo=vercel&labelColor=0f172a&color=000" alt="Vercel"/></a>
+  <a href="#"><img src="https://img.shields.io/badge/Hackathon-Project-fe7d37?style=for-the-badge&labelColor=0f172a&color=fe7d37" alt="Hackathon Project"/></a>
+</p>
+
+<p align="center">
   <a href="#"><img src="https://img.shields.io/badge/React_18-2024?style=flat-square&logo=react&labelColor=0f172a&color=61DAFB" alt="React 18"/></a>
   <a href="#"><img src="https://img.shields.io/badge/Vite_5-2024?style=flat-square&logo=vite&labelColor=0f172a&color=646CFF" alt="Vite 5"/></a>
   <a href="#"><img src="https://img.shields.io/badge/Tailwind_3-2024?style=flat-square&logo=tailwindcss&labelColor=0f172a&color=06b6d4" alt="Tailwind 3"/></a>
   <a href="#"><img src="https://img.shields.io/badge/Framer_12-2024?style=flat-square&logo=framer&labelColor=0f172a&color=8b5cf6" alt="Framer 12"/></a>
   <a href="#"><img src="https://img.shields.io/badge/FastAPI-2024?style=flat-square&logo=fastapi&labelColor=0f172a&color=009688" alt="FastAPI"/></a>
   <a href="#"><img src="https://img.shields.io/badge/Python_3.11-2024?style=flat-square&logo=python&labelColor=0f172a&color=3776AB" alt="Python 3.11"/></a>
+</p>
+
+<p align="center">
+  <strong>Production URL:</strong> <a href="https://frontend-phi-beige-51.vercel.app" target="_blank"><code>https://frontend-phi-beige-51.vercel.app</code></a>
 </p>
 
 ---
