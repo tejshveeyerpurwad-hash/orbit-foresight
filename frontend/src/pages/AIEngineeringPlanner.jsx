@@ -193,7 +193,7 @@ function ReadinessGauge({ value, label }) {
 
 function EffortBar({ label, points, hours, owner, totalPoints, color = 'violet' }) {
   const pct = totalPoints > 0 ? (points / totalPoints) * 100 : 0
-  const barColor = color === 'violet' ? 'bg-violet-500' : color === 'indigo' ? 'bg-indigo-500' : color === 'emerald' ? 'bg-emerald-500' : 'bg-violet-500'
+  const hexColor = color === 'violet' ? '#8b5cf6' : color === 'indigo' ? '#6366f1' : color === 'emerald' ? '#10b981' : '#8b5cf6'
   return (
     <div className="rounded-lg border border-slate-800 bg-slate-900/60 p-3 hover:border-violet-500/30 transition-all group">
       <div className="flex items-center justify-between mb-1.5">
@@ -203,30 +203,30 @@ function EffortBar({ label, points, hours, owner, totalPoints, color = 'violet' 
           <span className="text-[9px] text-slate-600">{hours}h</span>
         </div>
       </div>
-      <div className="h-1.5 rounded-full bg-slate-800 overflow-hidden">
-        <motion.div
-          initial={{ width: 0 }}
-          animate={{ width: `${pct}%` }}
-          transition={{ duration: 0.8, delay: 0.2 }}
-          className={`h-full rounded-full ${barColor}`}
-        />
+      <div className="flex items-center gap-2">
+        <svg width="28" height="28" viewBox="0 0 28 28" className="-rotate-90 shrink-0">
+          <circle cx="14" cy="14" r="10" fill="none" stroke="rgba(255,255,255,0.04)" strokeWidth="3" />
+          <motion.circle cx="14" cy="14" r="10" fill="none" stroke={hexColor} strokeWidth="3" strokeLinecap="round"
+            strokeDasharray={2 * Math.PI * 10} initial={{ strokeDashoffset: 2 * Math.PI * 10 }}
+            animate={{ strokeDashoffset: 2 * Math.PI * 10 * (1 - pct / 100) }} transition={{ duration: 0.8, delay: 0.2, ease: 'easeOut' }} />
+          <text x="14" y="17" textAnchor="middle" fill={hexColor} fontSize="6" fontWeight="700" fontFamily="monospace" transform="rotate(90 14 14)">{Math.round(pct)}%</text>
+        </svg>
+        <span className="text-[9px] text-slate-600">{owner}</span>
       </div>
-      <div className="mt-1 text-[9px] text-slate-600">{owner}</div>
     </div>
   )
 }
 
 function TeamCapacityBar({ load }) {
-  const color = load >= 80 ? 'bg-red-500' : load >= 60 ? 'bg-yellow-500' : 'bg-green-500'
+  const hexColor = load >= 80 ? '#ef4444' : load >= 60 ? '#eab308' : '#22c55e'
   return (
-    <div className="h-1.5 rounded-full bg-slate-800 overflow-hidden flex-1 mx-2">
-      <motion.div
-        initial={{ width: 0 }}
-        animate={{ width: `${load}%` }}
-        transition={{ duration: 0.8, delay: 0.1 }}
-        className={`h-full rounded-full ${color}`}
-      />
-    </div>
+    <svg width="24" height="24" viewBox="0 0 24 24" className="-rotate-90 shrink-0">
+      <circle cx="12" cy="12" r="9" fill="none" stroke="rgba(255,255,255,0.04)" strokeWidth="2.5" />
+      <motion.circle cx="12" cy="12" r="9" fill="none" stroke={hexColor} strokeWidth="2.5" strokeLinecap="round"
+        strokeDasharray={2 * Math.PI * 9} initial={{ strokeDashoffset: 2 * Math.PI * 9 }}
+        animate={{ strokeDashoffset: 2 * Math.PI * 9 * (1 - load / 100) }} transition={{ duration: 0.8, delay: 0.1, ease: 'easeOut' }} />
+      <text x="12" y="15" textAnchor="middle" fill={hexColor} fontSize="6" fontWeight="700" fontFamily="monospace" transform="rotate(90 12 12)">{load}%</text>
+    </svg>
   )
 }
 
@@ -587,9 +587,13 @@ export default function AIEngineeringPlanner() {
                       <AnimatedCounter value={typeof s.value === 'number' ? s.value : 85} suffix={s.suffix || ''} delay={200 + i * 80} />
                     </motion.div>
                     {s.label === 'Release Confidence' && (
-                      <div className="mt-2 h-1 rounded-full bg-slate-800 overflow-hidden">
-                        <motion.div initial={{ width: 0 }} animate={{ width: `${plan.effort.confidence === 'High' ? 85 : 60}%` }} transition={{ duration: 0.8, delay: 0.5 }} className="h-full rounded-full bg-gradient-to-r from-emerald-500 to-green-400" />
-                      </div>
+                      <svg width="36" height="36" viewBox="0 0 36 36" className="-rotate-90 shrink-0 mx-auto mt-2">
+                        <circle cx="18" cy="18" r="14" fill="none" stroke="rgba(255,255,255,0.04)" strokeWidth="3.5" />
+                        <motion.circle cx="18" cy="18" r="14" fill="none" stroke="#22c55e" strokeWidth="3.5" strokeLinecap="round"
+                          strokeDasharray={2 * Math.PI * 14} initial={{ strokeDashoffset: 2 * Math.PI * 14 }}
+                          animate={{ strokeDashoffset: 2 * Math.PI * 14 * (1 - (plan.effort.confidence === 'High' ? 85 : 60) / 100) }} transition={{ duration: 0.8, delay: 0.5, ease: 'easeOut' }} />
+                        <text x="18" y="21" textAnchor="middle" fill="#22c55e" fontSize="9" fontWeight="700" fontFamily="monospace" transform="rotate(90 18 18)">{plan.effort.confidence === 'High' ? 85 : 60}%</text>
+                      </svg>
                     )}
                   </div>
                 ))}
@@ -731,9 +735,13 @@ export default function AIEngineeringPlanner() {
                         <div className="text-sm font-medium text-white mb-1">{sprint.name}</div>
                         <div className="text-[10px] text-slate-500 mb-3">{sprint.focus}</div>
                         <div className="flex items-center gap-2 mb-3">
-                          <div className="flex-1 h-1.5 rounded-full bg-slate-800 overflow-hidden">
-                            <motion.div initial={{ width: 0 }} animate={{ width: `${pct}%` }} transition={{ duration: 0.8, delay: 0.2 + i * 0.08 }} className={`h-full rounded-full ${isActive ? 'bg-violet-500' : 'bg-slate-600'}`} />
-                          </div>
+                          <svg width="28" height="28" viewBox="0 0 28 28" className="-rotate-90 shrink-0">
+                            <circle cx="14" cy="14" r="10" fill="none" stroke="rgba(255,255,255,0.04)" strokeWidth="3" />
+                            <motion.circle cx="14" cy="14" r="10" fill="none" stroke={isActive ? '#8b5cf6' : '#64748b'} strokeWidth="3" strokeLinecap="round"
+                              strokeDasharray={2 * Math.PI * 10} initial={{ strokeDashoffset: 2 * Math.PI * 10 }}
+                              animate={{ strokeDashoffset: 2 * Math.PI * 10 * (1 - pct / 100) }} transition={{ duration: 0.8, delay: 0.2 + i * 0.08, ease: 'easeOut' }} />
+                            <text x="14" y="17" textAnchor="middle" fill={isActive ? '#8b5cf6' : '#64748b'} fontSize="6" fontWeight="700" fontFamily="monospace" transform="rotate(90 14 14)">{pct}%</text>
+                          </svg>
                           <span className="text-[10px] font-medium text-slate-400">{donePts}/{totalPts} pts</span>
                         </div>
                         <div className="flex items-center justify-between text-[9px] text-slate-600">
@@ -938,9 +946,13 @@ export default function AIEngineeringPlanner() {
                     <span>Overall Progress</span>
                     <span className="text-violet-400 font-medium">{Math.round(plan.timeline.reduce((a, t) => a + t.progress, 0) / plan.timeline.length)}%</span>
                   </div>
-                  <div className="h-2 rounded-full bg-slate-800 overflow-hidden">
-                    <motion.div initial={{ width: 0 }} animate={{ width: `${Math.round(plan.timeline.reduce((a, t) => a + t.progress, 0) / plan.timeline.length)}%` }} transition={{ duration: 1, delay: 0.2 }} className="h-full rounded-full bg-gradient-to-r from-violet-500 to-indigo-400" />
-                  </div>
+                  <svg width="36" height="36" viewBox="0 0 36 36" className="-rotate-90">
+                    <circle cx="18" cy="18" r="14" fill="none" stroke="rgba(255,255,255,0.04)" strokeWidth="3.5" />
+                    <motion.circle cx="18" cy="18" r="14" fill="none" stroke="#8b5cf6" strokeWidth="3.5" strokeLinecap="round"
+                      strokeDasharray={2 * Math.PI * 14} initial={{ strokeDashoffset: 2 * Math.PI * 14 }}
+                      animate={{ strokeDashoffset: 2 * Math.PI * 14 * (1 - Math.round(plan.timeline.reduce((a, t) => a + t.progress, 0) / plan.timeline.length) / 100) }} transition={{ duration: 1, delay: 0.2, ease: 'easeOut' }} />
+                    <text x="18" y="21" textAnchor="middle" fill="#8b5cf6" fontSize="9" fontWeight="700" fontFamily="monospace" transform="rotate(90 18 18)">{Math.round(plan.timeline.reduce((a, t) => a + t.progress, 0) / plan.timeline.length)}%</text>
+                  </svg>
                 </div>
                 <div className="flex items-center gap-2 mb-4 overflow-x-auto pb-2">
                   {plan.sprints.map(s => (
@@ -1021,24 +1033,27 @@ export default function AIEngineeringPlanner() {
                   </div>
                   <div className="lg:w-48 rounded-lg border border-slate-800 bg-slate-900/80 p-4">
                     <div className="text-[10px] text-slate-500 font-medium mb-3">Budget vs Actual</div>
-                    <div className="space-y-3">
-                      <div>
-                        <div className="flex justify-between text-[9px] text-slate-500 mb-0.5">
-                          <span>Budget</span>
-                          <span>${plan.costEstimation.budget.toLocaleString()}</span>
-                        </div>
-                        <div className="h-2 rounded-full bg-slate-800 overflow-hidden">
-                          <div className="h-full rounded-full bg-emerald-500" style={{ width: '100%' }} />
-                        </div>
+                    <div className="flex items-center justify-center gap-4 mb-3">
+                      <div className="flex flex-col items-center">
+                        <svg width="44" height="44" viewBox="0 0 44 44" className="-rotate-90">
+                          <circle cx="22" cy="22" r="18" fill="none" stroke="rgba(255,255,255,0.04)" strokeWidth="3.5" />
+                          <motion.circle cx="22" cy="22" r="18" fill="none" stroke="#22c55e" strokeWidth="3.5" strokeLinecap="round"
+                            strokeDasharray={2 * Math.PI * 18} animate={{ strokeDashoffset: 0 }} transition={{ duration: 0.8, delay: 0.3 }} />
+                          <text x="22" y="26" textAnchor="middle" fill="#22c55e" fontSize="11" fontWeight="700" fontFamily="monospace" transform="rotate(90 22 22)">100%</text>
+                        </svg>
+                        <span className="text-[8px] text-slate-500 font-mono mt-1">Budget</span>
+                        <span className="text-[9px] text-slate-400 font-mono">${plan.costEstimation.budget.toLocaleString()}</span>
                       </div>
-                      <div>
-                        <div className="flex justify-between text-[9px] text-slate-500 mb-0.5">
-                          <span>Estimated</span>
-                          <span>${plan.costEstimation.totalCost.toLocaleString()}</span>
-                        </div>
-                        <div className="h-2 rounded-full bg-slate-800 overflow-hidden">
-                          <motion.div initial={{ width: 0 }} animate={{ width: `${(plan.costEstimation.totalCost / plan.costEstimation.budget) * 100}%` }} transition={{ duration: 0.8, delay: 0.4 }} className="h-full rounded-full bg-violet-500" />
-                        </div>
+                      <div className="flex flex-col items-center">
+                        <svg width="44" height="44" viewBox="0 0 44 44" className="-rotate-90">
+                          <circle cx="22" cy="22" r="18" fill="none" stroke="rgba(255,255,255,0.04)" strokeWidth="3.5" />
+                          <motion.circle cx="22" cy="22" r="18" fill="none" stroke="#8b5cf6" strokeWidth="3.5" strokeLinecap="round"
+                            strokeDasharray={2 * Math.PI * 18} initial={{ strokeDashoffset: 2 * Math.PI * 18 }}
+                            animate={{ strokeDashoffset: 2 * Math.PI * 18 * (1 - plan.costEstimation.totalCost / plan.costEstimation.budget) }} transition={{ duration: 0.8, delay: 0.4, ease: 'easeOut' }} />
+                          <text x="22" y="26" textAnchor="middle" fill="#8b5cf6" fontSize="10" fontWeight="700" fontFamily="monospace" transform="rotate(90 22 22)">{Math.round((plan.costEstimation.totalCost / plan.costEstimation.budget) * 100)}%</text>
+                        </svg>
+                        <span className="text-[8px] text-slate-500 font-mono mt-1">Estimated</span>
+                        <span className="text-[9px] text-violet-400 font-mono">${plan.costEstimation.totalCost.toLocaleString()}</span>
                       </div>
                     </div>
                     <div className="mt-3 pt-3 border-t border-slate-800">

@@ -170,20 +170,6 @@ const mockData = {
   ],
 }
 
-function AnimatedProgress({ value, color = 'bg-amber-500', size = 'md', label }) {
-  const [w, setW] = useState(0)
-  useEffect(() => { const t = setTimeout(() => setW(value), 300); return () => clearTimeout(t) }, [value])
-  const h = size === 'sm' ? 'h-1' : size === 'lg' ? 'h-2.5' : 'h-1.5'
-  return (
-    <div className="w-full">
-      {label && <div className="flex justify-between text-[10px] text-slate-500 mb-1"><span>{label}</span><span>{value}%</span></div>}
-      <div className={`${h} rounded-full bg-slate-800 overflow-hidden`}>
-        <motion.div initial={{ width: 0 }} animate={{ width: `${w}%` }} transition={{ duration: 0.8, ease: 'easeOut' }} className={`h-full rounded-full ${color}`} />
-      </div>
-    </div>
-  )
-}
-
 function AnimatedGauge({ value, label, sub }) {
   const [pct, setPct] = useState(0)
   useEffect(() => { const t = setTimeout(() => setPct(value), 400); return () => clearTimeout(t) }, [value])
@@ -375,12 +361,16 @@ function BlockerCard({ blocker, index, expanded, onToggle }) {
               <span>Raised: {String(blocker?.raisedDate ?? '')}</span>
               <span>Linked: {(blocker?.linkedItems || []).join(', ')}</span>
             </div>
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-2">
+              <svg width="28" height="28" viewBox="0 0 28 28" className="-rotate-90 shrink-0">
+                <circle cx="14" cy="14" r="10" fill="none" stroke="rgba(255,255,255,0.04)" strokeWidth="3" />
+                <motion.circle cx="14" cy="14" r="10" fill="none" stroke={blkProgress >= 100 ? '#22c55e' : blkProgress >= 50 ? '#f59e0b' : '#ef4444'} strokeWidth="3" strokeLinecap="round"
+                  strokeDasharray={2 * Math.PI * 10} initial={{ strokeDashoffset: 2 * Math.PI * 10 }}
+                  animate={{ strokeDashoffset: 2 * Math.PI * 10 * (1 - blkProgress / 100) }} transition={{ duration: 0.8, delay: index * 0.1, ease: 'easeOut' }} />
+                <text x="14" y="17" textAnchor="middle" fill={blkProgress >= 100 ? '#22c55e' : blkProgress >= 50 ? '#f59e0b' : '#ef4444'} fontSize="6" fontWeight="700" fontFamily="monospace" transform="rotate(90 14 14)">{blkProgress}%</text>
+              </svg>
               <div className="flex-1">
-                <div className="flex justify-between text-[8px] text-slate-600 mb-1"><span>Resolution Progress</span><span>{blkProgress}%</span></div>
-                <div className="h-1.5 rounded-full bg-slate-800 overflow-hidden">
-                  <motion.div initial={{ width: 0 }} animate={{ width: `${blkProgress}%` }} transition={{ duration: 0.8, delay: index * 0.1 }} className={`h-full rounded-full ${blkProgress >= 100 ? 'bg-emerald-500' : blkProgress >= 50 ? 'bg-amber-500' : 'bg-red-500'}`} />
-                </div>
+                <span className="text-[8px] text-slate-600 font-mono">Resolution Progress</span>
               </div>
               {blkStatus !== 'resolved' && (
                 <div className="flex gap-1 shrink-0" onClick={e => e.stopPropagation()}>
@@ -418,13 +408,19 @@ function FeatureCard({ feature, index }) {
         </div>
         <span className="text-[9px] text-slate-600 shrink-0">{featProgress}%</span>
       </div>
-      <div className="flex items-center gap-2 mb-1.5">
-        <span className="text-[9px] text-slate-600">{String(feature?.owner ?? '')}</span>
-        <span className={`text-[9px] ${statusColor}`}>{featStatus.replace('_', ' ')}</span>
-        <span className="text-[9px] text-slate-700">Sprint {feature?.sprint ?? ''}</span>
-      </div>
-      <div className="h-1.5 rounded-full bg-slate-800 overflow-hidden">
-        <motion.div initial={{ width: 0 }} animate={{ width: `${featProgress}%` }} transition={{ duration: 0.6, delay: index * 0.05 }} className={`h-full rounded-full ${featProgress >= 100 ? 'bg-emerald-500' : featProgress >= 50 ? 'bg-amber-500' : 'bg-slate-600'}`} />
+      <div className="flex items-center gap-2">
+        <svg width="28" height="28" viewBox="0 0 28 28" className="-rotate-90 shrink-0">
+          <circle cx="14" cy="14" r="10" fill="none" stroke="rgba(255,255,255,0.04)" strokeWidth="3" />
+          <motion.circle cx="14" cy="14" r="10" fill="none" stroke={featProgress >= 100 ? '#22c55e' : featProgress >= 50 ? '#f59e0b' : '#64748b'} strokeWidth="3" strokeLinecap="round"
+            strokeDasharray={2 * Math.PI * 10} initial={{ strokeDashoffset: 2 * Math.PI * 10 }}
+            animate={{ strokeDashoffset: 2 * Math.PI * 10 * (1 - featProgress / 100) }} transition={{ duration: 0.6, delay: index * 0.05, ease: 'easeOut' }} />
+          <text x="14" y="17" textAnchor="middle" fill={featProgress >= 100 ? '#22c55e' : featProgress >= 50 ? '#f59e0b' : '#64748b'} fontSize="6" fontWeight="700" fontFamily="monospace" transform="rotate(90 14 14)">{featProgress}%</text>
+        </svg>
+        <div className="flex items-center gap-2">
+          <span className="text-[9px] text-slate-600 font-mono">{String(feature?.owner ?? '')}</span>
+          <span className={`text-[9px] font-mono ${statusColor}`}>{featStatus.replace('_', ' ')}</span>
+          <span className="text-[9px] text-slate-700 font-mono">S{feature?.sprint ?? ''}</span>
+        </div>
       </div>
     </motion.div>
   )
@@ -592,70 +588,111 @@ export default function OrbitExecutionPlanner() {
         {!loading && (
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-3">
 
-            {/* ===== SECTION 1: EXECUTIVE DELIVERY SUMMARY ===== */}
-            <motion.div variants={item} id="exec-summary" className="scroll-mt-20 rounded-xl border border-white/[0.06] bg-gradient-to-br from-slate-950 to-slate-950/50 p-3 sm:p-4">
-              <div className="flex items-center gap-3 mb-2">
-                <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-amber-500/20 border border-amber-500/20">
-                  <svg className="h-4 w-4 text-amber-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}><path strokeLinecap="round" strokeLinejoin="round" d="M3.75 12h16.5m-16.5 3.75h16.5M3.75 19.5h16.5M5.625 4.5h12.75a1.875 1.875 0 010 3.75H5.625a1.875 1.875 0 010-3.75z" /></svg>
+        {/* ===== SECTION 1: MISSION EXECUTION CENTER ===== */}
+            <motion.div variants={item} id="exec-summary" className="scroll-mt-20 rounded-xl bg-slate-950/40 backdrop-blur-[12px] border border-white/[0.06] p-4 sm:p-5">
+              <div className="flex items-center gap-3 mb-5">
+                <div className="relative">
+                  <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-gradient-to-br from-amber-500 to-orange-600 shadow-lg shadow-amber-500/20">
+                    <svg className="h-5 w-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M3.75 12h16.5m-16.5 3.75h16.5M3.75 19.5h16.5M5.625 4.5h12.75a1.875 1.875 0 010 3.75H5.625a1.875 1.875 0 010-3.75z" /></svg>
+                  </div>
+                  <span className="absolute -top-1 -right-1 h-2.5 w-2.5 rounded-full bg-amber-500 animate-ping" />
                 </div>
-                <h2 className="text-sm font-bold text-white">Executive Delivery Summary</h2>
-                <StatusBadge status={d.overview.onTrack ? 'success' : 'error'} label={d.overview.onTrack ? 'On Track' : 'At Risk'} />
+                <div>
+                  <h1 className="text-lg sm:text-xl font-bold text-white tracking-tight">Mission Execution Center</h1>
+                  <p className="text-[10px] text-slate-500 mt-0.5 font-mono tracking-wider">AI-POWERED ENTERPRISE DELIVERY COMMAND</p>
+                </div>
+                <StatusBadge status={d.overview.onTrack ? 'success' : 'error'} label={d.overview.onTrack ? 'MISSION ON TRACK' : 'AT RISK'} />
               </div>
-              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2">
-                <motion.div initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.05 }} className="rounded-xl border border-white/[0.06] bg-slate-900/60 p-3">
-                  <div className="text-[9px] text-slate-500 uppercase tracking-wider mb-1">Total Services</div>
-                  <div className="text-2xl font-bold text-white"><AnimatedCounter value={d.overview.totalServices} /></div>
-                  <div className="mt-1 text-[9px] text-slate-600">across all environments</div>
-                </motion.div>
-                <motion.div initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="rounded-xl border border-white/[0.06] bg-slate-900/60 p-3">
-                  <div className="text-[9px] text-slate-500 uppercase tracking-wider mb-1">Impacted Teams</div>
-                  <div className="text-2xl font-bold text-white"><AnimatedCounter value={d.overview.impactedTeams} /></div>
-                  <div className="mt-1 text-[9px] text-slate-600">actively contributing</div>
-                </motion.div>
-                <motion.div initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.15 }} className="rounded-xl border border-white/[0.06] bg-slate-900/60 p-3">
-                  <div className="text-[9px] text-slate-500 uppercase tracking-wider mb-1">Completion</div>
-                  <div className="text-2xl font-bold text-amber-300"><AnimatedCounter value={d.overview.completionPct} suffix="%" /></div>
-                  <AnimatedProgress value={d.overview.completionPct} color="bg-gradient-to-r from-amber-500 to-orange-500" size="sm" />
-                </motion.div>
-                <motion.div initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} className="rounded-xl border border-white/[0.06] bg-slate-900/60 p-3">
-                  <div className="text-[9px] text-slate-500 uppercase tracking-wider mb-1">Story Points</div>
-                  <div className="text-2xl font-bold text-white"><AnimatedCounter value={d.overview.pointsCompleted} /><span className="text-sm text-slate-500">/<AnimatedCounter value={d.overview.storyPointsTotal} /></span></div>
-                  <div className="mt-1 text-[9px] text-slate-600">{Math.round(d.overview.pointsCompleted / d.overview.storyPointsTotal * 100)}% completed</div>
-                </motion.div>
-                <motion.div initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.25 }} className="rounded-xl border border-white/[0.06] bg-slate-900/60 p-3">
-                  <div className="text-[9px] text-slate-500 uppercase tracking-wider mb-1">Hours Logged</div>
-                  <div className="text-2xl font-bold text-white"><AnimatedCounter value={d.overview.hoursLogged} /><span className="text-sm text-slate-500">/<AnimatedCounter value={d.overview.estimatedHours} /></span></div>
-                  <AnimatedProgress value={Math.round(d.overview.hoursLogged / d.overview.estimatedHours * 100)} color="bg-cyan-500" size="sm" />
-                </motion.div>
-                <motion.div initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }} className="rounded-xl border border-white/[0.06] bg-slate-900/60 p-3">
-                  <div className="text-[9px] text-slate-500 uppercase tracking-wider mb-1">Blockers</div>
-                  <div className="text-2xl font-bold text-red-400"><AnimatedCounter value={d.overview.blockers} /></div>
-                  <div className="mt-1 text-[9px] text-slate-600">{d.overview.blockers > 0 ? 'Requires attention' : 'All clear'}</div>
-                </motion.div>
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                {[
+                  { label: 'AI Success Probability', value: d.overview.qualityScore, unit: '%', color: '#22c55e', sub: 'Model confidence score', icon: 'M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09zM18.259 8.715L18 9.75l-.259-1.035a3.375 3.375 0 00-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 002.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 002.455 2.456L21.75 6l-1.036.259a3.375 3.375 0 00-2.455 2.456z' },
+                  { label: 'Sprint Health', value: d.overview.sprintHealth, unit: '%', color: '#f59e0b', sub: 'Current velocity trend', icon: 'M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v6.75C7.5 20.496 6.996 21 6.375 21h-2.25A1.125 1.125 0 013 19.875v-6.75zM9.75 8.625c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125v11.25c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V8.625zM16.5 4.125c0-.621.504-1.125 1.125-1.125h2.25C20.496 3 21 3.504 21 4.125v15.75c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V4.125z' },
+                  { label: 'Risk Reduction', value: 100 - Math.round(d.risks.filter(r => String(r?.status ?? '') === 'active').length / Math.max(1, d.risks.length) * 100), unit: '%', color: '#06b6d4', sub: 'Mitigation progress', icon: 'M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z' },
+                  { label: 'Deploy Readiness', value: d.overview.deploymentReadiness, unit: '%', color: '#a78bfa', sub: 'Release gate status', icon: 'M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z' },
+                ].map((m, i) => (
+                  <motion.div key={m.label} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 + i * 0.1 }}
+                    className="glass-card p-4 relative overflow-hidden group hover:border-white/[0.12] transition-all duration-300">
+                    <div className="absolute inset-0 bg-gradient-to-br from-transparent via-transparent to-current opacity-[0.02]" />
+                    <div className="flex items-start justify-between mb-2">
+                      <div className="flex items-center gap-2">
+                        <svg className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5} style={{ color: m.color }}><path strokeLinecap="round" strokeLinejoin="round" d={m.icon} /></svg>
+                        <span className="text-[9px] text-slate-500 font-mono tracking-wider uppercase">{m.label}</span>
+                      </div>
+                      <svg width="44" height="44" viewBox="0 0 44 44" className="-rotate-90 shrink-0">
+                        <circle cx="22" cy="22" r="18" fill="none" stroke="rgba(255,255,255,0.04)" strokeWidth="3.5" />
+                        <motion.circle cx="22" cy="22" r="18" fill="none" stroke={m.color} strokeWidth="3.5" strokeLinecap="round"
+                          strokeDasharray={2 * Math.PI * 18} initial={{ strokeDashoffset: 2 * Math.PI * 18 }}
+                          animate={{ strokeDashoffset: 2 * Math.PI * 18 * (1 - m.value / 100) }} transition={{ duration: 1.2, delay: i * 0.15, ease: 'easeOut' }} />
+                        <text x="22" y="26" textAnchor="middle" fill={m.color} fontSize="12" fontWeight="700" fontFamily="monospace" transform="rotate(90 22 22)">{m.value}{m.unit}</text>
+                      </svg>
+                    </div>
+                    <div className="mt-3">
+                      <div className="text-lg sm:text-xl font-bold font-mono tracking-tight" style={{ color: m.color }}><AnimatedCounter value={m.value} suffix={m.unit} /></div>
+                      <div className="text-[8px] text-slate-600 font-mono mt-0.5">{m.sub}</div>
+                    </div>
+                  </motion.div>
+                ))}
               </div>
             </motion.div>
 
-            {/* ===== SECTION 2: SPRINT PROGRESS DASHBOARD ===== */}
-            <motion.div variants={item} id="sprint-progress" className="scroll-mt-20 rounded-xl border border-white/[0.06] bg-slate-950/50 p-3 sm:p-4">
-              <div className="flex items-center gap-3 mb-3">
-                <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-emerald-500/20 border border-emerald-500/20">
-                  <svg className="h-4 w-4 text-emerald-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}><path strokeLinecap="round" strokeLinejoin="round" d="M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v6.75C7.5 20.496 6.996 21 6.375 21h-2.25A1.125 1.125 0 013 19.875v-6.75zM9.75 8.625c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125v11.25c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V8.625zM16.5 4.125c0-.621.504-1.125 1.125-1.125h2.25C20.496 3 21 3.504 21 4.125v15.75c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V4.125z" /></svg>
+            {/* ===== SECTION 2: EXECUTION WAR ROOM ===== */}
+            <motion.div variants={item} id="sprint-progress" className="scroll-mt-20 rounded-xl bg-slate-950/40 backdrop-blur-[12px] border border-white/[0.06] p-4">
+              <div className="flex items-center gap-3 mb-4">
+                <div className="relative">
+                  <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-emerald-500/20">
+                    <svg className="h-4 w-4 text-emerald-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}><path strokeLinecap="round" strokeLinejoin="round" d="M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v6.75C7.5 20.496 6.996 21 6.375 21h-2.25A1.125 1.125 0 013 19.875v-6.75zM9.75 8.625c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125v11.25c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V8.625zM16.5 4.125c0-.621.504-1.125 1.125-1.125h2.25C20.496 3 21 3.504 21 4.125v15.75c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V4.125z" /></svg>
+                  </div>
+                  <span className="absolute -top-0.5 -right-0.5 h-2 w-2 rounded-full bg-emerald-500 animate-ping" />
                 </div>
-                <h2 className="text-sm font-bold text-white">Sprint Progress Dashboard</h2>
+                <h2 className="text-sm font-bold text-white tracking-wider">Execution War Room</h2>
+                <StatusBadge status="info" label={`${d.sprints.length} MISSION PODS`} />
               </div>
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-5">
-                <div className="rounded-xl border border-white/[0.06] bg-slate-950/40 p-3 flex flex-col items-center">
-                  <AnimatedGauge value={d.overview.sprintHealth} label="Sprint Health" sub="current sprint" />
-                </div>
-                <div className="rounded-xl border border-white/[0.06] bg-slate-950/40 p-3 flex flex-col items-center">
-                  <AnimatedGauge value={d.overview.velocityTrend} label="Velocity Trend" sub="3-sprint avg" />
-                </div>
-                <div className="rounded-xl border border-white/[0.06] bg-slate-950/40 p-3 flex flex-col items-center">
-                  <AnimatedGauge value={d.overview.qualityScore} label="Quality Score" sub="test pass rate" />
-                </div>
-                <div className="rounded-xl border border-white/[0.06] bg-slate-950/40 p-3 flex flex-col items-center">
-                  <AnimatedGauge value={d.overview.deploymentReadiness} label="Deploy Readiness" sub="release gate" />
-                </div>
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-4">
+                {[
+                  { name: 'Foundation', status: 'active', points: d.sprints[0]?.points, days: d.sprints[0]?.daysRemaining, members: d.sprints[0]?.members, color: '#f59e0b', eta: 'Jun 26' },
+                  { name: 'Testing', status: 'planned', points: d.sprints[1]?.points, days: d.sprints[1]?.daysRemaining, members: d.sprints[1]?.members, color: '#06b6d4', eta: 'Jul 3' },
+                  { name: 'Security', status: 'planned', points: d.sprints[2]?.points, days: d.sprints[2]?.daysRemaining, members: d.sprints[2]?.members, color: '#a78bfa', eta: 'Jul 7' },
+                  { name: 'Release', status: 'planned', points: { total: 10, completed: 0 }, days: 18, members: ['@alice', '@dave', '@eve'], color: '#22c55e', eta: 'Jul 15' },
+                ].map((pod, i) => {
+                  const pct = pod.points && pod.points.total > 0 ? Math.round((pod.points.completed / pod.points.total) * 100) : 0
+                  const circumference = 2 * Math.PI * 24
+                  return (
+                    <motion.div key={pod.name} initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.08 }}
+                      className="glass-card p-3.5 relative overflow-hidden group hover:border-white/[0.12] transition-all">
+                      <div className="absolute inset-0 bg-gradient-to-br from-transparent via-transparent to-current opacity-[0.02]" />
+                      <div className="flex items-center justify-between mb-2">
+                        <span className="text-[10px] font-bold text-white tracking-wider font-mono">{pod.name}</span>
+                        <svg width="52" height="52" viewBox="0 0 52 52" className="-rotate-90">
+                          <circle cx="26" cy="26" r="24" fill="none" stroke="rgba(255,255,255,0.04)" strokeWidth="4" />
+                          <motion.circle cx="26" cy="26" r="24" fill="none" stroke={pod.color} strokeWidth="4" strokeLinecap="round"
+                            strokeDasharray={circumference} initial={{ strokeDashoffset: circumference }}
+                            animate={{ strokeDashoffset: circumference * (1 - pct / 100) }} transition={{ duration: 1.2, delay: i * 0.15, ease: 'easeOut' }} />
+                          <text x="26" y="30" textAnchor="middle" fill={pod.color} fontSize="12" fontWeight="700" fontFamily="monospace" transform="rotate(90 26 26)">{pct}%</text>
+                        </svg>
+                      </div>
+                      <div className="space-y-1 text-[8px] font-mono">
+                        <div className="flex items-center justify-between">
+                          <span className="text-slate-600">Points</span>
+                          <span className="text-slate-400">{pod.points?.completed ?? 0}/{pod.points?.total ?? 0}</span>
+                        </div>
+                        <div className="flex items-center justify-between">
+                          <span className="text-slate-600">ETA</span>
+                          <span className="text-slate-400">{pod.eta}</span>
+                        </div>
+                        <div className="flex items-center justify-between">
+                          <span className="text-slate-600">Risk</span>
+                          <span className={pct < 30 ? 'text-red-400' : pct < 60 ? 'text-yellow-400' : 'text-emerald-400'}>{pct < 30 ? 'HIGH' : pct < 60 ? 'MED' : 'LOW'}</span>
+                        </div>
+                        <div className="flex items-center gap-1 mt-1">
+                          {pod.members?.slice(0, 3).map(m => (
+                            <span key={m} className="rounded-full bg-slate-800 px-1 py-0.5 text-[7px] text-slate-500">{m}</span>
+                          ))}
+                          {pod.members?.length > 3 && <span className="text-[7px] text-slate-600">+{pod.members.length - 3}</span>}
+                        </div>
+                      </div>
+                    </motion.div>
+                  )
+                })}
               </div>
               <div className="grid gap-2 sm:grid-cols-3">
                 {(d.sprints || []).map(s => {
@@ -667,25 +704,27 @@ export default function OrbitExecutionPlanner() {
                   const sStatus = String(s?.status ?? '')
                   const members = s?.members || []
                   return (
-                    <motion.div key={s?.sprint ?? Math.random()} initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: (s?.sprint ?? 0) * 0.06 }} className={`rounded-lg border p-4 ${sStatus === 'active' ? 'border-amber-500/30 bg-amber-500/[0.04]' : 'border-white/[0.06] bg-white/[0.02]'}`}>
+                    <motion.div key={s?.sprint ?? Math.random()} initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: (s?.sprint ?? 0) * 0.06 }}
+                      className={'glass-card p-3.5 ' + (sStatus === 'active' ? 'border-amber-500/30' : '')}>
                       <div className="flex items-center justify-between mb-2">
                         <div className="flex items-center gap-2">
-                          <span className={`h-2 w-2 rounded-full ${sStatus === 'active' ? 'bg-amber-500 animate-pulse' : 'bg-slate-600'}`} />
+                          <span className={'h-2 w-2 rounded-full ' + (sStatus === 'active' ? 'bg-amber-500 animate-pulse shadow-[0_0_6px_rgba(245,158,11,0.5)]' : 'bg-slate-600')} />
                           <span className="text-xs font-bold text-white">{String(s?.name ?? '')}</span>
                         </div>
                         <StatusBadge status={sStatus === 'active' ? 'running' : sStatus} label={sStatus === 'active' ? `Day ${14 - (s?.daysRemaining ?? 0)}` : 'Planned'} />
                       </div>
-                      <div className="grid grid-cols-2 gap-2 mb-3 text-[10px] text-slate-500">
+                      <div className="grid grid-cols-2 gap-2 mb-2 text-[10px] text-slate-500">
                         <span>{completed}/{total} points</span>
                         <span className="text-right">{s?.daysRemaining ?? 0}d remaining</span>
-                        <span>{members.length} members</span>
-                        <span className="text-right">{pct}% done</span>
                       </div>
-                      <AnimatedProgress value={pct} color={sStatus === 'active' ? 'bg-amber-500' : 'bg-slate-600'} size="sm" />
+                      <div className="h-1.5 rounded-full bg-white/[0.04] overflow-hidden">
+                        <motion.div initial={{ width: 0 }} animate={{ width: `${pct}%` }} transition={{ duration: 0.8, ease: 'easeOut' }}
+                          className={'h-full rounded-full ' + (sStatus === 'active' ? 'bg-gradient-to-r from-amber-500 to-orange-500' : 'bg-slate-600')} />
+                      </div>
                       <div className="flex items-center gap-1 mt-2">
-                        {members.map(m => {
-                          const key = typeof m === 'string' ? m : Math.random()
-                          return <span key={key} className="rounded-full bg-slate-800 px-1.5 py-0.5 text-[8px] text-slate-400 font-mono">{typeof m === 'string' ? m : JSON.stringify(m)}</span>
+                        {members.map((m, mi) => {
+                          const key = typeof m === 'string' ? m : mi
+                          return <span key={key} className="rounded-full bg-slate-800 px-1.5 py-0.5 text-[7px] text-slate-500 font-mono">{typeof m === 'string' ? m : ''}</span>
                         })}
                       </div>
                     </motion.div>
@@ -729,8 +768,15 @@ export default function OrbitExecutionPlanner() {
                           <span className="text-[10px] text-slate-500">{completed}/{total} pts</span>
                         </div>
                       </div>
-                      <div className="h-1.5 rounded-full bg-slate-800 overflow-hidden mb-4">
-                        <motion.div initial={{ width: 0 }} animate={{ width: `${pct}%` }} transition={{ duration: 0.6 }} className="h-full rounded-full bg-gradient-to-r from-amber-500 to-orange-500" />
+                      <div className="flex items-center gap-2 mb-4">
+                        <svg width="28" height="28" viewBox="0 0 28 28" className="-rotate-90 shrink-0">
+                          <circle cx="14" cy="14" r="10" fill="none" stroke="rgba(255,255,255,0.04)" strokeWidth="3" />
+                          <motion.circle cx="14" cy="14" r="10" fill="none" stroke="#f59e0b" strokeWidth="3" strokeLinecap="round"
+                            strokeDasharray={2 * Math.PI * 10} initial={{ strokeDashoffset: 2 * Math.PI * 10 }}
+                            animate={{ strokeDashoffset: 2 * Math.PI * 10 * (1 - pct / 100) }} transition={{ duration: 0.6, ease: 'easeOut' }} />
+                          <text x="14" y="17" textAnchor="middle" fill="#f59e0b" fontSize="6" fontWeight="700" fontFamily="monospace" transform="rotate(90 14 14)">{pct}%</text>
+                        </svg>
+                        <span className="text-[10px] text-slate-500 font-mono">Sprint Progress</span>
                       </div>
                       <div className="grid gap-3 sm:grid-cols-3">
                         <div className="rounded-xl border border-white/[0.06] bg-slate-950/40 p-3 min-h-[180px]">
@@ -816,15 +862,22 @@ export default function OrbitExecutionPlanner() {
                           <span className="text-slate-700">&middot;</span>
                           <span>Lead: {String(t?.lead ?? '')}</span>
                         </div>
-                        <div className="flex items-center justify-between text-[10px] text-slate-500 mb-1.5">
-                          <span>{compPts}/{sprintPts} sprint pts</span>
-                          <span className={isOverloaded ? 'text-red-400 font-bold' : teamLoad >= 60 ? 'text-yellow-400' : 'text-emerald-400'}>{teamLoad}% load</span>
-                        </div>
-                        <div className="h-2 rounded-full bg-slate-800 overflow-hidden mb-1.5">
-                          <motion.div initial={{ width: 0 }} animate={{ width: `${loadPct}%` }} transition={{ duration: 0.6, delay: i * 0.08 }} className={`h-full rounded-full ${teamLoad >= 80 ? 'bg-red-500' : teamLoad >= 60 ? 'bg-yellow-500' : 'bg-emerald-500'}`} />
-                        </div>
-                        <div className="h-1 rounded-full bg-slate-800/50 overflow-hidden">
-                          <motion.div initial={{ width: 0 }} animate={{ width: `${teamLoad}%` }} transition={{ duration: 0.6, delay: i * 0.1 }} className={`h-full rounded-full ${teamLoad >= 80 ? 'bg-red-500/50' : teamLoad >= 60 ? 'bg-yellow-500/50' : 'bg-emerald-500/50'}`} />
+                        <div className="flex items-center gap-3 mb-1">
+                          <div className="flex items-center gap-2 flex-1">
+                            <svg width="36" height="36" viewBox="0 0 36 36" className="-rotate-90 shrink-0">
+                              <circle cx="18" cy="18" r="14" fill="none" stroke="rgba(255,255,255,0.04)" strokeWidth="3" />
+                              <motion.circle cx="18" cy="18" r="14" fill="none" stroke={teamLoad >= 80 ? '#ef4444' : teamLoad >= 60 ? '#eab308' : '#22c55e'} strokeWidth="3" strokeLinecap="round"
+                                strokeDasharray={2 * Math.PI * 14} initial={{ strokeDashoffset: 2 * Math.PI * 14 }}
+                                animate={{ strokeDashoffset: 2 * Math.PI * 14 * (1 - teamLoad / 100) }} transition={{ duration: 0.8, delay: i * 0.1, ease: 'easeOut' }} />
+                              <text x="18" y="21" textAnchor="middle" fill={teamLoad >= 80 ? '#ef4444' : teamLoad >= 60 ? '#eab308' : '#22c55e'} fontSize="9" fontWeight="700" fontFamily="monospace" transform="rotate(90 18 18)">{teamLoad}%</text>
+                            </svg>
+                            <div>
+                              <span className="text-[10px] text-slate-500 font-mono">Load</span>
+                            </div>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <span className="text-[10px] text-slate-500">{compPts}/{sprintPts} pts</span>
+                          </div>
                         </div>
                       </motion.div>
                     )
@@ -903,53 +956,55 @@ export default function OrbitExecutionPlanner() {
               </div>
             </motion.div>
 
-            {/* ===== SECTION 6: RELEASE READINESS CENTER ===== */}
-            <motion.div variants={item} id="readiness" className="scroll-mt-20 rounded-xl border border-white/[0.06] bg-slate-950/50 p-3 sm:p-4">
-              <div className="flex items-center gap-3 mb-3">
-                <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-cyan-500/20 border border-cyan-500/20">
-                  <svg className="h-4 w-4 text-cyan-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}><path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+            {/* ===== SECTION 6: LAUNCH READINESS CENTER ===== */}
+            <motion.div variants={item} id="readiness" className="scroll-mt-20 rounded-xl bg-slate-950/40 backdrop-blur-[12px] border border-white/[0.06] p-4">
+              <div className="flex items-center gap-3 mb-4">
+                <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-cyan-500/20">
+                  <svg className="h-4 w-4 text-cyan-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}><path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
                 </div>
-                <h2 className="text-sm font-bold text-white">Release Readiness Center</h2>
-                <StatusBadge status={(d.readinessChecks || []).filter(c => c?.status === 'pass').length >= (d.readinessChecks || []).length / 2 ? 'success' : 'warning'} label={`${(d.readinessChecks || []).filter(c => c?.status === 'pass').length}/${(d.readinessChecks || []).length} passed`} />
+                <h2 className="text-sm font-bold text-white tracking-wider">Launch Readiness Center</h2>
               </div>
-              <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3 mb-5">
-                {(d.readinessChecks || []).map((c, i) => {
-                  if (!c || typeof c !== 'object') return null
-                  const cStatus = String(c?.status ?? '')
-                  const isPass = cStatus === 'pass'
-                  return (
-                    <motion.div key={c?.name || i} initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: i * 0.04 }} className={`rounded-lg border p-4 flex items-center gap-3 transition-all ${isPass ? 'border-emerald-500/20 bg-emerald-500/[0.03]' : 'border-red-500/20 bg-red-500/[0.03]'}`}>
-                      <div className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-full ${isPass ? 'bg-emerald-500/20 text-emerald-400' : 'bg-red-500/20 text-red-400'}`}>
-                        {isPass ? (
-                          <motion.svg initial={{ scale: 0 }} animate={{ scale: 1 }} transition={{ type: 'spring', stiffness: 300, delay: 0.3 + i * 0.05 }} className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
-                            <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" />
-                          </motion.svg>
-                        ) : (
-                          <motion.svg initial={{ scale: 0 }} animate={{ scale: 1 }} transition={{ type: 'spring', stiffness: 300, delay: 0.3 + i * 0.05 }} className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
-                            <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
-                          </motion.svg>
-                        )}
-                      </div>
-                      <div className="min-w-0 flex-1">
-                        <div className="text-xs font-medium text-slate-200 truncate">{typeof c?.name === 'object' ? JSON.stringify(c.name) : String(c?.name ?? '')}</div>
-                        <div className="text-[9px] text-slate-600">{String(c?.category ?? '')}</div>
-                      </div>
-                      <span className={`text-[10px] font-bold shrink-0 ${isPass ? 'text-emerald-400' : 'text-red-400'}`}>{isPass ? 'PASS' : 'FAIL'}</span>
-                    </motion.div>
-                  )
-                })}
-              </div>
-              <div className="rounded-lg border border-white/[0.06] bg-slate-900/40 p-4">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-3">
-                    <span className="text-[10px] text-slate-600">Overall Readiness Score</span>
-                    <span className="text-lg font-bold text-white">{(d.readinessChecks || []).filter(c => c?.status === 'pass').length}/{(d.readinessChecks || []).length}</span>
-                    <span className="text-lg font-bold text-amber-300">({Math.round((d.readinessChecks || []).filter(c => c?.status === 'pass').length / Math.max(1, (d.readinessChecks || []).length) * 100)}%)</span>
-                  </div>
-                  <div className="w-48">
-                    <div className="h-2.5 rounded-full bg-slate-800 overflow-hidden">
-                      <motion.div initial={{ width: 0 }} animate={{ width: `${Math.round((d.readinessChecks || []).filter(c => c?.status === 'pass').length / Math.max(1, (d.readinessChecks || []).length) * 100)}%` }} transition={{ duration: 1 }} className="h-full rounded-full bg-gradient-to-r from-amber-500 to-orange-500" />
+              <div className="flex flex-col lg:flex-row items-center gap-6">
+                <div className="relative shrink-0">
+                  <svg width="200" height="200" viewBox="0 0 200 200" className="animate-[spin_20s_linear_infinite]">
+                    <circle cx="100" cy="100" r="95" fill="none" stroke="rgba(255,255,255,0.03)" strokeWidth="1" />
+                    <circle cx="100" cy="100" r="85" fill="none" stroke="rgba(255,255,255,0.02)" strokeWidth="1" />
+                    <circle cx="100" cy="100" r="70" fill="none" stroke="rgba(255,255,255,0.04)" strokeWidth="2" strokeDasharray="8 4" />
+                    <circle cx="100" cy="100" r="55" fill="none" stroke="rgba(34,211,153,0.15)" strokeWidth="3" strokeDasharray="12 6" />
+                    <motion.circle cx="100" cy="100" r="55" fill="none" stroke="#22c55e" strokeWidth="3" strokeLinecap="round"
+                      strokeDasharray={2 * Math.PI * 55} initial={{ strokeDashoffset: 2 * Math.PI * 55 }}
+                      animate={{ strokeDashoffset: 2 * Math.PI * 55 * (1 - Math.round((d.readinessChecks || []).filter(c => c?.status === 'pass').length / Math.max(1, (d.readinessChecks || []).length) * 100) / 100) }} transition={{ duration: 1.5, ease: 'easeOut' }} />
+                  </svg>
+                  <div className="absolute inset-0 flex flex-col items-center justify-center">
+                    <span className="text-4xl sm:text-5xl font-bold text-white font-mono tracking-tight">{Math.round((d.readinessChecks || []).filter(c => c?.status === 'pass').length / Math.max(1, (d.readinessChecks || []).length) * 100)}<span className="text-lg text-emerald-400">%</span></span>
+                    <span className="text-[10px] text-slate-500 font-mono tracking-wider mt-1">READY</span>
+                    <div className="flex items-center gap-1 mt-2">
+                      <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-ping" />
+                      <span className="text-[8px] text-slate-600 font-mono">LIVE</span>
                     </div>
+                  </div>
+                </div>
+                <div className="flex-1 w-full">
+                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                    {(d.readinessChecks || []).map((c, i) => {
+                      const isPass = String(c?.status ?? '') === 'pass'
+                      return (
+                        <motion.div key={c?.name || i} initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: i * 0.04 }}
+                          className={'glass-card p-2.5 flex items-center gap-2 ' + (isPass ? 'border-emerald-500/20' : 'border-red-500/20')}>
+                          <div className={'flex h-6 w-6 shrink-0 items-center justify-center rounded-full ' + (isPass ? 'bg-emerald-500/20 text-emerald-400' : 'bg-red-500/20 text-red-400')}>
+                            {isPass ? (
+                              <svg className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}><path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" /></svg>
+                            ) : (
+                              <svg className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}><path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
+                            )}
+                          </div>
+                          <div className="min-w-0">
+                            <div className="text-[9px] text-slate-300 truncate font-mono">{typeof c?.name === 'object' ? JSON.stringify(c.name) : String(c?.name ?? '')}</div>
+                            <div className="text-[7px] text-slate-600">{String(c?.category ?? '')}</div>
+                          </div>
+                        </motion.div>
+                      )
+                    })}
                   </div>
                 </div>
               </div>
@@ -1039,12 +1094,17 @@ export default function OrbitExecutionPlanner() {
                         <span className="text-slate-600">Owner:</span>
                         <span>{String(r?.owner ?? '')}</span>
                       </div>
-                      <div className="flex items-center gap-3">
-                        <span className="text-[9px] text-slate-600 shrink-0 w-16">Severity</span>
-                        <div className="flex-1 h-2 rounded-full bg-slate-800 overflow-hidden">
-                          <motion.div initial={{ width: 0 }} animate={{ width: `${sevPct}%` }} transition={{ duration: 0.8, delay: i * 0.05 }} className={`h-full rounded-full ${rSev === 'critical' ? 'bg-red-500' : rSev === 'high' ? 'bg-orange-500' : 'bg-yellow-500'}`} />
+                      <div className="flex items-center gap-2">
+                        <svg width="32" height="32" viewBox="0 0 32 32" className="-rotate-90 shrink-0">
+                          <circle cx="16" cy="16" r="12" fill="none" stroke="rgba(255,255,255,0.04)" strokeWidth="3" />
+                          <motion.circle cx="16" cy="16" r="12" fill="none" stroke={rSev === 'critical' ? '#ef4444' : rSev === 'high' ? '#f97316' : '#eab308'} strokeWidth="3" strokeLinecap="round"
+                            strokeDasharray={2 * Math.PI * 12} initial={{ strokeDashoffset: 2 * Math.PI * 12 }}
+                            animate={{ strokeDashoffset: 2 * Math.PI * 12 * (1 - sevPct / 100) }} transition={{ duration: 0.8, delay: i * 0.05, ease: 'easeOut' }} />
+                          <text x="16" y="19" textAnchor="middle" fill={rSev === 'critical' ? '#ef4444' : rSev === 'high' ? '#f97316' : '#eab308'} fontSize="8" fontWeight="700" fontFamily="monospace" transform="rotate(90 16 16)">{sevPct}%</text>
+                        </svg>
+                        <div className="flex-1 min-w-0">
+                          <span className="text-[9px] text-slate-500 font-mono">Severity</span>
                         </div>
-                        <span className={`text-[10px] font-bold shrink-0 w-12 text-right ${rSev === 'critical' ? 'text-red-400' : rSev === 'high' ? 'text-orange-400' : 'text-yellow-400'}`}>{sevPct}%</span>
                       </div>
                     </motion.div>
                   )

@@ -276,15 +276,12 @@ function AnimatedStatCard({ value, label, color, delay = 200 }) {
         </span>
         {label.includes('Rate') && <span className="text-lg text-slate-500" style={{ color }}>%</span>}
       </div>
-      <div className="mt-3 h-1 rounded-full bg-slate-800 overflow-hidden">
-        <motion.div
-          initial={{ width: 0 }}
-          animate={{ width: `${(count / (label.includes('Rate') ? 100 : safeValue > 500 ? safeValue : 1000)) * 100}%` }}
-          transition={{ duration: 0.8, ease: 'easeOut' }}
-          className="h-full rounded-full"
-          style={{ backgroundColor: color, boxShadow: `0 0 8px ${color}40` }}
-        />
-      </div>
+      <svg width="36" height="36" viewBox="0 0 36 36" className="-rotate-90 shrink-0">
+        <circle cx="18" cy="18" r="14" fill="none" stroke="rgba(255,255,255,0.04)" strokeWidth="3" />
+        <motion.circle cx="18" cy="18" r="14" fill="none" stroke={color} strokeWidth="3" strokeLinecap="round"
+          strokeDasharray={2 * Math.PI * 14} initial={{ strokeDashoffset: 2 * Math.PI * 14 }}
+          animate={{ strokeDashoffset: 2 * Math.PI * 14 * (1 - (count / (label.includes('Rate') ? 100 : safeValue > 500 ? safeValue : 1000))) }} transition={{ duration: 0.8, ease: 'easeOut' }} />
+      </svg>
     </motion.div>
   )
 }
@@ -449,17 +446,19 @@ function ReplayCard({ replay, index }) {
         </div>
         <span className={`rounded-full border px-1.5 py-0.5 text-[8px] font-semibold ${sev.badge}`}>{replay.severity}</span>
       </div>
-      <div className="relative mb-3">
-        <div className="h-1.5 rounded-full bg-slate-800 overflow-hidden">
-          <motion.div
-            className="h-full rounded-full bg-gradient-to-r from-purple-500 via-cyan-400 to-fuchsia-500"
-            animate={{ width: playing && currentStep >= 0 ? `${((currentStep + 1) / replay.steps.length) * 100}%` : '0%' }}
-            transition={{ duration: 0.3 }}
-          />
-        </div>
-        <div className="flex justify-between mt-1">
-          <span className="text-[8px] text-slate-700">0%</span>
-          <span className="text-[8px] text-slate-700">100%</span>
+      <div className="flex items-center gap-2 mb-3">
+        <svg width="36" height="36" viewBox="0 0 36 36" className="-rotate-90 shrink-0">
+          <circle cx="18" cy="18" r="14" fill="none" stroke="rgba(255,255,255,0.04)" strokeWidth="3" />
+          <motion.circle cx="18" cy="18" r="14" fill="none" stroke="#a855f7" strokeWidth="3" strokeLinecap="round"
+            strokeDasharray={2 * Math.PI * 14}
+            animate={{ strokeDashoffset: 2 * Math.PI * 14 * (1 - (playing && currentStep >= 0 ? ((currentStep + 1) / replay.steps.length) : 0)) }} transition={{ duration: 0.3 }} />
+          <text x="18" y="21" textAnchor="middle" fill="#a855f7" fontSize="8" fontWeight="700" fontFamily="monospace" transform="rotate(90 18 18)">{playing && currentStep >= 0 ? Math.round(((currentStep + 1) / replay.steps.length) * 100) : 0}%</text>
+        </svg>
+        <div className="flex-1">
+          <div className="h-1.5 rounded-full bg-white/[0.04] overflow-hidden">
+            <motion.div className="h-full rounded-full bg-gradient-to-r from-purple-500 via-cyan-400 to-fuchsia-500"
+              animate={{ width: playing && currentStep >= 0 ? `${((currentStep + 1) / replay.steps.length) * 100}%` : '0%' }} transition={{ duration: 0.3 }} />
+          </div>
         </div>
       </div>
       <div className="space-y-1 min-h-[80px]">
@@ -641,14 +640,14 @@ function RecoveryTimelineCard({ steps }) {
               </div>
               <span className="text-[8px] font-mono text-slate-600 bg-white/[0.03] px-1.5 py-0.5 rounded shrink-0">{step.owner}</span>
             </div>
-            <div className="ml-4 h-2 rounded-full bg-slate-800 overflow-hidden">
-              <motion.div
-                initial={{ width: 0 }}
-                animate={{ width: `${pct}%` }}
-                transition={{ duration: 0.8, delay: i * 0.15 }}
-                className="h-full rounded-full"
-                style={{ backgroundColor: stepColors[i], boxShadow: `0 0 6px ${stepColors[i]}40` }}
-              />
+            <div className="flex items-center gap-2 ml-4">
+              <svg width="28" height="28" viewBox="0 0 28 28" className="-rotate-90 shrink-0">
+                <circle cx="14" cy="14" r="10" fill="none" stroke="rgba(255,255,255,0.04)" strokeWidth="3" />
+                <motion.circle cx="14" cy="14" r="10" fill="none" stroke={stepColors[i]} strokeWidth="3" strokeLinecap="round"
+                  strokeDasharray={2 * Math.PI * 10} initial={{ strokeDashoffset: 2 * Math.PI * 10 }}
+                  animate={{ strokeDashoffset: 2 * Math.PI * 10 * (1 - pct / 100) }} transition={{ duration: 0.8, delay: i * 0.15, ease: 'easeOut' }} />
+                <text x="14" y="17" textAnchor="middle" fill={stepColors[i]} fontSize="6" fontWeight="700" fontFamily="monospace" transform="rotate(90 14 14)">{Math.round(pct)}%</text>
+              </svg>
             </div>
             {i < steps.length - 1 && (
               <div className="ml-[15px] w-0.5 h-4 bg-gradient-to-b from-slate-700 to-transparent" />
@@ -855,15 +854,13 @@ function ImpactForecastCard({ forecasts }) {
               </div>
               <span className="text-[9px] font-mono font-bold" style={{ color: ic.text.replace('text-', '#') }}>{f.risk}%</span>
             </div>
-            <div className="h-2 rounded-full bg-slate-800 overflow-hidden">
-              <motion.div
-                initial={{ width: 0 }}
-                animate={{ width: `${f.risk}%` }}
-                transition={{ duration: 1, delay: i * 0.1, ease: 'easeOut' }}
-                className={`h-full rounded-full bg-gradient-to-r ${ic.bar}`}
-                style={{ boxShadow: `0 0 8px ${ic.text === 'text-red-400' ? '#ef4444' : ic.text === 'text-amber-400' ? '#f59e0b' : ic.text === 'text-purple-400' ? '#a855f7' : '#f97316'}40` }}
-              />
-            </div>
+            <svg width="32" height="32" viewBox="0 0 32 32" className="-rotate-90 shrink-0">
+              <circle cx="16" cy="16" r="12" fill="none" stroke="rgba(255,255,255,0.04)" strokeWidth="3" />
+              <motion.circle cx="16" cy="16" r="12" fill="none" stroke={ic.text === 'text-red-400' ? '#ef4444' : ic.text === 'text-amber-400' ? '#f59e0b' : ic.text === 'text-purple-400' ? '#a855f7' : '#f97316'} strokeWidth="3" strokeLinecap="round"
+                strokeDasharray={2 * Math.PI * 12} initial={{ strokeDashoffset: 2 * Math.PI * 12 }}
+                animate={{ strokeDashoffset: 2 * Math.PI * 12 * (1 - f.risk / 100) }} transition={{ duration: 1, delay: i * 0.1, ease: 'easeOut' }} />
+              <text x="16" y="19" textAnchor="middle" fill={ic.text === 'text-red-400' ? '#ef4444' : ic.text === 'text-amber-400' ? '#f59e0b' : ic.text === 'text-purple-400' ? '#a855f7' : '#f97316'} fontSize="7" fontWeight="700" fontFamily="monospace" transform="rotate(90 16 16)">{f.risk}%</text>
+            </svg>
           </motion.div>
         )
       })}
@@ -905,14 +902,13 @@ function HistoricalComparisonCard({ metric }) {
               <div key={p.label} className={`w-2 h-2 rounded-full transition-all ${i === phase ? 'bg-cyan-400 scale-125' : 'bg-slate-800'}`} />
             ))}
           </div>
-          <div className="mt-3 h-2 rounded-full bg-slate-800 overflow-hidden">
-            <motion.div
-              className="h-full rounded-full"
-              style={{ backgroundColor: states[phase].color }}
-              animate={{ width: `${(states[phase].value / maxVal) * 100}%` }}
-              transition={{ duration: 0.5 }}
-            />
-          </div>
+          <svg width="32" height="32" viewBox="0 0 32 32" className="-rotate-90 shrink-0">
+            <circle cx="16" cy="16" r="12" fill="none" stroke="rgba(255,255,255,0.04)" strokeWidth="3" />
+            <motion.circle cx="16" cy="16" r="12" fill="none" stroke={states[phase].color} strokeWidth="3" strokeLinecap="round"
+              strokeDasharray={2 * Math.PI * 12}
+              animate={{ strokeDashoffset: 2 * Math.PI * 12 * (1 - (states[phase].value / maxVal)) }} transition={{ duration: 0.5 }} />
+            <text x="16" y="19" textAnchor="middle" fill={states[phase].color} fontSize="7" fontWeight="700" fontFamily="monospace" transform="rotate(90 16 16)">{Math.round((states[phase].value / maxVal) * 100)}%</text>
+          </svg>
           <span className="text-[8px] text-slate-600 mt-1 block">{states[phase].label}</span>
         </motion.div>
       </AnimatePresence>
@@ -1310,17 +1306,16 @@ export default function IncidentTimeMachine() {
                         const impactColors = { downtime: '#ef4444', delay: '#f59e0b', overload: '#a855f7', failure: '#f97316' }
                         return (
                           <div key={f?.service} className="flex items-center gap-1">
-                            <span className="text-[7px] text-slate-500 w-12 truncate">{f?.service?.split(' ')[0] || ''}</span>
-                            <div className="flex-1 h-1.5 rounded-full bg-slate-800 overflow-hidden">
-                              <motion.div
-                                initial={{ width: 0 }}
-                                animate={{ width: `${f?.risk ?? 0}%` }}
-                                transition={{ duration: 0.5 }}
-                                className="h-full rounded-full"
-                                style={{ backgroundColor: impactColors[f?.impact] || '#f97316' }}
-                              />
+                            <svg width="20" height="20" viewBox="0 0 20 20" className="-rotate-90 shrink-0">
+                              <circle cx="10" cy="10" r="7" fill="none" stroke="rgba(255,255,255,0.04)" strokeWidth="2.5" />
+                              <motion.circle cx="10" cy="10" r="7" fill="none" stroke={impactColors[f?.impact] || '#f97316'} strokeWidth="2.5" strokeLinecap="round"
+                                strokeDasharray={2 * Math.PI * 7} initial={{ strokeDashoffset: 2 * Math.PI * 7 }}
+                                animate={{ strokeDashoffset: 2 * Math.PI * 7 * (1 - (f?.risk ?? 0) / 100) }} transition={{ duration: 0.5 }} />
+                            </svg>
+                            <span className="text-[7px] text-slate-500 w-10 truncate">{f?.service?.split(' ')[0] || ''}</span>
+                            <div className="flex-1 min-w-0">
+                              <span className="text-[7px] font-mono text-slate-600">{f?.risk ?? 0}%</span>
                             </div>
-                            <span className="text-[7px] font-mono text-slate-600 w-5 text-right">{f?.risk ?? 0}%</span>
                           </div>
                         )
                       })}
@@ -1500,28 +1495,23 @@ export default function IncidentTimeMachine() {
                           <div className="flex justify-center my-2">
                             <Sparkline data={sparkData} color={p.trend === 'up' ? '#ef4444' : p.trend === 'down' ? '#22c55e' : '#eab308'} height={28} width={100} />
                           </div>
-                          <div className="space-y-1 mb-2">
-                            <div className="flex items-center gap-1.5">
-                              <span className="text-[8px] text-red-400 w-9">Critical</span>
-                              <div className="flex-1 h-1.5 rounded-full bg-slate-800 overflow-hidden">
-                                <div className="h-full rounded-full bg-red-500" style={{ width: `${(p.severityDist.critical / total) * 100}%` }} />
+                          <div className="flex items-center justify-center gap-1 mb-2">
+                            {[
+                              { label: 'C', count: p.severityDist.critical, color: '#ef4444' },
+                              { label: 'H', count: p.severityDist.high, color: '#f97316' },
+                              { label: 'M', count: p.severityDist.medium, color: '#eab308' },
+                            ].map((sev, si) => (
+                              <div key={sev.label} className="flex flex-col items-center">
+                                <svg width="32" height="32" viewBox="0 0 32 32" className="-rotate-90">
+                                  <circle cx="16" cy="16" r="12" fill="none" stroke="rgba(255,255,255,0.04)" strokeWidth="3" />
+                                  <motion.circle cx="16" cy="16" r="12" fill="none" stroke={sev.color} strokeWidth="3" strokeLinecap="round"
+                                    strokeDasharray={2 * Math.PI * 12}
+                                    animate={{ strokeDashoffset: 2 * Math.PI * 12 * (1 - sev.count / total) }} transition={{ duration: 0.8, delay: si * 0.1 }} />
+                                  <text x="16" y="19" textAnchor="middle" fill={sev.color} fontSize="8" fontWeight="700" fontFamily="monospace" transform="rotate(90 16 16)">{sev.count}</text>
+                                </svg>
+                                <span className="text-[7px] text-slate-500 font-mono">{sev.label}</span>
                               </div>
-                              <span className="text-[8px] text-slate-600 w-3 text-right">{p.severityDist.critical}</span>
-                            </div>
-                            <div className="flex items-center gap-1.5">
-                              <span className="text-[8px] text-orange-400 w-9">High</span>
-                              <div className="flex-1 h-1.5 rounded-full bg-slate-800 overflow-hidden">
-                                <div className="h-full rounded-full bg-orange-500" style={{ width: `${(p.severityDist.high / total) * 100}%` }} />
-                              </div>
-                              <span className="text-[8px] text-slate-600 w-3 text-right">{p.severityDist.high}</span>
-                            </div>
-                            <div className="flex items-center gap-1.5">
-                              <span className="text-[8px] text-yellow-400 w-9">Med</span>
-                              <div className="flex-1 h-1.5 rounded-full bg-slate-800 overflow-hidden">
-                                <div className="h-full rounded-full bg-yellow-500" style={{ width: `${(p.severityDist.medium / total) * 100}%` }} />
-                              </div>
-                              <span className="text-[8px] text-slate-600 w-3 text-right">{p.severityDist.medium}</span>
-                            </div>
+                            ))}
                           </div>
                           <div className="flex items-center justify-between text-[8px] text-slate-700 border-t border-white/[0.06] pt-2 font-mono">
                             <span>First: {p.firstSeen}</span>

@@ -735,9 +735,12 @@ export default function Analytics() {
                     </div>
                   </div>
                   <div className="flex items-center gap-2">
-                    <div className="flex-1 h-1.5 rounded-full bg-slate-800 overflow-hidden">
-                      <div className="h-full rounded-full transition-all" style={{ width: `${Math.min(s.bar, 100)}%`, backgroundColor: slaBarColor(s.bar) }} />
-                    </div>
+                    <svg width="24" height="24" viewBox="0 0 24 24" className="-rotate-90 shrink-0">
+                      <circle cx="12" cy="12" r="9" fill="none" stroke="rgba(255,255,255,0.04)" strokeWidth="2.5" />
+                      <circle cx="12" cy="12" r="9" fill="none" stroke={slaBarColor(s.bar)} strokeWidth="2.5" strokeLinecap="round"
+                        strokeDasharray={2 * Math.PI * 9} strokeDashoffset={2 * Math.PI * 9 * (1 - Math.min(s.bar, 100) / 100)} />
+                      <text x="12" y="15" textAnchor="middle" fill={slaBarColor(s.bar)} fontSize="5" fontWeight="700" fontFamily="monospace" transform="rotate(90 12 12)">{Math.round(Math.min(s.bar, 100))}%</text>
+                    </svg>
                     <span className="text-[8px] text-slate-600 w-10 text-right">{s.trend}</span>
                   </div>
                 </div>
@@ -794,12 +797,14 @@ export default function Analytics() {
                         }`}>
                           {a.impact.toUpperCase()} IMPACT
                         </span>
-                        <div className="flex items-center gap-1">
-                          <div className="w-12 h-1 rounded-full bg-slate-800 overflow-hidden">
-                            <div className="h-full rounded-full bg-cyan-500" style={{ width: `${a.confidence}%` }} />
-                          </div>
-                          <span className="text-[8px] text-slate-600">{a.confidence}%</span>
-                        </div>
+                         <div className="flex items-center gap-1">
+                           <svg width="20" height="20" viewBox="0 0 20 20" className="-rotate-90">
+                             <circle cx="10" cy="10" r="7" fill="none" stroke="rgba(255,255,255,0.04)" strokeWidth="2.5" />
+                             <circle cx="10" cy="10" r="7" fill="none" stroke="#22d3ee" strokeWidth="2.5" strokeLinecap="round"
+                               strokeDasharray={2 * Math.PI * 7} strokeDashoffset={2 * Math.PI * 7 * (1 - a.confidence / 100)} />
+                           </svg>
+                           <span className="text-[8px] text-slate-600">{a.confidence}%</span>
+                         </div>
                       </div>
                     </div>
                   </div>
@@ -896,13 +901,16 @@ export default function Analytics() {
           <ChartCard title="Incident Root Cause Analysis" subtitle="Breakdown of incident causes this quarter" delay={0.6}>
             <div className="space-y-2">
               {incidentCauseBreakdown.map((c) => (
-                <div key={c.cause} className="flex items-center gap-2">
-                  <div className="w-28 shrink-0">
-                    <p className="text-[9px] text-slate-300 truncate">{c.cause}</p>
-                  </div>
-                  <div className="flex-1 h-2 rounded-full bg-slate-800 overflow-hidden">
-                    <div className="h-full rounded-full" style={{ width: `${c.pct}%`, backgroundColor: c.pct > 25 ? '#ef4444' : c.pct > 15 ? '#f59e0b' : c.pct > 8 ? '#06b6d4' : '#22c55e' }} />
-                  </div>
+                  <div key={c.cause} className="flex items-center gap-2">
+                    <svg width="24" height="24" viewBox="0 0 24 24" className="-rotate-90 shrink-0">
+                      <circle cx="12" cy="12" r="9" fill="none" stroke="rgba(255,255,255,0.04)" strokeWidth="2.5" />
+                      <circle cx="12" cy="12" r="9" fill="none" stroke={c.pct > 25 ? '#ef4444' : c.pct > 15 ? '#f59e0b' : c.pct > 8 ? '#06b6d4' : '#22c55e'} strokeWidth="2.5" strokeLinecap="round"
+                        strokeDasharray={2 * Math.PI * 9} strokeDashoffset={2 * Math.PI * 9 * (1 - c.pct / 100)} />
+                      <text x="12" y="15" textAnchor="middle" fill={c.pct > 25 ? '#ef4444' : c.pct > 15 ? '#f59e0b' : c.pct > 8 ? '#06b6d4' : '#22c55e'} fontSize="5" fontWeight="700" fontFamily="monospace" transform="rotate(90 12 12)">{Math.round(c.pct)}%</text>
+                    </svg>
+                    <div className="w-24 shrink-0">
+                      <p className="text-[9px] text-slate-300 truncate">{c.cause}</p>
+                    </div>
                   <div className="w-10 text-right shrink-0">
                     <p className="text-[9px] font-semibold text-white">{c.count}</p>
                   </div>
@@ -1117,9 +1125,11 @@ export default function Analytics() {
                   <span className="text-[8px] text-slate-600">±{((t.upper - t.lower) / 2).toFixed(0)}</span>
                 </div>
                 <p className="text-[8px] text-slate-600">{t.prevented} prevented · {t.autoResolved} auto</p>
-                  <div className="mt-1 w-full h-1 rounded-full bg-slate-800 overflow-hidden">
-                    <div className="h-full rounded-full bg-green-500" style={{ width: `${(t.prevented + t.predicted) > 0 ? (t.prevented / (t.prevented + t.predicted)) * 100 : 0}%` }} />
-                  </div>
+                  <svg width="20" height="20" viewBox="0 0 20 20" className="-rotate-90 mx-auto mt-1">
+                    <circle cx="10" cy="10" r="7" fill="none" stroke="rgba(255,255,255,0.04)" strokeWidth="2.5" />
+                    <circle cx="10" cy="10" r="7" fill="none" stroke="#22c55e" strokeWidth="2.5" strokeLinecap="round"
+                      strokeDasharray={2 * Math.PI * 7} strokeDashoffset={2 * Math.PI * 7 * (1 - ((t.prevented + t.predicted) > 0 ? t.prevented / (t.prevented + t.predicted) : 0))} />
+                  </svg>
               </div>
             ))}
           </div>
@@ -1146,12 +1156,15 @@ export default function Analytics() {
           <ChartCard title="Severity Breakdown" subtitle="Incidents by severity level" delay={0.8}>
             <div className="space-y-2">
               {severityBreakdown.map((s) => (
-                <div key={s.name} className="flex items-center gap-3">
+                <div key={s.name} className="flex items-center gap-2">
+                  <svg width="24" height="24" viewBox="0 0 24 24" className="-rotate-90 shrink-0">
+                    <circle cx="12" cy="12" r="9" fill="none" stroke="rgba(255,255,255,0.04)" strokeWidth="2.5" />
+                    <circle cx="12" cy="12" r="9" fill="none" stroke={s.color} strokeWidth="2.5" strokeLinecap="round"
+                      strokeDasharray={2 * Math.PI * 9} strokeDashoffset={2 * Math.PI * 9 * (1 - s.value / severityBreakdown.reduce((a, b) => a + b.value, 0))} />
+                    <text x="12" y="15" textAnchor="middle" fill={s.color} fontSize="5" fontWeight="700" fontFamily="monospace" transform="rotate(90 12 12)">{Math.round((s.value / severityBreakdown.reduce((a, b) => a + b.value, 0)) * 100)}%</text>
+                  </svg>
                   <div className="w-20 shrink-0">
                     <p className="text-[10px] font-medium text-slate-300">{s.name}</p>
-                  </div>
-                  <div className="flex-1 h-2 rounded-full bg-slate-800 overflow-hidden">
-                    <div className="h-full rounded-full transition-all" style={{ width: `${(s.value / severityBreakdown.reduce((a, b) => a + b.value, 0)) * 100}%`, backgroundColor: s.color }} />
                   </div>
                   <div className="w-12 text-right shrink-0">
                     <p className="text-[10px] font-semibold text-white">{s.value}</p>

@@ -807,19 +807,24 @@ function IncidentsByService() {
         <StatusBadge status="info" label="24h window" />
       </div>
       <div className="space-y-2">
-        {mockData.incidentsByService.map((item, idx) => {
-          const sevColor = item.severity === 'critical' ? 'text-red-400' : item.severity === 'high' ? 'text-orange-400' : item.severity === 'medium' ? 'text-amber-400' : 'text-emerald-400'
-          const sevBar = item.severity === 'critical' ? 'bg-red-500/80' : item.severity === 'high' ? 'bg-orange-500/80' : item.severity === 'medium' ? 'bg-amber-500/80' : 'bg-emerald-500/80'
-          const barWidth = Math.min((item.count / 5) * 100, 100)
+          {mockData.incidentsByService.map((item, idx) => {
+          const sevColor = item.severity === 'critical' ? '#ef4444' : item.severity === 'high' ? '#f97316' : item.severity === 'medium' ? '#eab308' : '#22c55e'
+          const sevColorClass = item.severity === 'critical' ? 'text-red-400' : item.severity === 'high' ? 'text-orange-400' : item.severity === 'medium' ? 'text-amber-400' : 'text-emerald-400'
+          const pct = Math.min((item.count / 5) * 100, 100)
           return (
-            <motion.div key={item.service} initial={{ opacity: 0, x: -8 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: idx * 0.05 }} className="flex items-center gap-3">
-              <span className="text-[10px] font-mono text-slate-400 w-24 shrink-0 truncate">{item.service}</span>
-              <div className="flex-1 h-2 rounded-full bg-slate-800 overflow-hidden">
-                <motion.div initial={{ width: 0 }} animate={{ width: `${barWidth}%` }} transition={{ duration: 0.8, delay: idx * 0.05 }} className={`h-full rounded-full ${sevBar}`} />
-              </div>
-              <div className="flex items-center gap-1.5 shrink-0 w-16 justify-end">
-                <span className={`text-[11px] font-bold font-mono ${sevColor}`}>{item.count}</span>
-                <span className={`text-[8px] font-mono ${item.trend === 'up' ? 'text-red-400' : item.trend === 'down' ? 'text-emerald-400' : 'text-slate-600'}`}>{item.trend === 'up' ? '\u2191' : item.trend === 'down' ? '\u2193' : '\u2192'}</span>
+            <motion.div key={item.service} initial={{ opacity: 0, x: -8 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: idx * 0.05 }} className="flex items-center gap-2 glass-card p-1.5">
+              <svg width="28" height="28" viewBox="0 0 28 28" className="-rotate-90 shrink-0">
+                <circle cx="14" cy="14" r="10" fill="none" stroke="rgba(255,255,255,0.04)" strokeWidth="3" />
+                <motion.circle cx="14" cy="14" r="10" fill="none" stroke={sevColor} strokeWidth="3" strokeLinecap="round"
+                  strokeDasharray={2 * Math.PI * 10} initial={{ strokeDashoffset: 2 * Math.PI * 10 }}
+                  animate={{ strokeDashoffset: 2 * Math.PI * 10 * (1 - pct / 100) }} transition={{ duration: 0.8, delay: idx * 0.05, ease: 'easeOut' }} />
+                <text x="14" y="17" textAnchor="middle" fill={sevColor} fontSize="6" fontWeight="700" fontFamily="monospace" transform="rotate(90 14 14)">{item.count}</text>
+              </svg>
+              <div className="flex-1 min-w-0">
+                <div className="flex items-center justify-between">
+                  <span className="text-[10px] font-mono text-slate-300 truncate">{item.service}</span>
+                  <span className={'text-[8px] font-mono ' + (item.trend === 'up' ? 'text-red-400' : item.trend === 'down' ? 'text-emerald-400' : 'text-slate-600')}>{item.trend === 'up' ? '\u2191' : item.trend === 'down' ? '\u2193' : '\u2192'}</span>
+                </div>
               </div>
             </motion.div>
           )
@@ -857,9 +862,13 @@ function SloSummary() {
                   <StatusBadge status={slo.status === 'attaining' ? 'success' : 'warning'} label={slo.status} />
                 </div>
               </div>
-              <div className="h-1.5 rounded-full bg-slate-800 overflow-hidden">
-                <motion.div initial={{ width: 0 }} animate={{ width: `${Math.min(barPct * (slo.unit === 'ms' ? 2 : 1), 100)}%` }} transition={{ duration: 0.8, delay: idx * 0.05 }} className={`h-full rounded-full ${barColor}`} />
-              </div>
+              <svg width="28" height="28" viewBox="0 0 28 28" className="-rotate-90 shrink-0">
+                <circle cx="14" cy="14" r="10" fill="none" stroke="rgba(255,255,255,0.04)" strokeWidth="3" />
+                <motion.circle cx="14" cy="14" r="10" fill="none" stroke={slo.status === 'attaining' ? '#22c55e' : '#f59e0b'} strokeWidth="3" strokeLinecap="round"
+                  strokeDasharray={2 * Math.PI * 10} initial={{ strokeDashoffset: 2 * Math.PI * 10 }}
+                  animate={{ strokeDashoffset: 2 * Math.PI * 10 * (1 - Math.min(barPct * (slo.unit === 'ms' ? 2 : 1), 100) / 100) }} transition={{ duration: 0.8, delay: idx * 0.05, ease: 'easeOut' }} />
+                <text x="14" y="17" textAnchor="middle" fill={slo.status === 'attaining' ? '#22c55e' : '#f59e0b'} fontSize="6" fontWeight="700" fontFamily="monospace" transform="rotate(90 14 14)">{displayActual}</text>
+              </svg>
             </motion.div>
           )
         })}
@@ -1010,9 +1019,15 @@ function BusinessImpactCalculator() {
                   <svg className={`h-3.5 w-3.5 ${biz.color}`} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}><path strokeLinecap="round" strokeLinejoin="round" d={biz.icon} /></svg>
                   <span className="text-[9px] font-mono text-slate-500 uppercase tracking-wider truncate">{biz.label}</span>
                 </div>
-                <div className={`text-lg sm:text-xl font-bold font-mono ${biz.color} truncate`}>{biz.prefix}{displayVal}{biz.suffix}</div>
-                <div className="mt-2 h-1.5 rounded-full bg-slate-800 overflow-hidden">
-                  <motion.div initial={{ width: 0 }} animate={{ width: `${barPct}%` }} transition={{ duration: 1.2, delay: idx * 0.1 + 0.3, ease: 'easeOut' }} className={`h-full rounded-full ${String(biz.color ?? '').replace('text-', 'bg-').replace('400', '500/80')}`} />
+                <div className="flex items-center gap-2">
+                  <div className={`text-lg sm:text-xl font-bold font-mono ${biz.color} truncate`}>{biz.prefix}{displayVal}{biz.suffix}</div>
+                  <svg width="32" height="32" viewBox="0 0 32 32" className="-rotate-90 shrink-0 ml-auto">
+                    <circle cx="16" cy="16" r="12" fill="none" stroke="rgba(255,255,255,0.04)" strokeWidth="3" />
+                    <motion.circle cx="16" cy="16" r="12" fill="none" stroke={(() => { const m = { 'text-red-400': '#f87171', 'text-amber-400': '#fbbf24', 'text-cyan-400': '#22d3ee', 'text-emerald-400': '#34d399' }; return m[biz.color] || '#64748b' })()} strokeWidth="3" strokeLinecap="round"
+                      strokeDasharray={2 * Math.PI * 12} initial={{ strokeDashoffset: 2 * Math.PI * 12 }}
+                      animate={{ strokeDashoffset: 2 * Math.PI * 12 * (1 - barPct / 100) }} transition={{ duration: 1.2, delay: idx * 0.1 + 0.3, ease: 'easeOut' }} />
+                    <text x="16" y="19" textAnchor="middle" fill={(() => { const m = { 'text-red-400': '#f87171', 'text-amber-400': '#fbbf24', 'text-cyan-400': '#22d3ee', 'text-emerald-400': '#34d399' }; return m[biz.color] || '#64748b' })()} fontSize="7" fontWeight="700" fontFamily="monospace" transform="rotate(90 16 16)">{Math.round(barPct)}%</text>
+                  </svg>
                 </div>
               </motion.div>
             )
@@ -1305,31 +1320,54 @@ function PredictionWall() {
 }
 function TopRisksLeaderboard() {
   const risks = mockData.topRisksLeaderboard
-  const riskColors = { critical: 'text-red-400 border-red-500/30', high: 'text-orange-400 border-orange-500/30', medium: 'text-amber-400 border-amber-500/30', low: 'text-emerald-400 border-emerald-500/30' }
+  const severityConfig = { critical: { color: '#ef4444', glow: 'rgba(239,68,68,0.3)', label: 'CRITICAL', ring: '#ef4444' }, high: { color: '#f97316', glow: 'rgba(249,115,22,0.25)', label: 'HIGH', ring: '#f97316' }, medium: { color: '#eab308', glow: 'rgba(234,179,8,0.2)', label: 'MEDIUM', ring: '#eab308' }, low: { color: '#22c55e', glow: 'rgba(34,197,94,0.15)', label: 'LOW', ring: '#22c55e' } }
   return (
-    <motion.div variants={item} className="rounded-xl border border-white/[0.06] bg-gradient-to-br from-slate-900 to-slate-900/50 p-3 sm:p-4">
-      <div className="flex items-center justify-between mb-2.5">
-        <h2 className="text-[11px] font-semibold text-slate-400 uppercase tracking-[0.15em] font-mono">Top Risks Leaderboard</h2>
-        <div className="flex items-center gap-2"><StatusBadge status="warning" label="PRIORITY" /><span className="h-1.5 w-1.5 rounded-full bg-red-500 animate-pulse" /></div>
+    <motion.div variants={item} className="rounded-xl bg-slate-950/40 backdrop-blur-[12px] border border-white/[0.06] p-4">
+      <div className="flex items-center justify-between mb-4">
+        <div className="flex items-center gap-3">
+          <div className="relative">
+            <svg className="h-5 w-5 text-red-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}><path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" /></svg>
+            <span className="absolute -top-1 -right-1 h-2 w-2 rounded-full bg-red-500 animate-ping" />
+          </div>
+          <h2 className="text-sm font-bold text-white tracking-wider">Threat Command Center</h2>
+          <StatusBadge status="critical" label="ACTIVE THREATS" />
+        </div>
       </div>
-      <div className="space-y-1.5">
-        {risks.map((r, idx) => {
-          const rc = riskColors[r.severity] || riskColors.medium
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+        {risks.slice(0, 4).map((r, idx) => {
+          const cfg = severityConfig[r.severity] || severityConfig.medium
+          const circumference = 2 * Math.PI * 22
           return (
-            <motion.div key={r.id} variants={item} className={`rounded-lg border ${rc} bg-white/[0.01] p-2.5 hover:bg-white/[0.03] transition-all`}>
-              <div className="flex items-start justify-between gap-2">
-                <div className="flex items-center gap-1.5 min-w-0">
-                  <span className={`w-5 h-5 rounded-full ${r.severity === 'critical' ? 'bg-red-500/20 text-red-400' : r.severity === 'high' ? 'bg-orange-500/20 text-orange-400' : r.severity === 'medium' ? 'bg-amber-500/20 text-amber-400' : 'bg-emerald-500/20 text-emerald-400'} flex items-center justify-center text-[9px] font-mono font-bold shrink-0`}>{idx + 1}</span>
-                  <div className="min-w-0"><p className="text-[11px] font-medium text-slate-200 truncate">{r.title}</p><div className="flex items-center gap-2"><span className="text-[9px] font-mono text-slate-600">{r.service}</span><span className="text-[9px] font-mono text-red-400">{String(r.severity ?? '').toUpperCase()}</span></div></div>
+            <motion.div key={r.id} variants={item} className="glass-card p-4 relative overflow-hidden group hover:border-white/[0.12] transition-all duration-300">
+              <div className="absolute inset-0 bg-gradient-to-br from-transparent via-transparent to-current opacity-[0.02] group-hover:opacity-[0.04] transition-opacity" />
+              <div className="flex items-center justify-between mb-3">
+                <div className="flex items-center gap-2">
+                  <span className={'h-2.5 w-2.5 rounded-full animate-pulse ' + (r.severity === 'critical' ? 'bg-red-500 shadow-[0_0_8px_rgba(239,68,68,0.5)]' : r.severity === 'high' ? 'bg-orange-500 shadow-[0_0_8px_rgba(249,115,22,0.4)]' : r.severity === 'medium' ? 'bg-yellow-500 shadow-[0_0_8px_rgba(234,179,8,0.3)]' : 'bg-green-500 shadow-[0_0_8px_rgba(34,197,94,0.2)]')} />
+                  <span className="text-[9px] font-mono font-bold tracking-wider" style={{ color: cfg.color }}>{cfg.label}</span>
                 </div>
-                <div className="text-right shrink-0"><span className="text-sm font-bold font-mono text-red-400">{r.score}</span><span className="text-[8px] text-slate-700 block">Risk Score</span></div>
+                <svg width="52" height="52" viewBox="0 0 52 52" className="-rotate-90">
+                  <circle cx="26" cy="26" r="22" fill="none" stroke="rgba(255,255,255,0.04)" strokeWidth="4" />
+                  <motion.circle cx="26" cy="26" r="22" fill="none" stroke={cfg.ring} strokeWidth="4" strokeLinecap="round"
+                    strokeDasharray={circumference} initial={{ strokeDashoffset: circumference }}
+                    animate={{ strokeDashoffset: circumference * (1 - r.score / 100) }} transition={{ duration: 1.2, delay: idx * 0.15, ease: 'easeOut' }} />
+                  <text x="26" y="30" textAnchor="middle" fill={cfg.ring} fontSize="14" fontWeight="700" fontFamily="monospace" transform="rotate(90 26 26)">{r.score}</text>
+                </svg>
               </div>
-              <div className="flex items-center gap-2 mt-1.5">
-                <span className="text-[8px] font-mono text-slate-600">{r.impact}</span>
-                <span className="text-slate-800">|</span>
-                <span className="text-[8px] font-mono text-cyan-400/60">P{idx + 1}</span>
+              <p className="text-xs font-medium text-slate-200 leading-snug mb-2 line-clamp-2">{r.title}</p>
+              <div className="space-y-1.5">
+                <div className="flex items-center justify-between">
+                  <span className="text-[9px] text-slate-600 font-mono">Service</span>
+                  <span className="text-[9px] text-slate-400 font-mono">{r.service}</span>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="text-[9px] text-slate-600 font-mono">Exposure</span>
+                  <span className="text-[9px] text-red-400 font-mono font-semibold">{r.impact}</span>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="text-[9px] text-slate-600 font-mono">Priority</span>
+                  <span className="text-[9px] text-cyan-400/80 font-mono">P{idx + 1}</span>
+                </div>
               </div>
-              <div className="w-full h-1 bg-white/[0.03] rounded-full mt-1 overflow-hidden"><motion.div initial={{ width: 0 }} whileInView={{ width: `${r.score}%` }} viewport={{ once: true }} transition={{ duration: 1, delay: idx * 0.1 }} className="h-full rounded-full bg-gradient-to-r from-red-600 to-red-400" style={{ width: `${r.score}%` }} /></div>
             </motion.div>
           )
         })}
@@ -1626,30 +1664,54 @@ function PredictionWallExpanded() {
 }
 function TopRisksLeaderboardExpanded() {
   const risks = mockData.topRisksLeaderboard
-  const riskColors = { critical: 'text-red-400 border-red-500/30', high: 'text-orange-400 border-orange-500/30', medium: 'text-amber-400 border-amber-500/30', low: 'text-emerald-400 border-emerald-500/30' }
+  const severityConfig = { critical: { color: '#ef4444', glow: 'rgba(239,68,68,0.3)', label: 'CRITICAL', ring: '#ef4444' }, high: { color: '#f97316', glow: 'rgba(249,115,22,0.25)', label: 'HIGH', ring: '#f97316' }, medium: { color: '#eab308', glow: 'rgba(234,179,8,0.2)', label: 'MEDIUM', ring: '#eab308' }, low: { color: '#22c55e', glow: 'rgba(34,197,94,0.15)', label: 'LOW', ring: '#22c55e' } }
   return (
-    <motion.div variants={item} className="rounded-xl border border-white/[0.06] bg-gradient-to-br from-slate-900 to-slate-900/50 p-3 sm:p-4">
-      <div className="flex items-center justify-between mb-3">
-        <div className="flex items-center gap-2">
-          <svg className="h-4 w-4 text-red-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}><path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" /></svg>
-          <h2 className="text-sm font-semibold text-red-400 uppercase tracking-[0.15em] font-mono">Top Risks Leaderboard</h2>
-          <StatusBadge status="critical" label="Priority" />
+    <motion.div variants={item} className="rounded-xl bg-slate-950/40 backdrop-blur-[12px] border border-white/[0.06] p-4">
+      <div className="flex items-center justify-between mb-4">
+        <div className="flex items-center gap-3">
+          <div className="relative">
+            <svg className="h-5 w-5 text-red-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}><path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" /></svg>
+            <span className="absolute -top-1 -right-1 h-2 w-2 rounded-full bg-red-500 animate-ping" />
+          </div>
+          <h2 className="text-base font-bold text-white tracking-wider">Threat Command Center</h2>
+          <StatusBadge status="critical" label="ACTIVE THREATS" />
         </div>
       </div>
-      <div className="space-y-2">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
         {risks.map((r, idx) => {
-          const rc = riskColors[r.severity] || riskColors.medium
+          const cfg = severityConfig[r.severity] || severityConfig.medium
+          const circumference = 2 * Math.PI * 22
           return (
-            <motion.div key={r.id} variants={item} className={`rounded-xl border ${rc} bg-white/[0.02] p-3 hover:bg-white/[0.04] transition-all`}>
-              <div className="flex items-start justify-between gap-3">
-                <div className="flex items-center gap-2 min-w-0">
-                  <span className={`w-6 h-6 rounded-full ${r.severity === 'critical' ? 'bg-red-500/20 text-red-400' : r.severity === 'high' ? 'bg-orange-500/20 text-orange-400' : r.severity === 'medium' ? 'bg-amber-500/20 text-amber-400' : 'bg-emerald-500/20 text-emerald-400'} flex items-center justify-center text-[10px] font-mono font-bold shrink-0`}>{idx + 1}</span>
-                  <div className="min-w-0"><p className="text-sm font-medium text-slate-200 truncate">{r.title}</p><div className="flex items-center gap-2"><span className="text-[10px] font-mono text-slate-600">{r.service}</span><span className={`text-[10px] font-mono ${r.severity === 'critical' ? 'text-red-400' : r.severity === 'high' ? 'text-orange-400' : r.severity === 'medium' ? 'text-amber-400' : 'text-emerald-400'}`}>{String(r.severity ?? '').toUpperCase()}</span></div></div>
+            <motion.div key={r.id} variants={item} className="glass-card p-4 relative overflow-hidden group hover:border-white/[0.12] transition-all duration-300">
+              <div className="absolute inset-0 bg-gradient-to-br from-transparent via-transparent to-current opacity-[0.02] group-hover:opacity-[0.04] transition-opacity" />
+              <div className="flex items-center justify-between mb-3">
+                <div className="flex items-center gap-2">
+                  <span className={'h-2.5 w-2.5 rounded-full animate-pulse ' + (r.severity === 'critical' ? 'bg-red-500 shadow-[0_0_8px_rgba(239,68,68,0.5)]' : r.severity === 'high' ? 'bg-orange-500 shadow-[0_0_8px_rgba(249,115,22,0.4)]' : r.severity === 'medium' ? 'bg-yellow-500 shadow-[0_0_8px_rgba(234,179,8,0.3)]' : 'bg-green-500 shadow-[0_0_8px_rgba(34,197,94,0.2)]')} />
+                  <span className="text-[9px] font-mono font-bold tracking-wider" style={{ color: cfg.color }}>{cfg.label}</span>
                 </div>
-                <div className="text-right shrink-0"><span className="text-lg font-bold font-mono text-red-400">{r.score}</span><span className="text-[9px] text-slate-700 block">Risk Score</span></div>
+                <svg width="52" height="52" viewBox="0 0 52 52" className="-rotate-90">
+                  <circle cx="26" cy="26" r="22" fill="none" stroke="rgba(255,255,255,0.04)" strokeWidth="4" />
+                  <motion.circle cx="26" cy="26" r="22" fill="none" stroke={cfg.ring} strokeWidth="4" strokeLinecap="round"
+                    strokeDasharray={circumference} initial={{ strokeDashoffset: circumference }}
+                    animate={{ strokeDashoffset: circumference * (1 - r.score / 100) }} transition={{ duration: 1.2, delay: idx * 0.15, ease: 'easeOut' }} />
+                  <text x="26" y="30" textAnchor="middle" fill={cfg.ring} fontSize="14" fontWeight="700" fontFamily="monospace" transform="rotate(90 26 26)">{r.score}</text>
+                </svg>
               </div>
-              <div className="flex items-center gap-3 mt-2"><span className="text-[9px] font-mono text-slate-600">{r.impact}</span><span className="text-slate-800">|</span><span className="text-[9px] font-mono text-cyan-400/60">P{idx + 1}</span></div>
-              <div className="w-full h-1.5 bg-white/[0.03] rounded-full mt-2 overflow-hidden"><motion.div initial={{ width: 0 }} whileInView={{ width: `${r.score}%` }} viewport={{ once: true }} transition={{ duration: 1, delay: idx * 0.1 }} className="h-full rounded-full bg-gradient-to-r from-red-600 to-red-400" style={{ width: `${r.score}%` }} /></div>
+              <p className="text-xs font-medium text-slate-200 leading-snug mb-2 line-clamp-2">{r.title}</p>
+              <div className="space-y-1.5">
+                <div className="flex items-center justify-between">
+                  <span className="text-[9px] text-slate-600 font-mono">Service</span>
+                  <span className="text-[9px] text-slate-400 font-mono">{r.service}</span>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="text-[9px] text-slate-600 font-mono">Exposure</span>
+                  <span className="text-[9px] text-red-400 font-mono font-semibold">{r.impact}</span>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="text-[9px] text-slate-600 font-mono">Priority</span>
+                  <span className="text-[9px] text-cyan-400/80 font-mono">P{idx + 1}</span>
+                </div>
+              </div>
             </motion.div>
           )
         })}
