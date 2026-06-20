@@ -228,7 +228,14 @@ export function NarrativeCTA({ currentPage, confidence = 0, impact = '' }) {
           </div>
         </div>
 
-        <div className="flex items-center gap-2 flex-wrap shrink-0">
+        <div className="flex flex-col items-end gap-1 shrink-0">
+          <div className="flex items-center gap-1">
+            <svg className="h-1.5 w-1.5 text-cyan-400" fill="currentColor" viewBox="0 0 8 8">
+              <circle cx="4" cy="4" r="3" />
+            </svg>
+            <span className="text-[7px] font-mono text-slate-600 uppercase tracking-widest font-semibold">Next Recommended Action</span>
+          </div>
+          <div className="flex items-center gap-2 flex-wrap justify-end">
           {confidence > 0 && (
             <div className="flex items-center gap-1.5 rounded-md border border-white/[0.06] bg-white/[0.03] px-2 py-1">
               <div className="flex items-center gap-1">
@@ -307,6 +314,7 @@ export function NarrativeCTA({ currentPage, confidence = 0, impact = '' }) {
               </Link>
             </>
           )}
+           </div>
         </div>
       </div>
     </motion.div>
