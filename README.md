@@ -363,42 +363,65 @@ The platform engineering movement is driving toward **developer self-service**, 
 
 ---
 
-## Build & Verification Status
-
-### Production-ready deployment verification.
-
-| Verification | Status |
-|:---|---:|
-| Production Build | **✅ Passing** |
-| Build Warnings | **✅ Zero** |
-| Build Errors | **✅ Zero** |
-| Production Deployment | **✅ Vercel** |
-| SPA Routes | **✅ 7 Routes** |
-| API Endpoints | **✅ 33 Endpoints** |
-| Historical Events | **✅ 1,598+** |
-| Knowledge Graph Nodes | **✅ 847+** |
-| Dependency Edges | **✅ 1,200+** |
-| Demo Ready | **✅ Yes** |
-
-Orbit Foresight is fully deployed, production-ready, and available for immediate evaluation. Judges can explore the complete platform without setup, configuration, or account creation.
-
----
 
 ## Architecture
 
-### Orbit Foresight Intelligence Architecture — from telemetry signals to executive decisions.
+### Orbit Foresight Intelligence Architecture
 
-<p align="center">
-  <img src="docs/assets/orbit-foresight-architecture.svg" alt="Orbit Foresight Architecture" width="100%" style="max-width: 1920px; border-radius: 12px;"/>
-</p>
+Transforming engineering telemetry into executive decisions in under 60 seconds.
 
-| Layer | Components | Purpose |
+```mermaid
+flowchart TB
+    subgraph SL["Signal Intelligence Layer"]
+        A1["Deployments"]
+        A2["Incidents"]
+        A3["Metrics"]
+        A4["Logs & Traces"]
+        A5["Service Dependencies"]
+    end
+
+    subgraph IL["AI Intelligence Layer"]
+        B1["Anomaly Detection"]
+        B2["Pattern Correlation"]
+        B3["Risk Prediction"]
+        B4["Root Cause Analysis"]
+        B5["Failure Forecasting"]
+    end
+
+    subgraph TL["Engineering Digital Twin"]
+        C1["Service Topology"]
+        C2["Dependency Graph"]
+        C3["Blast Radius Simulator"]
+        C4["Incident Memory"]
+    end
+
+    subgraph BL["Business Impact Layer"]
+        D1["Revenue Exposure"]
+        D2["Customer Impact"]
+        D3["SLA Risk"]
+        D4["Priority Ranking"]
+    end
+
+    subgraph EL["Executive Decision Layer"]
+        E1["Executive Command Center"]
+        E2["CTO Intelligence Reports"]
+        E3["Remediation Planner"]
+        E4["Mission Control"]
+    end
+
+    SL --> IL
+    IL --> TL
+    TL --> BL
+    BL --> EL
+```
+
+| Layer | Purpose | Key Capability |
 |:---|:---|:---|
-| **Signal Layer** | Deployments, Incidents, Metrics, Logs, Traces, Dependencies | Continuous stream processing — 2.4M+ data points across 15 dimensions |
-| **Intelligence Layer** | AI Investigation Engine, Root Cause Analysis, Risk Prediction, Pattern Correlation, Failure Forecasting | ML-powered forensic analysis with 94% confidence |
-| **Knowledge Layer** | Digital Twin, Service Graph, Dependency Mapping, Blast Radius Engine, Incident Memory | 847+ node production mirror with real-time synchronization |
-| **Business Layer** | Revenue Exposure, Customer Impact, SLA Risk, Compliance Impact, Priority Ranking | Engineering-to-executive translation with $2.8M protected |
-| **Executive Layer** | Command Center, CTO Reports, Remediation Planner, Executive Briefings | Boardroom-ready decisions in under 60 seconds |
+| **Signal Intelligence** | Continuous ingestion from engineering systems | Deployments, metrics, incidents, traces |
+| **AI Intelligence** | Detection, correlation, and reasoning | Root cause analysis, risk prediction, failure forecasting |
+| **Engineering Digital Twin** | System understanding and simulation | Blast radius simulation, dependency graph, incident memory |
+| **Business Impact** | Executive translation of engineering data | Revenue exposure, SLA risk, customer impact, priority ranking |
+| **Executive Decision** | Action generation and reporting | CTO reports, remediation plans, mission control |
 
 ---
 
@@ -419,6 +442,60 @@ Multi-team, multi-service intelligence graphs that model dependencies across the
 Orbit Foresight becomes the central nervous system of engineering organizations — integrating with every stage of the software development lifecycle. From PR review risk scoring to deployment gating to post-incident learning, the platform powers every decision with intelligence.
 
 > **The goal:** Every engineering organization should be able to answer three questions at any moment — "What's breaking?", "What's at risk?", and "What should we do?" — without opening a single dashboard.
+
+---
+
+## Verification & Production Readiness
+
+Every claim in Orbit Foresight is backed by a deployed, working system.
+
+### Build Verification
+
+✅ **Production Build Passing**
+
+✅ **Zero Build Errors**
+
+✅ **Zero Build Warnings**
+
+✅ **Vercel Production Deployment**
+
+### Platform Scale
+
+✅ **7 Production Routes**
+
+✅ **33 API Endpoints**
+
+✅ **1,598 Historical Events**
+
+✅ **847 Knowledge Graph Nodes**
+
+✅ **1,200+ Dependency Edges**
+
+### Judge Experience
+
+✅ **No Login Required**
+
+✅ **No Setup Required**
+
+✅ **Preloaded Enterprise Dataset**
+
+✅ **Full End-to-End Workflow**
+
+✅ **90-Second Guided Evaluation**
+
+### Engineering Quality
+
+✅ **React 18 + Vite**
+
+✅ **FastAPI Backend**
+
+✅ **Responsive UI**
+
+✅ **Production Deployment**
+
+✅ **Live Demo Available**
+
+> Orbit Foresight is not a concept prototype. It is a deployed engineering intelligence platform available for immediate evaluation.
 
 ---
 
