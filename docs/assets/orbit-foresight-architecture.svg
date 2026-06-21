@@ -1,455 +1,341 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1920 1080" width="1920" height="1080">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1800 1080" width="1800" height="1080">
   <defs>
-    <radialGradient id="bgGlow" cx="50%" cy="40%" r="65%">
-      <stop offset="0%" stop-color="#0f1a2e"/>
-      <stop offset="50%" stop-color="#0a0f1d"/>
+    <radialGradient id="bgGlow" cx="50%" cy="50%" r="65%">
+      <stop offset="0%" stop-color="#0a1628"/>
+      <stop offset="40%" stop-color="#070e1a"/>
       <stop offset="100%" stop-color="#02040a"/>
     </radialGradient>
-    <radialGradient id="orbitalGlow" cx="50%" cy="50%" r="50%">
-      <stop offset="0%" stop-color="rgba(6,182,212,0.06)"/>
+    <radialGradient id="coreGlow" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="rgba(6,182,212,0.12)"/>
+      <stop offset="40%" stop-color="rgba(6,182,212,0.04)"/>
+      <stop offset="100%" stop-color="rgba(6,182,212,0)"/>
+    </radialGradient>
+    <radialGradient id="corePulse" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="rgba(6,182,212,0.2)"/>
+      <stop offset="50%" stop-color="rgba(139,92,246,0.08)"/>
       <stop offset="100%" stop-color="rgba(6,182,212,0)"/>
     </radialGradient>
 
-    <linearGradient id="glassBase" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="rgba(15,23,42,0.7)"/>
+    <linearGradient id="glassBase" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="rgba(15,23,42,0.65)"/>
+      <stop offset="100%" stop-color="rgba(15,23,42,0.25)"/>
+    </linearGradient>
+    <linearGradient id="glassHover" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="rgba(15,23,42,0.75)"/>
       <stop offset="100%" stop-color="rgba(15,23,42,0.35)"/>
     </linearGradient>
 
-    <linearGradient id="sigHeader" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stop-color="#06b6d4"/><stop offset="100%" stop-color="#0891b2"/></linearGradient>
-    <linearGradient id="aiHeader" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stop-color="#8b5cf6"/><stop offset="100%" stop-color="#7c3aed"/></linearGradient>
-    <linearGradient id="twinHeader" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stop-color="#22d3ee"/><stop offset="100%" stop-color="#06b6d4"/></linearGradient>
-    <linearGradient id="impactHeader" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stop-color="#f59e0b"/><stop offset="100%" stop-color="#d97706"/></linearGradient>
-    <linearGradient id="execHeader" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stop-color="#10b981"/><stop offset="100%" stop-color="#059669"/></linearGradient>
+    <linearGradient id="cyanBorder" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="rgba(6,182,212,0.35)"/>
+      <stop offset="100%" stop-color="rgba(6,182,212,0.05)"/>
+    </linearGradient>
+    <linearGradient id="purpleBorder" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="rgba(139,92,246,0.35)"/>
+      <stop offset="100%" stop-color="rgba(139,92,246,0.05)"/>
+    </linearGradient>
+    <linearGradient id="tealBorder" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="rgba(34,211,238,0.35)"/>
+      <stop offset="100%" stop-color="rgba(34,211,238,0.05)"/>
+    </linearGradient>
+    <linearGradient id="amberBorder" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="rgba(245,158,11,0.35)"/>
+      <stop offset="100%" stop-color="rgba(245,158,11,0.05)"/>
+    </linearGradient>
+    <linearGradient id="emeraldBorder" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="rgba(16,185,129,0.35)"/>
+      <stop offset="100%" stop-color="rgba(16,185,129,0.05)"/>
+    </linearGradient>
 
-    <linearGradient id="sigBorder" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="rgba(6,182,212,0.4)"/><stop offset="100%" stop-color="rgba(6,182,212,0.05)"/></linearGradient>
-    <linearGradient id="aiBorder" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="rgba(139,92,246,0.4)"/><stop offset="100%" stop-color="rgba(139,92,246,0.05)"/></linearGradient>
-    <linearGradient id="twinBorder" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="rgba(34,211,238,0.4)"/><stop offset="100%" stop-color="rgba(34,211,238,0.05)"/></linearGradient>
-    <linearGradient id="impactBorder" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="rgba(245,158,11,0.4)"/><stop offset="100%" stop-color="rgba(245,158,11,0.05)"/></linearGradient>
-    <linearGradient id="execBorder" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="rgba(16,185,129,0.4)"/><stop offset="100%" stop-color="rgba(16,185,129,0.05)"/></linearGradient>
+    <linearGradient id="cyanAccent" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#06b6d4"/>
+      <stop offset="100%" stop-color="#22d3ee"/>
+    </linearGradient>
+    <linearGradient id="purpleAccent" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#8b5cf6"/>
+      <stop offset="100%" stop-color="#a78bfa"/>
+    </linearGradient>
+    <linearGradient id="tealAccent" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#22d3ee"/>
+      <stop offset="100%" stop-color="#06b6d4"/>
+    </linearGradient>
+    <linearGradient id="amberAccent" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#f59e0b"/>
+      <stop offset="100%" stop-color="#fbbf24"/>
+    </linearGradient>
+    <linearGradient id="emeraldAccent" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#10b981"/>
+      <stop offset="100%" stop-color="#34d399"/>
+    </linearGradient>
 
-    <filter id="glowCyan"><feGaussianBlur stdDeviation="5" result="blur"/><feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
-    <filter id="glowPurple"><feGaussianBlur stdDeviation="5" result="blur"/><feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
-    <filter id="glowGreen"><feGaussianBlur stdDeviation="5" result="blur"/><feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+    <filter id="glowCyan"><feGaussianBlur stdDeviation="6" result="blur"/><feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+    <filter id="glowPurple"><feGaussianBlur stdDeviation="6" result="blur"/><feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+    <filter id="glowTeal"><feGaussianBlur stdDeviation="5" result="blur"/><feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
     <filter id="glowAmber"><feGaussianBlur stdDeviation="4" result="blur"/><feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
-    <filter id="glowRed"><feGaussianBlur stdDeviation="3" result="blur"/><feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
-    <filter id="dropShadow"><feDropShadow dx="0" dy="6" stdDeviation="12" flood-color="rgba(0,0,0,0.6)"/></filter>
-    <filter id="ambientGlow"><feGaussianBlur stdDeviation="30"/></filter>
+    <filter id="glowEmerald"><feGaussianBlur stdDeviation="4" result="blur"/><feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+    <filter id="ambientGlow"><feGaussianBlur stdDeviation="40"/></filter>
+    <filter id="dropShadow"><feDropShadow dx="0" dy="8" stdDeviation="16" flood-color="rgba(0,0,0,0.6)"/></filter>
+    <filter id="coreShadow"><feDropShadow dx="0" dy="0" stdDeviation="24" flood-color="rgba(6,182,212,0.3)"/></filter>
 
-    <marker id="arrowCyan" markerWidth="12" markerHeight="8" refX="11" refY="4" orient="auto"><polygon points="0 0, 12 4, 0 8" fill="#06b6d4"/></marker>
-    <marker id="arrowPurple" markerWidth="12" markerHeight="8" refX="11" refY="4" orient="auto"><polygon points="0 0, 12 4, 0 8" fill="#8b5cf6"/></marker>
-    <marker id="arrowTeal" markerWidth="12" markerHeight="8" refX="11" refY="4" orient="auto"><polygon points="0 0, 12 4, 0 8" fill="#22d3ee"/></marker>
-    <marker id="arrowAmber" markerWidth="12" markerHeight="8" refX="11" refY="4" orient="auto"><polygon points="0 0, 12 4, 0 8" fill="#f59e0b"/></marker>
-    <marker id="arrowGreen" markerWidth="12" markerHeight="8" refX="11" refY="4" orient="auto"><polygon points="0 0, 12 4, 0 8" fill="#10b981"/></marker>
-
-    <pattern id="grid" width="60" height="60" patternUnits="userSpaceOnUse">
-      <path d="M 60 0 L 0 0 0 60" fill="none" stroke="rgba(6,182,212,0.02)" stroke-width="1"/>
+    <pattern id="grid" width="50" height="50" patternUnits="userSpaceOnUse">
+      <path d="M 50 0 L 0 0 0 50" fill="none" stroke="rgba(6,182,212,0.015)" stroke-width="1"/>
     </pattern>
 
+    <marker id="arrowCyan" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#06b6d4"/>
+    </marker>
+    <marker id="arrowPurple" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#8b5cf6"/>
+    </marker>
+    <marker id="arrowTeal" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#22d3ee"/>
+    </marker>
+    <marker id="arrowAmber" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#f59e0b"/>
+    </marker>
+
     <style>
-      @keyframes pulse { 0%,100% { opacity: 0.3; } 50% { opacity: 1; } }
+      @keyframes pulseGlow { 0%,100% { opacity: 0.3; } 50% { opacity: 0.8; } }
+      @keyframes pulseRing { 0% { transform: scale(1); opacity: 0.5; } 100% { transform: scale(1.3); opacity: 0; } }
       @keyframes orbit { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-      @keyframes drift { 0%,100% { transform: translate(0,0); } 50% { transform: translate(8px,-8px); } }
-      @keyframes scanLine { 0% { transform: translateY(0); } 100% { transform: translateY(460px); } }
-      .pulse-cyan { animation: pulse 2s ease-in-out infinite; }
-      .pulse-purple { animation: pulse 2.5s ease-in-out infinite; }
-      .pulse-green { animation: pulse 3s ease-in-out infinite; }
-      .pulse-amber { animation: pulse 2.8s ease-in-out infinite; }
-      .drift { animation: drift 6s ease-in-out infinite; }
+      @keyframes particleDrift { 0% { transform: translate(0,0); opacity: 0; } 20% { opacity: 0.8; } 80% { opacity: 0.8; } 100% { transform: translate(120px,-60px); opacity: 0; } }
+      @keyframes nodePulse { 0%,100% { r: 3; } 50% { r: 5; } }
+      .p-cyan { animation: pulseGlow 2.5s ease-in-out infinite; }
+      .p-purple { animation: pulseGlow 3s ease-in-out infinite; }
+      .p-teal { animation: pulseGlow 2.8s ease-in-out infinite; }
+      .p-amber { animation: pulseGlow 3.2s ease-in-out infinite; }
+      .p-emerald { animation: pulseGlow 2.6s ease-in-out infinite; }
+      .p-ring { animation: pulseRing 3s ease-out infinite; transform-origin: center; }
     </style>
   </defs>
 
-  <rect width="1920" height="1080" fill="url(#bgGlow)"/>
-  <rect width="1920" height="1080" fill="url(#grid)"/>
+  <rect width="1800" height="1080" fill="url(#bgGlow)"/>
+  <rect width="1800" height="1080" fill="url(#grid)"/>
 
-  <circle cx="960" cy="400" r="350" fill="url(#orbitalGlow)"/>
+  <circle cx="900" cy="480" r="420" fill="url(#coreGlow)"/>
 
-  <circle cx="200" cy="250" r="200" fill="rgba(6,182,212,0.03)" filter="url(#ambientGlow)"/>
-  <circle cx="960" cy="350" r="300" fill="rgba(139,92,246,0.025)" filter="url(#ambientGlow)"/>
-  <circle cx="1600" cy="300" r="220" fill="rgba(34,211,238,0.02)" filter="url(#ambientGlow)"/>
+  <circle cx="900" cy="480" r="200" fill="none" stroke="rgba(6,182,212,0.04)" stroke-width="1" stroke-dasharray="3 6"/>
+  <circle cx="900" cy="480" r="280" fill="none" stroke="rgba(139,92,246,0.03)" stroke-width="1" stroke-dasharray="2 8"/>
+  <circle cx="900" cy="480" r="360" fill="none" stroke="rgba(22,211,238,0.02)" stroke-width="0.5" stroke-dasharray="1 12"/>
 
-  <g opacity="0.15">
-    <circle cx="960" cy="400" r="280" fill="none" stroke="rgba(6,182,212,0.08)" stroke-width="1" stroke-dasharray="4 6"/>
-    <circle cx="960" cy="400" r="320" fill="none" stroke="rgba(139,92,246,0.06)" stroke-width="1" stroke-dasharray="3 8"/>
-    <circle cx="960" cy="400" r="360" fill="none" stroke="rgba(22,211,238,0.04)" stroke-width="0.5" stroke-dasharray="2 10"/>
+  <circle cx="200" cy="220" r="220" fill="rgba(6,182,212,0.02)" filter="url(#ambientGlow)"/>
+  <circle cx="1500" cy="300" r="200" fill="rgba(139,92,246,0.02)" filter="url(#ambientGlow)"/>
+  <circle cx="1100" cy="750" r="200" fill="rgba(245,158,11,0.015)" filter="url(#ambientGlow)"/>
+
+  <text x="900" y="52" text-anchor="middle" fill="#06b6d4" font-family="'SF Mono','JetBrains Mono',monospace" font-size="20" font-weight="700" letter-spacing="10">ORBIT FORESIGHT</text>
+  <text x="900" y="78" text-anchor="middle" fill="rgba(148,163,184,0.35)" font-family="'SF Mono',monospace" font-size="11" letter-spacing="5">ENGINEERING INTELLIGENCE ARCHITECTURE</text>
+  <line x1="200" y1="92" x2="1600" y2="92" stroke="rgba(255,255,255,0.03)" stroke-width="1"/>
+
+  <g transform="translate(900, 480)">
+    <circle cx="0" cy="0" r="75" fill="rgba(6,182,212,0.06)" stroke="rgba(6,182,212,0.15)" stroke-width="1.5" filter="url(#coreShadow)"/>
+    <circle cx="0" cy="0" r="65" fill="rgba(6,182,212,0.04)" stroke="rgba(6,182,212,0.1)" stroke-width="1"/>
+    <circle cx="0" cy="0" r="55" fill="url(#corePulse)"/>
+    <circle cx="0" cy="0" r="18" fill="rgba(6,182,212,0.15)" stroke="#06b6d4" stroke-width="2" filter="url(#glowCyan)"/>
+    <circle cx="0" cy="0" r="6" fill="#06b6d4"/>
+    <text x="0" y="90" text-anchor="middle" fill="#06b6d4" font-family="'SF Pro',system-ui,sans-serif" font-size="14" font-weight="700" letter-spacing="3">INTELLIGENCE ENGINE</text>
+    <text x="0" y="108" text-anchor="middle" fill="rgba(148,163,184,0.3)" font-family="'SF Mono',monospace" font-size="8" letter-spacing="2">AI CORE</text>
+
+    <g class="p-ring"><circle cx="0" cy="0" r="75" fill="none" stroke="rgba(6,182,212,0.15)" stroke-width="2"/></g>
   </g>
 
-  <text x="960" y="48" text-anchor="middle" fill="#06b6d4" font-family="'SF Mono','JetBrains Mono',monospace" font-size="18" font-weight="700" letter-spacing="10">ORBIT FORESIGHT</text>
-  <text x="960" y="68" text-anchor="middle" fill="rgba(148,163,184,0.4)" font-family="'SF Mono','JetBrains Mono',monospace" font-size="10" letter-spacing="5">ENGINEERING INTELLIGENCE ARCHITECTURE</text>
-  <line x1="200" y1="82" x2="1720" y2="82" stroke="rgba(255,255,255,0.03)" stroke-width="1"/>
+  <g transform="translate(80, 140)">
+    <rect width="360" height="400" rx="16" fill="url(#glassBase)" stroke="url(#cyanBorder)" stroke-width="1.5" filter="url(#dropShadow)"/>
+    <rect width="360" height="44" rx="16" fill="rgba(6,182,212,0.08)"/>
+    <rect width="360" height="44" rx="16" fill="none" stroke="rgba(255,255,255,0.04)" stroke-width="1"/>
+    <circle cx="22" cy="22" r="6" fill="#06b6d4" filter="url(#glowCyan)" class="p-cyan"/>
+    <circle cx="22" cy="22" r="6" fill="none" stroke="#06b6d4" stroke-width="1" opacity="0.5"><animate attributeName="r" values="6;12;6" dur="2s" repeatCount="indefinite"/><animate attributeName="opacity" values="0.5;0;0.5" dur="2s" repeatCount="indefinite"/></circle>
+    <text x="180" y="28" text-anchor="middle" fill="#06b6d4" font-family="'SF Pro',system-ui,sans-serif" font-size="13" font-weight="700" letter-spacing="3">SIGNAL INTELLIGENCE</text>
 
-  <g transform="translate(30, 105)">
-    <rect width="370" height="490" rx="14" fill="url(#glassBase)" stroke="url(#sigBorder)" stroke-width="1.5" filter="url(#dropShadow)"/>
-    <rect width="370" height="38" rx="14" fill="url(#sigHeader)" opacity="0.12"/>
-    <rect width="370" height="38" rx="14" fill="none" stroke="rgba(255,255,255,0.06)" stroke-width="1"/>
-    <circle cx="20" cy="19" r="5" fill="#06b6d4" filter="url(#glowCyan)" class="pulse-cyan"/>
-    <text x="185" y="24" text-anchor="middle" fill="#06b6d4" font-family="'SF Pro',system-ui,sans-serif" font-size="12" font-weight="700" letter-spacing="3">SIGNAL LAYER</text>
-
-    <g transform="translate(15, 55)">
-      <rect width="340" height="36" rx="8" fill="rgba(6,182,212,0.06)" stroke="rgba(6,182,212,0.15)" stroke-width="1"/>
-      <circle cx="14" cy="18" r="4" fill="#06b6d4" opacity="0.7"/>
-      <text x="28" y="23" fill="rgba(255,255,255,0.9)" font-family="'SF Mono',monospace" font-size="12" font-weight="500">Deployments</text>
-      <text x="310" y="23" text-anchor="end" fill="rgba(148,163,184,0.35)" font-family="'SF Mono',monospace" font-size="9">GitLab CI / GH</text>
+    <g transform="translate(12, 58)">
+      <rect width="336" height="40" rx="8" fill="rgba(6,182,212,0.04)" stroke="rgba(6,182,212,0.1)" stroke-width="1"/>
+      <circle cx="16" cy="20" r="4" fill="#06b6d4" opacity="0.7"/>
+      <text x="28" y="25" fill="rgba(255,255,255,0.85)" font-family="'SF Mono',monospace" font-size="12" font-weight="500">Deployments</text>
+      <text x="320" y="25" text-anchor="end" fill="rgba(148,163,184,0.3)" font-family="'SF Mono',monospace" font-size="9">GitLab CI</text>
     </g>
-    <g transform="translate(15, 98)">
-      <rect width="340" height="36" rx="8" fill="rgba(6,182,212,0.06)" stroke="rgba(6,182,212,0.15)" stroke-width="1"/>
-      <circle cx="14" cy="18" r="4" fill="#06b6d4" opacity="0.7"/>
-      <text x="28" y="23" fill="rgba(255,255,255,0.9)" font-family="'SF Mono',monospace" font-size="12" font-weight="500">Incidents</text>
-      <text x="310" y="23" text-anchor="end" fill="rgba(148,163,184,0.35)" font-family="'SF Mono',monospace" font-size="9">PagerDuty</text>
+    <g transform="translate(12, 106)">
+      <rect width="336" height="40" rx="8" fill="rgba(6,182,212,0.04)" stroke="rgba(6,182,212,0.1)" stroke-width="1"/>
+      <circle cx="16" cy="20" r="4" fill="#06b6d4" opacity="0.7"/>
+      <text x="28" y="25" fill="rgba(255,255,255,0.85)" font-family="'SF Mono',monospace" font-size="12" font-weight="500">Incidents</text>
+      <text x="320" y="25" text-anchor="end" fill="rgba(148,163,184,0.3)" font-family="'SF Mono',monospace" font-size="9">PagerDuty</text>
     </g>
-    <g transform="translate(15, 141)">
-      <rect width="340" height="36" rx="8" fill="rgba(6,182,212,0.06)" stroke="rgba(6,182,212,0.15)" stroke-width="1"/>
-      <circle cx="14" cy="18" r="4" fill="#06b6d4" opacity="0.7"/>
-      <text x="28" y="23" fill="rgba(255,255,255,0.9)" font-family="'SF Mono',monospace" font-size="12" font-weight="500">Metrics &amp; Logs</text>
-      <text x="310" y="23" text-anchor="end" fill="rgba(148,163,184,0.35)" font-family="'SF Mono',monospace" font-size="9">Datadog / CW</text>
+    <g transform="translate(12, 154)">
+      <rect width="336" height="40" rx="8" fill="rgba(6,182,212,0.04)" stroke="rgba(6,182,212,0.1)" stroke-width="1"/>
+      <circle cx="16" cy="20" r="4" fill="#06b6d4" opacity="0.7"/>
+      <text x="28" y="25" fill="rgba(255,255,255,0.85)" font-family="'SF Mono',monospace" font-size="12" font-weight="500">Metrics</text>
+      <text x="320" y="25" text-anchor="end" fill="rgba(148,163,184,0.3)" font-family="'SF Mono',monospace" font-size="9">Datadog</text>
     </g>
-    <g transform="translate(15, 184)">
-      <rect width="340" height="36" rx="8" fill="rgba(6,182,212,0.06)" stroke="rgba(6,182,212,0.15)" stroke-width="1"/>
-      <circle cx="14" cy="18" r="4" fill="#06b6d4" opacity="0.7"/>
-      <text x="28" y="23" fill="rgba(255,255,255,0.9)" font-family="'SF Mono',monospace" font-size="12" font-weight="500">Traces &amp; Dependencies</text>
-      <text x="310" y="23" text-anchor="end" fill="rgba(148,163,184,0.35)" font-family="'SF Mono',monospace" font-size="9">OTel / Mesh</text>
+    <g transform="translate(12, 202)">
+      <rect width="336" height="40" rx="8" fill="rgba(6,182,212,0.04)" stroke="rgba(6,182,212,0.1)" stroke-width="1"/>
+      <circle cx="16" cy="20" r="4" fill="#06b6d4" opacity="0.7"/>
+      <text x="28" y="25" fill="rgba(255,255,255,0.85)" font-family="'SF Mono',monospace" font-size="12" font-weight="500">Logs &amp; Traces</text>
+      <text x="320" y="25" text-anchor="end" fill="rgba(148,163,184,0.3)" font-family="'SF Mono',monospace" font-size="9">OTel</text>
     </g>
-    <g transform="translate(15, 227)">
-      <rect width="340" height="36" rx="8" fill="rgba(6,182,212,0.06)" stroke="rgba(6,182,212,0.15)" stroke-width="1"/>
-      <circle cx="14" cy="18" r="4" fill="#06b6d4" opacity="0.7"/>
-      <text x="28" y="23" fill="rgba(255,255,255,0.9)" font-family="'SF Mono',monospace" font-size="12" font-weight="500">CI/CD Pipelines</text>
-      <text x="310" y="23" text-anchor="end" fill="rgba(148,163,184,0.35)" font-family="'SF Mono',monospace" font-size="9">GitLab Actions</text>
+    <g transform="translate(12, 250)">
+      <rect width="336" height="40" rx="8" fill="rgba(6,182,212,0.04)" stroke="rgba(6,182,212,0.1)" stroke-width="1"/>
+      <circle cx="16" cy="20" r="4" fill="#06b6d4" opacity="0.7"/>
+      <text x="28" y="25" fill="rgba(255,255,255,0.85)" font-family="'SF Mono',monospace" font-size="12" font-weight="500">Service Dependencies</text>
+      <text x="320" y="25" text-anchor="end" fill="rgba(148,163,184,0.3)" font-family="'SF Mono',monospace" font-size="9">Mesh</text>
     </g>
 
-    <line x1="20" y1="290" x2="350" y2="290" stroke="rgba(6,182,212,0.08)" stroke-width="1"/>
-    <text x="185" y="340" text-anchor="middle" fill="rgba(148,163,184,0.25)" font-family="'SF Mono',monospace" font-size="9" letter-spacing="2">CONTINUOUS STREAM PROCESSING</text>
-    <text x="185" y="360" text-anchor="middle" fill="rgba(148,163,184,0.15)" font-family="'SF Mono',monospace" font-size="8">1,598+ historical events · 15 dimensions</text>
-
-    <g transform="translate(135, 400)">
-      <circle cx="0" cy="0" r="28" fill="rgba(6,182,212,0.04)" stroke="rgba(6,182,212,0.1)" stroke-width="1"/>
-      <circle cx="0" cy="0" r="10" fill="rgba(6,182,212,0.1)" stroke="#06b6d4" stroke-width="1.5" filter="url(#glowCyan)"/>
-      <circle cx="0" cy="0" r="3" fill="#06b6d4"/>
-      <text x="0" y="42" text-anchor="middle" fill="rgba(148,163,184,0.3)" font-family="'SF Mono',monospace" font-size="8">2.4M+ DATA POINTS</text>
-    </g>
+    <line x1="20" y1="315" x2="340" y2="315" stroke="rgba(6,182,212,0.06)" stroke-width="1"/>
+    <text x="180" y="345" text-anchor="middle" fill="rgba(148,163,184,0.25)" font-family="'SF Mono',monospace" font-size="9" letter-spacing="2">ENGINEERING TELEMETRY INGESTION</text>
+    <text x="180" y="365" text-anchor="middle" fill="rgba(148,163,184,0.15)" font-family="'SF Mono',monospace" font-size="8">2.4M+ data points · 15 dimensions</text>
   </g>
 
-  <line x1="410" y1="350" x2="430" y2="350" stroke="#06b6d4" stroke-width="2.5" stroke-dasharray="6 4" marker-end="url(#arrowCyan)" opacity="0.8"/>
+  <g transform="translate(1360, 140)">
+    <rect width="360" height="400" rx="16" fill="url(#glassBase)" stroke="url(#purpleBorder)" stroke-width="1.5" filter="url(#dropShadow)"/>
+    <rect width="360" height="44" rx="16" fill="rgba(139,92,246,0.08)"/>
+    <rect width="360" height="44" rx="16" fill="none" stroke="rgba(255,255,255,0.04)" stroke-width="1"/>
+    <circle cx="22" cy="22" r="6" fill="#8b5cf6" filter="url(#glowPurple)" class="p-purple"/>
+    <circle cx="22" cy="22" r="6" fill="none" stroke="#8b5cf6" stroke-width="1" opacity="0.5"><animate attributeName="r" values="6;12;6" dur="2.5s" repeatCount="indefinite"/><animate attributeName="opacity" values="0.5;0;0.5" dur="2.5s" repeatCount="indefinite"/></circle>
+    <text x="180" y="28" text-anchor="middle" fill="#8b5cf6" font-family="'SF Pro',system-ui,sans-serif" font-size="13" font-weight="700" letter-spacing="3">AI INTELLIGENCE</text>
 
-  <g transform="translate(440, 105)">
-    <rect width="320" height="490" rx="14" fill="url(#glassBase)" stroke="url(#aiBorder)" stroke-width="1.5" filter="url(#dropShadow)"/>
-    <rect width="320" height="38" rx="14" fill="url(#aiHeader)" opacity="0.12"/>
-    <rect width="320" height="38" rx="14" fill="none" stroke="rgba(255,255,255,0.06)" stroke-width="1"/>
-    <circle cx="20" cy="19" r="5" fill="#8b5cf6" filter="url(#glowPurple)" class="pulse-purple"/>
-    <text x="160" y="24" text-anchor="middle" fill="#8b5cf6" font-family="'SF Pro',system-ui,sans-serif" font-size="12" font-weight="700" letter-spacing="3">INTELLIGENCE LAYER</text>
-
-    <g transform="translate(12, 55)">
-      <rect width="296" height="52" rx="8" fill="rgba(139,92,246,0.06)" stroke="rgba(139,92,246,0.15)" stroke-width="1"/>
-      <text x="148" y="22" text-anchor="middle" fill="rgba(255,255,255,0.9)" font-family="'SF Mono',monospace" font-size="11" font-weight="600">AI Investigation Engine</text>
-      <text x="148" y="40" text-anchor="middle" fill="rgba(148,163,184,0.45)" font-family="'SF Mono',monospace" font-size="8">15-dimension parallel forensic analysis</text>
+    <g transform="translate(12, 58)">
+      <rect width="336" height="46" rx="8" fill="rgba(139,92,246,0.04)" stroke="rgba(139,92,246,0.1)" stroke-width="1"/>
+      <text x="168" y="20" text-anchor="middle" fill="rgba(255,255,255,0.85)" font-family="'SF Mono',monospace" font-size="11" font-weight="600">Anomaly Detection</text>
+      <text x="168" y="36" text-anchor="middle" fill="rgba(148,163,184,0.4)" font-family="'SF Mono',monospace" font-size="8">Statistical deviation · ML classification</text>
     </g>
-    <g transform="translate(12, 117)">
-      <rect width="296" height="52" rx="8" fill="rgba(139,92,246,0.06)" stroke="rgba(139,92,246,0.15)" stroke-width="1"/>
-      <text x="148" y="22" text-anchor="middle" fill="rgba(255,255,255,0.9)" font-family="'SF Mono',monospace" font-size="11" font-weight="600">Root Cause Analysis</text>
-      <text x="148" y="40" text-anchor="middle" fill="rgba(148,163,184,0.45)" font-family="'SF Mono',monospace" font-size="8">Confidence-weighted · &lt; 30 seconds</text>
+    <g transform="translate(12, 114)">
+      <rect width="336" height="46" rx="8" fill="rgba(139,92,246,0.04)" stroke="rgba(139,92,246,0.1)" stroke-width="1"/>
+      <text x="168" y="20" text-anchor="middle" fill="rgba(255,255,255,0.85)" font-family="'SF Mono',monospace" font-size="11" font-weight="600">Pattern Correlation</text>
+      <text x="168" y="36" text-anchor="middle" fill="rgba(148,163,184,0.4)" font-family="'SF Mono',monospace" font-size="8">1,598+ historical event matching</text>
     </g>
-    <g transform="translate(12, 179)">
-      <rect width="296" height="52" rx="8" fill="rgba(139,92,246,0.06)" stroke="rgba(139,92,246,0.15)" stroke-width="1"/>
-      <text x="148" y="22" text-anchor="middle" fill="rgba(255,255,255,0.9)" font-family="'SF Mono',monospace" font-size="11" font-weight="600">Risk Prediction</text>
-      <text x="148" y="40" text-anchor="middle" fill="rgba(148,163,184,0.45)" font-family="'SF Mono',monospace" font-size="8">ML-powered · 94% confidence</text>
+    <g transform="translate(12, 170)">
+      <rect width="336" height="46" rx="8" fill="rgba(139,92,246,0.04)" stroke="rgba(139,92,246,0.1)" stroke-width="1"/>
+      <text x="168" y="20" text-anchor="middle" fill="rgba(255,255,255,0.85)" font-family="'SF Mono',monospace" font-size="11" font-weight="600">Risk Prediction</text>
+      <text x="168" y="36" text-anchor="middle" fill="rgba(148,163,184,0.4)" font-family="'SF Mono',monospace" font-size="8">15-dimension · 94% confidence</text>
     </g>
-    <g transform="translate(12, 241)">
-      <rect width="296" height="52" rx="8" fill="rgba(139,92,246,0.06)" stroke="rgba(139,92,246,0.15)" stroke-width="1"/>
-      <text x="148" y="22" text-anchor="middle" fill="rgba(255,255,255,0.9)" font-family="'SF Mono',monospace" font-size="11" font-weight="600">Pattern Correlation</text>
-      <text x="148" y="40" text-anchor="middle" fill="rgba(148,163,184,0.45)" font-family="'SF Mono',monospace" font-size="8">1,598+ historical event matching</text>
+    <g transform="translate(12, 226)">
+      <rect width="336" height="46" rx="8" fill="rgba(139,92,246,0.04)" stroke="rgba(139,92,246,0.1)" stroke-width="1"/>
+      <text x="168" y="20" text-anchor="middle" fill="rgba(255,255,255,0.85)" font-family="'SF Mono',monospace" font-size="11" font-weight="600">Root Cause Analysis</text>
+      <text x="168" y="36" text-anchor="middle" fill="rgba(148,163,184,0.4)" font-family="'SF Mono',monospace" font-size="8">Forensic chain · &lt; 30 seconds</text>
     </g>
-    <g transform="translate(12, 303)">
-      <rect width="296" height="52" rx="8" fill="rgba(139,92,246,0.06)" stroke="rgba(139,92,246,0.15)" stroke-width="1"/>
-      <text x="148" y="22" text-anchor="middle" fill="rgba(255,255,255,0.9)" font-family="'SF Mono',monospace" font-size="11" font-weight="600">Failure Forecasting</text>
-      <text x="148" y="40" text-anchor="middle" fill="rgba(148,163,184,0.45)" font-family="'SF Mono',monospace" font-size="8">87%+ accuracy at 24-hour horizon</text>
+    <g transform="translate(12, 282)">
+      <rect width="336" height="46" rx="8" fill="rgba(139,92,246,0.04)" stroke="rgba(139,92,246,0.1)" stroke-width="1"/>
+      <text x="168" y="20" text-anchor="middle" fill="rgba(255,255,255,0.85)" font-family="'SF Mono',monospace" font-size="11" font-weight="600">Failure Forecasting</text>
+      <text x="168" y="36" text-anchor="middle" fill="rgba(148,163,184,0.4)" font-family="'SF Mono',monospace" font-size="8">Predictive · 87%+ accuracy at 24h</text>
     </g>
 
-    <g transform="translate(135, 410)">
-      <circle cx="0" cy="0" r="28" fill="rgba(139,92,246,0.04)" stroke="rgba(139,92,246,0.1)" stroke-width="1"/>
-      <circle cx="0" cy="0" r="10" fill="rgba(139,92,246,0.1)" stroke="#8b5cf6" stroke-width="1.5" filter="url(#glowPurple)"/>
-      <circle cx="0" cy="0" r="3" fill="#8b5cf6"/>
-      <text x="0" y="42" text-anchor="middle" fill="rgba(148,163,184,0.3)" font-family="'SF Mono',monospace" font-size="8">94% ACCURACY</text>
-    </g>
+    <text x="180" y="365" text-anchor="middle" fill="rgba(148,163,184,0.25)" font-family="'SF Mono',monospace" font-size="9" letter-spacing="2">AI REASONING ENGINE</text>
   </g>
 
-  <line x1="770" y1="350" x2="790" y2="350" stroke="#8b5cf6" stroke-width="2.5" stroke-dasharray="6 4" marker-end="url(#arrowPurple)" opacity="0.8"/>
+  <g transform="translate(1360, 590)">
+    <rect width="360" height="310" rx="16" fill="url(#glassBase)" stroke="url(#tealBorder)" stroke-width="1.5" filter="url(#dropShadow)"/>
+    <rect width="360" height="44" rx="16" fill="rgba(34,211,238,0.08)"/>
+    <rect width="360" height="44" rx="16" fill="none" stroke="rgba(255,255,255,0.04)" stroke-width="1"/>
+    <circle cx="22" cy="22" r="6" fill="#22d3ee" filter="url(#glowTeal)" class="p-teal"/>
+    <circle cx="22" cy="22" r="6" fill="none" stroke="#22d3ee" stroke-width="1" opacity="0.5"><animate attributeName="r" values="6;12;6" dur="2.8s" repeatCount="indefinite"/><animate attributeName="opacity" values="0.5;0;0.5" dur="2.8s" repeatCount="indefinite"/></circle>
+    <text x="180" y="28" text-anchor="middle" fill="#22d3ee" font-family="'SF Pro',system-ui,sans-serif" font-size="13" font-weight="700" letter-spacing="3">DIGITAL TWIN</text>
 
-  <g transform="translate(800, 105)">
-    <rect width="320" height="490" rx="14" fill="url(#glassBase)" stroke="url(#twinBorder)" stroke-width="1.5" filter="url(#dropShadow)"/>
-    <rect width="320" height="38" rx="14" fill="url(#twinHeader)" opacity="0.12"/>
-    <rect width="320" height="38" rx="14" fill="none" stroke="rgba(255,255,255,0.06)" stroke-width="1"/>
-    <circle cx="20" cy="19" r="5" fill="#22d3ee" filter="url(#glowCyan)" class="pulse-green"/>
-    <text x="160" y="24" text-anchor="middle" fill="#22d3ee" font-family="'SF Pro',system-ui,sans-serif" font-size="12" font-weight="700" letter-spacing="3">KNOWLEDGE LAYER</text>
-
-    <g transform="translate(12, 55)">
-      <rect width="296" height="52" rx="8" fill="rgba(34,211,238,0.06)" stroke="rgba(34,211,238,0.15)" stroke-width="1"/>
-      <text x="148" y="22" text-anchor="middle" fill="rgba(255,255,255,0.9)" font-family="'SF Mono',monospace" font-size="11" font-weight="600">Digital Twin</text>
-      <text x="148" y="40" text-anchor="middle" fill="rgba(148,163,184,0.45)" font-family="'SF Mono',monospace" font-size="8">Real-time production mirror</text>
+    <g transform="translate(12, 58)">
+      <rect width="336" height="40" rx="8" fill="rgba(34,211,238,0.04)" stroke="rgba(34,211,238,0.1)" stroke-width="1"/>
+      <text x="168" y="25" text-anchor="middle" fill="rgba(255,255,255,0.85)" font-family="'SF Mono',monospace" font-size="11" font-weight="600">Service Topology</text>
     </g>
-    <g transform="translate(12, 117)">
-      <rect width="296" height="52" rx="8" fill="rgba(34,211,238,0.06)" stroke="rgba(34,211,238,0.15)" stroke-width="1"/>
-      <text x="148" y="22" text-anchor="middle" fill="rgba(255,255,255,0.9)" font-family="'SF Mono',monospace" font-size="11" font-weight="600">Service Graph</text>
-      <text x="148" y="40" text-anchor="middle" fill="rgba(148,163,184,0.45)" font-family="'SF Mono',monospace" font-size="8">847+ nodes · Auto-discovered</text>
+    <g transform="translate(12, 106)">
+      <rect width="336" height="40" rx="8" fill="rgba(34,211,238,0.04)" stroke="rgba(34,211,238,0.1)" stroke-width="1"/>
+      <text x="168" y="25" text-anchor="middle" fill="rgba(255,255,255,0.85)" font-family="'SF Mono',monospace" font-size="11" font-weight="600">Dependency Graph</text>
     </g>
-    <g transform="translate(12, 179)">
-      <rect width="296" height="52" rx="8" fill="rgba(34,211,238,0.06)" stroke="rgba(34,211,238,0.15)" stroke-width="1"/>
-      <text x="148" y="22" text-anchor="middle" fill="rgba(255,255,255,0.9)" font-family="'SF Mono',monospace" font-size="11" font-weight="600">Dependency Mapping</text>
-      <text x="148" y="40" text-anchor="middle" fill="rgba(148,163,184,0.45)" font-family="'SF Mono',monospace" font-size="8">1,200+ edges · Weighted risk paths</text>
+    <g transform="translate(12, 154)">
+      <rect width="336" height="40" rx="8" fill="rgba(34,211,238,0.04)" stroke="rgba(34,211,238,0.1)" stroke-width="1"/>
+      <text x="168" y="25" text-anchor="middle" fill="rgba(255,255,255,0.85)" font-family="'SF Mono',monospace" font-size="11" font-weight="600">Blast Radius Simulator</text>
     </g>
-    <g transform="translate(12, 241)">
-      <rect width="296" height="52" rx="8" fill="rgba(34,211,238,0.06)" stroke="rgba(34,211,238,0.15)" stroke-width="1"/>
-      <text x="148" y="22" text-anchor="middle" fill="rgba(255,255,255,0.9)" font-family="'SF Mono',monospace" font-size="11" font-weight="600">Blast Radius Engine</text>
-      <text x="148" y="40" text-anchor="middle" fill="rgba(148,163,184,0.45)" font-family="'SF Mono',monospace" font-size="8">Cascading failure propagation</text>
-    </g>
-    <g transform="translate(12, 303)">
-      <rect width="296" height="52" rx="8" fill="rgba(34,211,238,0.06)" stroke="rgba(34,211,238,0.15)" stroke-width="1"/>
-      <text x="148" y="22" text-anchor="middle" fill="rgba(255,255,255,0.9)" font-family="'SF Mono',monospace" font-size="11" font-weight="600">Incident Memory</text>
-      <text x="148" y="40" text-anchor="middle" fill="rgba(148,163,184,0.45)" font-family="'SF Mono',monospace" font-size="8">1,598+ events · Learning system</text>
+    <g transform="translate(12, 202)">
+      <rect width="336" height="40" rx="8" fill="rgba(34,211,238,0.04)" stroke="rgba(34,211,238,0.1)" stroke-width="1"/>
+      <text x="168" y="25" text-anchor="middle" fill="rgba(255,255,255,0.85)" font-family="'SF Mono',monospace" font-size="11" font-weight="600">Incident Memory</text>
     </g>
 
-    <g transform="translate(135, 410)">
-      <circle cx="0" cy="0" r="28" fill="rgba(34,211,238,0.04)" stroke="rgba(34,211,238,0.1)" stroke-width="1"/>
-      <circle cx="0" cy="0" r="10" fill="rgba(34,211,238,0.1)" stroke="#22d3ee" stroke-width="1.5" filter="url(#glowCyan)"/>
-      <circle cx="0" cy="0" r="3" fill="#22d3ee"/>
-      <text x="0" y="42" text-anchor="middle" fill="rgba(148,163,184,0.3)" font-family="'SF Mono',monospace" font-size="8">847+ SERVICE NODES</text>
-    </g>
+    <text x="180" y="275" text-anchor="middle" fill="rgba(148,163,184,0.25)" font-family="'SF Mono',monospace" font-size="9" letter-spacing="2">LIVING PRODUCTION MODEL</text>
   </g>
 
-  <line x1="1130" y1="350" x2="1150" y2="350" stroke="#22d3ee" stroke-width="2.5" stroke-dasharray="6 4" marker-end="url(#arrowTeal)" opacity="0.8"/>
+  <g transform="translate(80, 590)">
+    <rect width="360" height="310" rx="16" fill="url(#glassBase)" stroke="url(#amberBorder)" stroke-width="1.5" filter="url(#dropShadow)"/>
+    <rect width="360" height="44" rx="16" fill="rgba(245,158,11,0.08)"/>
+    <rect width="360" height="44" rx="16" fill="none" stroke="rgba(255,255,255,0.04)" stroke-width="1"/>
+    <circle cx="22" cy="22" r="6" fill="#f59e0b" filter="url(#glowAmber)" class="p-amber"/>
+    <circle cx="22" cy="22" r="6" fill="none" stroke="#f59e0b" stroke-width="1" opacity="0.5"><animate attributeName="r" values="6;12;6" dur="3.2s" repeatCount="indefinite"/><animate attributeName="opacity" values="0.5;0;0.5" dur="3.2s" repeatCount="indefinite"/></circle>
+    <text x="180" y="28" text-anchor="middle" fill="#f59e0b" font-family="'SF Pro',system-ui,sans-serif" font-size="13" font-weight="700" letter-spacing="3">BUSINESS IMPACT</text>
 
-  <g transform="translate(1160, 105)">
-    <rect width="320" height="490" rx="14" fill="url(#glassBase)" stroke="url(#impactBorder)" stroke-width="1.5" filter="url(#dropShadow)"/>
-    <rect width="320" height="38" rx="14" fill="url(#impactHeader)" opacity="0.12"/>
-    <rect width="320" height="38" rx="14" fill="none" stroke="rgba(255,255,255,0.06)" stroke-width="1"/>
-    <circle cx="20" cy="19" r="5" fill="#f59e0b" filter="url(#glowAmber)" class="pulse-amber"/>
-    <text x="160" y="24" text-anchor="middle" fill="#f59e0b" font-family="'SF Pro',system-ui,sans-serif" font-size="12" font-weight="700" letter-spacing="3">BUSINESS LAYER</text>
-
-    <g transform="translate(12, 55)">
-      <rect width="296" height="52" rx="8" fill="rgba(245,158,11,0.06)" stroke="rgba(245,158,11,0.15)" stroke-width="1"/>
-      <text x="148" y="22" text-anchor="middle" fill="rgba(255,255,255,0.9)" font-family="'SF Mono',monospace" font-size="11" font-weight="600">Revenue Exposure</text>
-      <text x="148" y="40" text-anchor="middle" fill="rgba(148,163,184,0.45)" font-family="'SF Mono',monospace" font-size="8">Real-time at-risk revenue $2.8M</text>
+    <g transform="translate(12, 58)">
+      <rect width="336" height="40" rx="8" fill="rgba(245,158,11,0.04)" stroke="rgba(245,158,11,0.1)" stroke-width="1"/>
+      <text x="168" y="25" text-anchor="middle" fill="rgba(255,255,255,0.85)" font-family="'SF Mono',monospace" font-size="11" font-weight="600">Revenue Exposure</text>
     </g>
-    <g transform="translate(12, 117)">
-      <rect width="296" height="52" rx="8" fill="rgba(245,158,11,0.06)" stroke="rgba(245,158,11,0.15)" stroke-width="1"/>
-      <text x="148" y="22" text-anchor="middle" fill="rgba(255,255,255,0.9)" font-family="'SF Mono',monospace" font-size="11" font-weight="600">Customer Impact</text>
-      <text x="148" y="40" text-anchor="middle" fill="rgba(148,163,184,0.45)" font-family="'SF Mono',monospace" font-size="8">Affected users · Severity scoring</text>
+    <g transform="translate(12, 106)">
+      <rect width="336" height="40" rx="8" fill="rgba(245,158,11,0.04)" stroke="rgba(245,158,11,0.1)" stroke-width="1"/>
+      <text x="168" y="25" text-anchor="middle" fill="rgba(255,255,255,0.85)" font-family="'SF Mono',monospace" font-size="11" font-weight="600">Customer Impact</text>
     </g>
-    <g transform="translate(12, 179)">
-      <rect width="296" height="52" rx="8" fill="rgba(245,158,11,0.06)" stroke="rgba(245,158,11,0.15)" stroke-width="1"/>
-      <text x="148" y="22" text-anchor="middle" fill="rgba(255,255,255,0.9)" font-family="'SF Mono',monospace" font-size="11" font-weight="600">SLA Risk</text>
-      <text x="148" y="40" text-anchor="middle" fill="rgba(148,163,184,0.45)" font-family="'SF Mono',monospace" font-size="8">Credit exposure · Compliance tracking</text>
+    <g transform="translate(12, 154)">
+      <rect width="336" height="40" rx="8" fill="rgba(245,158,11,0.04)" stroke="rgba(245,158,11,0.1)" stroke-width="1"/>
+      <text x="168" y="25" text-anchor="middle" fill="rgba(255,255,255,0.85)" font-family="'SF Mono',monospace" font-size="11" font-weight="600">SLA Risk</text>
     </g>
-    <g transform="translate(12, 241)">
-      <rect width="296" height="52" rx="8" fill="rgba(245,158,11,0.06)" stroke="rgba(245,158,11,0.15)" stroke-width="1"/>
-      <text x="148" y="22" text-anchor="middle" fill="rgba(255,255,255,0.9)" font-family="'SF Mono',monospace" font-size="11" font-weight="600">Compliance Impact</text>
-      <text x="148" y="40" text-anchor="middle" fill="rgba(148,163,184,0.45)" font-family="'SF Mono',monospace" font-size="8">PCI DSS · SOC 2 · GDPR</text>
-    </g>
-    <g transform="translate(12, 303)">
-      <rect width="296" height="52" rx="8" fill="rgba(245,158,11,0.06)" stroke="rgba(245,158,11,0.15)" stroke-width="1"/>
-      <text x="148" y="22" text-anchor="middle" fill="rgba(255,255,255,0.9)" font-family="'SF Mono',monospace" font-size="11" font-weight="600">Priority Ranking</text>
-      <text x="148" y="40" text-anchor="middle" fill="rgba(148,163,184,0.45)" font-family="'SF Mono',monospace" font-size="8">P0-P3 · Automated severity tiering</text>
+    <g transform="translate(12, 202)">
+      <rect width="336" height="40" rx="8" fill="rgba(245,158,11,0.04)" stroke="rgba(245,158,11,0.1)" stroke-width="1"/>
+      <text x="168" y="25" text-anchor="middle" fill="rgba(255,255,255,0.85)" font-family="'SF Mono',monospace" font-size="11" font-weight="600">Priority Ranking</text>
     </g>
 
-    <g transform="translate(135, 410)">
-      <circle cx="0" cy="0" r="28" fill="rgba(245,158,11,0.04)" stroke="rgba(245,158,11,0.1)" stroke-width="1"/>
-      <circle cx="0" cy="0" r="10" fill="rgba(245,158,11,0.1)" stroke="#f59e0b" stroke-width="1.5" filter="url(#glowAmber)"/>
-      <circle cx="0" cy="0" r="3" fill="#f59e0b"/>
-      <text x="0" y="42" text-anchor="middle" fill="rgba(148,163,184,0.3)" font-family="'SF Mono',monospace" font-size="8">$2.8M PROTECTED</text>
-    </g>
+    <text x="180" y="275" text-anchor="middle" fill="rgba(148,163,184,0.25)" font-family="'SF Mono',monospace" font-size="9" letter-spacing="2">ENGINEERING TO BUSINESS TRANSLATION</text>
   </g>
 
-  <line x1="1490" y1="350" x2="1510" y2="350" stroke="#f59e0b" stroke-width="2.5" stroke-dasharray="6 4" marker-end="url(#arrowAmber)" opacity="0.8"/>
+  <g transform="translate(720, 790)">
+    <rect width="360" height="190" rx="16" fill="url(#glassBase)" stroke="url(#emeraldBorder)" stroke-width="1.5" filter="url(#dropShadow)"/>
+    <rect width="360" height="44" rx="16" fill="rgba(16,185,129,0.08)"/>
+    <rect width="360" height="44" rx="16" fill="none" stroke="rgba(255,255,255,0.04)" stroke-width="1"/>
+    <circle cx="22" cy="22" r="6" fill="#10b981" filter="url(#glowEmerald)" class="p-emerald"/>
+    <circle cx="22" cy="22" r="6" fill="none" stroke="#10b981" stroke-width="1" opacity="0.5"><animate attributeName="r" values="6;12;6" dur="2.6s" repeatCount="indefinite"/><animate attributeName="opacity" values="0.5;0;0.5" dur="2.6s" repeatCount="indefinite"/></circle>
+    <text x="180" y="28" text-anchor="middle" fill="#10b981" font-family="'SF Pro',system-ui,sans-serif" font-size="13" font-weight="700" letter-spacing="3">EXECUTIVE DECISION</text>
 
-  <g transform="translate(1520, 105)">
-    <rect width="370" height="490" rx="14" fill="url(#glassBase)" stroke="url(#execBorder)" stroke-width="1.5" filter="url(#dropShadow)"/>
-    <rect width="370" height="38" rx="14" fill="url(#execHeader)" opacity="0.12"/>
-    <rect width="370" height="38" rx="14" fill="none" stroke="rgba(255,255,255,0.06)" stroke-width="1"/>
-    <circle cx="20" cy="19" r="5" fill="#10b981" filter="url(#glowGreen)" class="pulse-green"/>
-    <text x="185" y="24" text-anchor="middle" fill="#10b981" font-family="'SF Pro',system-ui,sans-serif" font-size="12" font-weight="700" letter-spacing="3">EXECUTIVE LAYER</text>
-
-    <g transform="translate(15, 55)">
-      <rect width="340" height="60" rx="8" fill="rgba(16,185,129,0.06)" stroke="rgba(16,185,129,0.15)" stroke-width="1"/>
-      <text x="170" y="26" text-anchor="middle" fill="rgba(255,255,255,0.9)" font-family="'SF Mono',monospace" font-size="12" font-weight="600">Command Center</text>
-      <text x="170" y="46" text-anchor="middle" fill="rgba(148,163,184,0.45)" font-family="'SF Mono',monospace" font-size="9">Real-time risk posture · Anomaly tracking</text>
+    <g transform="translate(12, 54)">
+      <rect width="162" height="36" rx="8" fill="rgba(16,185,129,0.04)" stroke="rgba(16,185,129,0.1)" stroke-width="1"/>
+      <text x="81" y="24" text-anchor="middle" fill="rgba(255,255,255,0.85)" font-family="'SF Mono',monospace" font-size="10" font-weight="600">CTO Reports</text>
     </g>
-    <g transform="translate(15, 125)">
-      <rect width="340" height="60" rx="8" fill="rgba(16,185,129,0.06)" stroke="rgba(16,185,129,0.15)" stroke-width="1"/>
-      <text x="170" y="26" text-anchor="middle" fill="rgba(255,255,255,0.9)" font-family="'SF Mono',monospace" font-size="12" font-weight="600">CTO Reports</text>
-      <text x="170" y="46" text-anchor="middle" fill="rgba(148,163,184,0.45)" font-family="'SF Mono',monospace" font-size="9">Boardroom-ready · Generated &lt; 60s</text>
+    <g transform="translate(186, 54)">
+      <rect width="162" height="36" rx="8" fill="rgba(16,185,129,0.04)" stroke="rgba(16,185,129,0.1)" stroke-width="1"/>
+      <text x="81" y="24" text-anchor="middle" fill="rgba(255,255,255,0.85)" font-family="'SF Mono',monospace" font-size="10" font-weight="600">Mission Control</text>
     </g>
-    <g transform="translate(15, 195)">
-      <rect width="340" height="60" rx="8" fill="rgba(16,185,129,0.06)" stroke="rgba(16,185,129,0.15)" stroke-width="1"/>
-      <text x="170" y="26" text-anchor="middle" fill="rgba(255,255,255,0.9)" font-family="'SF Mono',monospace" font-size="12" font-weight="600">Remediation Planner</text>
-      <text x="170" y="46" text-anchor="middle" fill="rgba(148,163,184,0.45)" font-family="'SF Mono',monospace" font-size="9">AI-generated sprint plans · Risk mitigation</text>
-    </g>
-    <g transform="translate(15, 265)">
-      <rect width="340" height="60" rx="8" fill="rgba(16,185,129,0.06)" stroke="rgba(16,185,129,0.15)" stroke-width="1"/>
-      <text x="170" y="26" text-anchor="middle" fill="rgba(255,255,255,0.9)" font-family="'SF Mono',monospace" font-size="12" font-weight="600">Executive Briefings</text>
-      <text x="170" y="46" text-anchor="middle" fill="rgba(148,163,184,0.45)" font-family="'SF Mono',monospace" font-size="9">Revenue · SLA · Customer context</text>
-    </g>
-
-    <g transform="translate(135, 405)">
-      <circle cx="0" cy="0" r="32" fill="rgba(16,185,129,0.04)" stroke="rgba(16,185,129,0.1)" stroke-width="1"/>
-      <circle cx="0" cy="0" r="12" fill="rgba(16,185,129,0.1)" stroke="#10b981" stroke-width="1.5" filter="url(#glowGreen)"/>
-      <circle cx="0" cy="0" r="4" fill="#10b981"/>
-      <text x="0" y="46" text-anchor="middle" fill="rgba(148,163,184,0.3)" font-family="'SF Mono',monospace" font-size="8">30s TO DECISION</text>
-    </g>
-  </g>
-
-  <g transform="translate(30, 620)">
-    <rect width="600" height="280" rx="14" fill="url(#glassBase)" stroke="rgba(6,182,212,0.15)" stroke-width="1" filter="url(#dropShadow)"/>
-    <rect width="600" height="36" rx="14" fill="rgba(6,182,212,0.08)"/>
-    <rect width="600" height="36" rx="14" fill="none" stroke="rgba(255,255,255,0.04)" stroke-width="1"/>
-    <text x="300" y="24" text-anchor="middle" fill="#06b6d4" font-family="'SF Pro',system-ui,sans-serif" font-size="12" font-weight="700" letter-spacing="3">INTEGRATION LAYER</text>
-
-    <g transform="translate(12, 48)">
-      <rect width="140" height="40" rx="8" fill="rgba(6,182,212,0.04)" stroke="rgba(6,182,212,0.1)" stroke-width="1"/>
-      <text x="70" y="26" text-anchor="middle" fill="rgba(255,255,255,0.75)" font-family="'SF Mono',monospace" font-size="10" font-weight="500">GitLab</text>
-    </g>
-    <g transform="translate(162, 48)">
-      <rect width="140" height="40" rx="8" fill="rgba(139,92,246,0.04)" stroke="rgba(139,92,246,0.1)" stroke-width="1"/>
-      <text x="70" y="26" text-anchor="middle" fill="rgba(255,255,255,0.75)" font-family="'SF Mono',monospace" font-size="10" font-weight="500">PagerDuty</text>
-    </g>
-    <g transform="translate(312, 48)">
-      <rect width="140" height="40" rx="8" fill="rgba(34,211,238,0.04)" stroke="rgba(34,211,238,0.1)" stroke-width="1"/>
-      <text x="70" y="26" text-anchor="middle" fill="rgba(255,255,255,0.75)" font-family="'SF Mono',monospace" font-size="10" font-weight="500">Datadog</text>
-    </g>
-    <g transform="translate(462, 48)">
-      <rect width="126" height="40" rx="8" fill="rgba(245,158,11,0.04)" stroke="rgba(245,158,11,0.1)" stroke-width="1"/>
-      <text x="63" y="26" text-anchor="middle" fill="rgba(255,255,255,0.75)" font-family="'SF Mono',monospace" font-size="10" font-weight="500">Slack</text>
-    </g>
-
     <g transform="translate(12, 98)">
-      <rect width="140" height="40" rx="8" fill="rgba(255,255,255,0.02)" stroke="rgba(255,255,255,0.04)" stroke-width="1"/>
-      <text x="70" y="26" text-anchor="middle" fill="rgba(255,255,255,0.75)" font-family="'SF Mono',monospace" font-size="10" font-weight="500">Jira</text>
+      <rect width="162" height="36" rx="8" fill="rgba(16,185,129,0.04)" stroke="rgba(16,185,129,0.1)" stroke-width="1"/>
+      <text x="81" y="24" text-anchor="middle" fill="rgba(255,255,255,0.85)" font-family="'SF Mono',monospace" font-size="10" font-weight="600">Exec Dashboard</text>
     </g>
-    <g transform="translate(162, 98)">
-      <rect width="140" height="40" rx="8" fill="rgba(255,255,255,0.02)" stroke="rgba(255,255,255,0.04)" stroke-width="1"/>
-      <text x="70" y="26" text-anchor="middle" fill="rgba(255,255,255,0.75)" font-family="'SF Mono',monospace" font-size="10" font-weight="500">AWS</text>
-    </g>
-    <g transform="translate(312, 98)">
-      <rect width="140" height="40" rx="8" fill="rgba(255,255,255,0.02)" stroke="rgba(255,255,255,0.04)" stroke-width="1"/>
-      <text x="70" y="26" text-anchor="middle" fill="rgba(255,255,255,0.75)" font-family="'SF Mono',monospace" font-size="10" font-weight="500">GCP</text>
-    </g>
-    <g transform="translate(462, 98)">
-      <rect width="126" height="40" rx="8" fill="rgba(255,255,255,0.02)" stroke="rgba(255,255,255,0.04)" stroke-width="1"/>
-      <text x="63" y="26" text-anchor="middle" fill="rgba(255,255,255,0.75)" font-family="'SF Mono',monospace" font-size="10" font-weight="500">Azure</text>
+    <g transform="translate(186, 98)">
+      <rect width="162" height="36" rx="8" fill="rgba(16,185,129,0.04)" stroke="rgba(16,185,129,0.1)" stroke-width="1"/>
+      <text x="81" y="24" text-anchor="middle" fill="rgba(255,255,255,0.85)" font-family="'SF Mono',monospace" font-size="10" font-weight="600">Remediation Planner</text>
     </g>
 
-    <g transform="translate(12, 148)">
-      <rect width="140" height="40" rx="8" fill="rgba(239,68,68,0.04)" stroke="rgba(239,68,68,0.08)" stroke-width="1"/>
-      <text x="70" y="26" text-anchor="middle" fill="rgba(255,255,255,0.75)" font-family="'SF Mono',monospace" font-size="10" font-weight="500">Sentry</text>
-    </g>
-    <g transform="translate(162, 148)">
-      <rect width="140" height="40" rx="8" fill="rgba(239,68,68,0.04)" stroke="rgba(239,68,68,0.08)" stroke-width="1"/>
-      <text x="70" y="26" text-anchor="middle" fill="rgba(255,255,255,0.75)" font-family="'SF Mono',monospace" font-size="10" font-weight="500">OpenTelemetry</text>
-    </g>
-    <g transform="translate(312, 148)">
-      <rect width="140" height="40" rx="8" fill="rgba(239,68,68,0.04)" stroke="rgba(239,68,68,0.08)" stroke-width="1"/>
-      <text x="70" y="26" text-anchor="middle" fill="rgba(255,255,255,0.75)" font-family="'SF Mono',monospace" font-size="10" font-weight="500">Service Mesh</text>
-    </g>
-    <g transform="translate(462, 148)">
-      <rect width="126" height="40" rx="8" fill="rgba(239,68,68,0.04)" stroke="rgba(239,68,68,0.08)" stroke-width="1"/>
-      <text x="63" y="26" text-anchor="middle" fill="rgba(255,255,255,0.75)" font-family="'SF Mono',monospace" font-size="10" font-weight="500">Kubernetes</text>
-    </g>
-
-    <line x1="20" y1="205" x2="580" y2="205" stroke="rgba(255,255,255,0.03)" stroke-width="1"/>
-    <text x="300" y="230" text-anchor="middle" fill="rgba(148,163,184,0.2)" font-family="'SF Mono',monospace" font-size="8" letter-spacing="2">PLUG &amp; PLAY ARCHITECTURE</text>
-
-    <g transform="translate(180, 245)">
-      <rect width="240" height="26" rx="13" fill="rgba(6,182,212,0.04)" stroke="rgba(6,182,212,0.08)" stroke-width="1"/>
-      <text x="120" y="18" text-anchor="middle" fill="rgba(148,163,184,0.3)" font-family="'SF Mono',monospace" font-size="8" letter-spacing="2">ZERO CONFIGURATION REQUIRED</text>
-    </g>
+    <text x="180" y="160" text-anchor="middle" fill="rgba(148,163,184,0.25)" font-family="'SF Mono',monospace" font-size="9" letter-spacing="2">ACTIONABLE INTELLIGENCE</text>
   </g>
 
-  <g transform="translate(660, 620)">
-    <rect width="600" height="280" rx="14" fill="url(#glassBase)" stroke="rgba(52,211,153,0.15)" stroke-width="1" filter="url(#dropShadow)"/>
-    <rect width="600" height="36" rx="14" fill="rgba(52,211,153,0.06)"/>
-    <rect width="600" height="36" rx="14" fill="none" stroke="rgba(255,255,255,0.04)" stroke-width="1"/>
-    <text x="300" y="24" text-anchor="middle" fill="#34d399" font-family="'SF Pro',system-ui,sans-serif" font-size="12" font-weight="700" letter-spacing="3">OUTCOMES &amp; BUSINESS IMPACT</text>
-
-    <g transform="translate(15, 50)">
-      <rect width="186" height="80" rx="10" fill="rgba(52,211,153,0.04)" stroke="rgba(52,211,153,0.1)" stroke-width="1"/>
-      <text x="93" y="32" text-anchor="middle" fill="#34d399" font-family="'SF Mono',monospace" font-size="22" font-weight="700">87%</text>
-      <text x="93" y="56" text-anchor="middle" fill="rgba(255,255,255,0.65)" font-family="'SF Mono',monospace" font-size="10" font-weight="500">Faster Detection</text>
-    </g>
-    <g transform="translate(207, 50)">
-      <rect width="186" height="80" rx="10" fill="rgba(52,211,153,0.04)" stroke="rgba(52,211,153,0.1)" stroke-width="1"/>
-      <text x="93" y="32" text-anchor="middle" fill="#8b5cf6" font-family="'SF Mono',monospace" font-size="22" font-weight="700">30s</text>
-      <text x="93" y="56" text-anchor="middle" fill="rgba(255,255,255,0.65)" font-family="'SF Mono',monospace" font-size="10" font-weight="500">Investigation Time</text>
-    </g>
-    <g transform="translate(399, 50)">
-      <rect width="186" height="80" rx="10" fill="rgba(52,211,153,0.04)" stroke="rgba(52,211,153,0.1)" stroke-width="1"/>
-      <text x="93" y="32" text-anchor="middle" fill="#f59e0b" font-family="'SF Mono',monospace" font-size="22" font-weight="700">$4.2M</text>
-      <text x="93" y="56" text-anchor="middle" fill="rgba(255,255,255,0.65)" font-family="'SF Mono',monospace" font-size="10" font-weight="500">Annual Savings</text>
-    </g>
-
-    <g transform="translate(15, 140)">
-      <rect width="186" height="80" rx="10" fill="rgba(52,211,153,0.04)" stroke="rgba(52,211,153,0.1)" stroke-width="1"/>
-      <text x="93" y="32" text-anchor="middle" fill="#06b6d4" font-family="'SF Mono',monospace" font-size="22" font-weight="700">94%</text>
-      <text x="93" y="56" text-anchor="middle" fill="rgba(255,255,255,0.65)" font-family="'SF Mono',monospace" font-size="10" font-weight="500">Prediction Accuracy</text>
-    </g>
-    <g transform="translate(207, 140)">
-      <rect width="186" height="80" rx="10" fill="rgba(52,211,153,0.04)" stroke="rgba(52,211,153,0.1)" stroke-width="1"/>
-      <text x="93" y="32" text-anchor="middle" fill="#22d3ee" font-family="'SF Mono',monospace" font-size="22" font-weight="700">847+</text>
-      <text x="93" y="56" text-anchor="middle" fill="rgba(255,255,255,0.65)" font-family="'SF Mono',monospace" font-size="10" font-weight="500">Service Nodes</text>
-    </g>
-    <g transform="translate(399, 140)">
-      <rect width="186" height="80" rx="10" fill="rgba(52,211,153,0.04)" stroke="rgba(52,211,153,0.1)" stroke-width="1"/>
-      <text x="93" y="32" text-anchor="middle" fill="rgba(255,255,255,0.65)" font-family="'SF Mono',monospace" font-size="22" font-weight="700">1,598+</text>
-      <text x="93" y="56" text-anchor="middle" fill="rgba(255,255,255,0.65)" font-family="'SF Mono',monospace" font-size="10" font-weight="500">Historical Events</text>
-    </g>
-
-    <g transform="translate(150, 245)">
-      <rect width="300" height="26" rx="13" fill="rgba(52,211,153,0.04)" stroke="rgba(52,211,153,0.08)" stroke-width="1"/>
-      <text x="150" y="18" text-anchor="middle" fill="rgba(148,163,184,0.3)" font-family="'SF Mono',monospace" font-size="8" letter-spacing="2">PREDICT · PREVENT · DEPLOY WITH CONFIDENCE</text>
-    </g>
+  <g opacity="0.7">
+    <path d="M 440 340 L 720 390" fill="none" stroke="#06b6d4" stroke-width="2.5" stroke-dasharray="6 4" marker-end="url(#arrowCyan)"/>
+    <path d="M 1360 340 L 1090 400" fill="none" stroke="#8b5cf6" stroke-width="2.5" stroke-dasharray="6 4" marker-end="url(#arrowPurple)"/>
+    <path d="M 1090 620 L 900 560" fill="none" stroke="#22d3ee" stroke-width="2.5" stroke-dasharray="6 4" marker-end="url(#arrowTeal)"/>
+    <path d="M 440 700 L 720 760" fill="none" stroke="#f59e0b" stroke-width="2.5" stroke-dasharray="6 4" marker-end="url(#arrowAmber)"/>
   </g>
 
-  <g transform="translate(1290, 620)">
-    <rect width="600" height="280" rx="14" fill="url(#glassBase)" stroke="rgba(139,92,246,0.15)" stroke-width="1" filter="url(#dropShadow)"/>
-    <rect width="600" height="36" rx="14" fill="rgba(139,92,246,0.06)"/>
-    <rect width="600" height="36" rx="14" fill="none" stroke="rgba(255,255,255,0.04)" stroke-width="1"/>
-    <text x="300" y="24" text-anchor="middle" fill="#a78bfa" font-family="'SF Pro',system-ui,sans-serif" font-size="12" font-weight="700" letter-spacing="3">ACTION ENGINE</text>
-
-    <g transform="translate(15, 50)">
-      <rect width="186" height="80" rx="10" fill="rgba(239,68,68,0.04)" stroke="rgba(239,68,68,0.08)" stroke-width="1"/>
-      <text x="93" y="35" text-anchor="middle" fill="rgba(255,255,255,0.75)" font-family="'SF Mono',monospace" font-size="11" font-weight="600">Change Simulator</text>
-      <text x="93" y="56" text-anchor="middle" fill="rgba(148,163,184,0.35)" font-family="'SF Mono',monospace" font-size="8">Pre-deploy testing</text>
-    </g>
-    <g transform="translate(207, 50)">
-      <rect width="186" height="80" rx="10" fill="rgba(239,68,68,0.04)" stroke="rgba(239,68,68,0.08)" stroke-width="1"/>
-      <text x="93" y="35" text-anchor="middle" fill="rgba(255,255,255,0.75)" font-family="'SF Mono',monospace" font-size="11" font-weight="600">Blast Radius</text>
-      <text x="93" y="56" text-anchor="middle" fill="rgba(148,163,184,0.35)" font-family="'SF Mono',monospace" font-size="8">Failure propagation</text>
-    </g>
-    <g transform="translate(399, 50)">
-      <rect width="186" height="80" rx="10" fill="rgba(239,68,68,0.04)" stroke="rgba(239,68,68,0.08)" stroke-width="1"/>
-      <text x="93" y="35" text-anchor="middle" fill="rgba(255,255,255,0.75)" font-family="'SF Mono',monospace" font-size="11" font-weight="600">AI Remediation</text>
-      <text x="93" y="56" text-anchor="middle" fill="rgba(148,163,184,0.35)" font-family="'SF Mono',monospace" font-size="8">Auto-generated plans</text>
-    </g>
-
-    <g transform="translate(15, 140)">
-      <rect width="186" height="80" rx="10" fill="rgba(239,68,68,0.04)" stroke="rgba(239,68,68,0.08)" stroke-width="1"/>
-      <text x="93" y="35" text-anchor="middle" fill="rgba(255,255,255,0.75)" font-family="'SF Mono',monospace" font-size="11" font-weight="600">Rollback Advisor</text>
-      <text x="93" y="56" text-anchor="middle" fill="rgba(148,163,184,0.35)" font-family="'SF Mono',monospace" font-size="8">Safe revert paths</text>
-    </g>
-    <g transform="translate(207, 140)">
-      <rect width="186" height="80" rx="10" fill="rgba(239,68,68,0.04)" stroke="rgba(239,68,68,0.08)" stroke-width="1"/>
-      <text x="93" y="35" text-anchor="middle" fill="rgba(255,255,255,0.75)" font-family="'SF Mono',monospace" font-size="11" font-weight="600">Verify Engine</text>
-      <text x="93" y="56" text-anchor="middle" fill="rgba(148,163,184,0.35)" font-family="'SF Mono',monospace" font-size="8">Post-deploy health</text>
-    </g>
-    <g transform="translate(399, 140)">
-      <rect width="186" height="80" rx="10" fill="rgba(239,68,68,0.04)" stroke="rgba(239,68,68,0.08)" stroke-width="1"/>
-      <text x="93" y="35" text-anchor="middle" fill="rgba(255,255,255,0.75)" font-family="'SF Mono',monospace" font-size="11" font-weight="600">Auto-Deploy Gate</text>
-      <text x="93" y="56" text-anchor="middle" fill="rgba(148,163,184,0.35)" font-family="'SF Mono',monospace" font-size="8">Risk-based gating</text>
-    </g>
-
-    <g transform="translate(150, 245)">
-      <rect width="300" height="26" rx="13" fill="rgba(139,92,246,0.04)" stroke="rgba(139,92,246,0.08)" stroke-width="1"/>
-      <text x="150" y="18" text-anchor="middle" fill="rgba(148,163,184,0.3)" font-family="'SF Mono',monospace" font-size="8" letter-spacing="2">AUTONOMOUS · REAL-TIME · INTELLIGENT</text>
-    </g>
+  <g opacity="0.4">
+    <line x1="800" y1="555" x2="800" y2="790" stroke="#10b981" stroke-width="2" stroke-dasharray="4 4"/>
+    <line x1="900" y1="555" x2="900" y2="790" stroke="#10b981" stroke-width="2" stroke-dasharray="4 4"/>
   </g>
 
-  <path d="M 20 20 L 60 20 L 60 18 L 22 18 L 22 60 L 20 60 Z" fill="rgba(6,182,212,0.1)"/>
-  <path d="M 1900 20 L 1860 20 L 1860 18 L 1898 18 L 1898 60 L 1900 60 Z" fill="rgba(6,182,212,0.1)"/>
-  <path d="M 20 1060 L 60 1060 L 60 1062 L 22 1062 L 22 1020 L 20 1020 Z" fill="rgba(6,182,212,0.1)"/>
-  <path d="M 1900 1060 L 1860 1060 L 1860 1062 L 1898 1062 L 1898 1020 L 1900 1020 Z" fill="rgba(6,182,212,0.1)"/>
+  <g transform="translate(540, 360)">
+    <circle cx="0" cy="0" r="2" fill="#06b6d4" opacity="0.8"><animate attributeName="cx" values="0;120" dur="3s" repeatCount="indefinite"/><animate attributeName="opacity" values="0.8;0.2;0.8" dur="3s" repeatCount="indefinite"/></circle>
+  </g>
+  <g transform="translate(1170, 380)">
+    <circle cx="0" cy="0" r="2" fill="#8b5cf6" opacity="0.8"><animate attributeName="cx" values="0;-120" dur="3s" repeatCount="indefinite"/><animate attributeName="opacity" values="0.8;0.2;0.8" dur="3s" repeatCount="indefinite"/></circle>
+  </g>
+
+  <g transform="translate(880, 1000)">
+    <rect x="-420" y="0" width="840" height="50" rx="25" fill="rgba(6,182,212,0.04)" stroke="rgba(6,182,212,0.08)" stroke-width="1"/>
+    <text x="-350" y="31" text-anchor="middle" fill="#06b6d4" font-family="'SF Mono',monospace" font-size="13" font-weight="700">847+ NODES</text>
+    <line x1="-240" y1="10" x2="-240" y2="40" stroke="rgba(255,255,255,0.04)" stroke-width="1"/>
+    <text x="-160" y="31" text-anchor="middle" fill="#8b5cf6" font-family="'SF Mono',monospace" font-size="13" font-weight="700">1,200+ DEPENDENCIES</text>
+    <line x1="-50" y1="10" x2="-50" y2="40" stroke="rgba(255,255,255,0.04)" stroke-width="1"/>
+    <text x="40" y="31" text-anchor="middle" fill="#22d3ee" font-family="'SF Mono',monospace" font-size="13" font-weight="700">1,598+ EVENTS</text>
+    <line x1="140" y1="10" x2="140" y2="40" stroke="rgba(255,255,255,0.04)" stroke-width="1"/>
+    <text x="230" y="31" text-anchor="middle" fill="#f59e0b" font-family="'SF Mono',monospace" font-size="13" font-weight="700">94% ACCURACY</text>
+    <line x1="320" y1="10" x2="320" y2="40" stroke="rgba(255,255,255,0.04)" stroke-width="1"/>
+    <text x="400" y="31" text-anchor="middle" fill="#10b981" font-family="'SF Mono',monospace" font-size="13" font-weight="700">30s INVESTIGATION</text>
+  </g>
+
+  <path d="M 20 20 L 60 20 L 60 18 L 22 18 L 22 60 L 20 60 Z" fill="rgba(6,182,212,0.08)"/>
+  <path d="M 1780 20 L 1740 20 L 1740 18 L 1778 18 L 1778 60 L 1780 60 Z" fill="rgba(6,182,212,0.08)"/>
+  <path d="M 20 1060 L 60 1060 L 60 1062 L 22 1062 L 22 1020 L 20 1020 Z" fill="rgba(6,182,212,0.08)"/>
+  <path d="M 1780 1060 L 1740 1060 L 1740 1062 L 1778 1062 L 1778 1020 L 1780 1020 Z" fill="rgba(6,182,212,0.08)"/>
 </svg>

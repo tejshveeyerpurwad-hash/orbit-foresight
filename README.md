@@ -368,60 +368,17 @@ The platform engineering movement is driving toward **developer self-service**, 
 
 ### Orbit Foresight Intelligence Architecture
 
-Transforming engineering telemetry into executive decisions in under 60 seconds.
+<p align="center">
+  <img src="docs/assets/orbit-foresight-architecture.svg" alt="Orbit Foresight Architecture" width="100%">
+</p>
 
-```mermaid
-flowchart TB
-    subgraph SL["Signal Intelligence Layer"]
-        A1["Deployments"]
-        A2["Incidents"]
-        A3["Metrics"]
-        A4["Logs & Traces"]
-        A5["Service Dependencies"]
-    end
-
-    subgraph IL["AI Intelligence Layer"]
-        B1["Anomaly Detection"]
-        B2["Pattern Correlation"]
-        B3["Risk Prediction"]
-        B4["Root Cause Analysis"]
-        B5["Failure Forecasting"]
-    end
-
-    subgraph TL["Engineering Digital Twin"]
-        C1["Service Topology"]
-        C2["Dependency Graph"]
-        C3["Blast Radius Simulator"]
-        C4["Incident Memory"]
-    end
-
-    subgraph BL["Business Impact Layer"]
-        D1["Revenue Exposure"]
-        D2["Customer Impact"]
-        D3["SLA Risk"]
-        D4["Priority Ranking"]
-    end
-
-    subgraph EL["Executive Decision Layer"]
-        E1["Executive Command Center"]
-        E2["CTO Intelligence Reports"]
-        E3["Remediation Planner"]
-        E4["Mission Control"]
-    end
-
-    SL --> IL
-    IL --> TL
-    TL --> BL
-    BL --> EL
-```
-
-| Layer | Purpose | Key Capability |
-|:---|:---|:---|
-| **Signal Intelligence** | Continuous ingestion from engineering systems | Deployments, metrics, incidents, traces |
-| **AI Intelligence** | Detection, correlation, and reasoning | Root cause analysis, risk prediction, failure forecasting |
-| **Engineering Digital Twin** | System understanding and simulation | Blast radius simulation, dependency graph, incident memory |
-| **Business Impact** | Executive translation of engineering data | Revenue exposure, SLA risk, customer impact, priority ranking |
-| **Executive Decision** | Action generation and reporting | CTO reports, remediation plans, mission control |
+| Layer | Purpose |
+|:---|:---|
+| **Signal Intelligence** | Continuous ingestion from engineering systems — deployments, incidents, metrics, traces, and service dependencies |
+| **AI Intelligence** | ML-powered anomaly detection, pattern correlation, risk prediction, and root cause analysis across the full telemetry corpus |
+| **Digital Twin** | Living production model maintaining service topology, dependency graph, blast radius simulation, and incident memory |
+| **Business Impact** | Engineering-to-business translation — revenue exposure, customer impact, SLA risk, and priority ranking |
+| **Executive Decision** | Actionable intelligence through CTO reports, mission control dashboards, and remediation planning |
 
 ---
 
