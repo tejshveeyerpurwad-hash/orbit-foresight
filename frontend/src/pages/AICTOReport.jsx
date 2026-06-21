@@ -237,11 +237,334 @@ const item = { hidden: { opacity: 0, y: 16 }, show: { opacity: 1, y: 0 } }
 
 export default function AICTOReport() {
   const data = reportData
+  const opEx = Math.round(data.teamReadiness.reduce((a, t) => a + t.readiness, 0) / data.teamReadiness.length)
+  const annualSavings = data.monthlyProjection[data.monthlyProjection.length - 1].cumulative
 
   return (
     <Layout>
       <motion.div variants={container} initial="hidden" animate="show" className="space-y-2">
         <ExecutiveBanner currentPage="/cto-report" />
+
+        {/* === PREMIUM BOARDROOM INTELLIGENCE SECTIONS === */}
+
+        {/* B1. Boardroom Intelligence Dashboard Hero */}
+        <motion.div variants={item} className="relative overflow-hidden rounded-xl border border-white/[0.08] bg-gradient-to-br from-slate-900 via-slate-900 to-slate-950 p-6">
+          <div className="absolute -top-40 -left-40 h-80 w-80 rounded-full bg-cyan-500/[0.05] blur-[120px]" />
+          <div className="absolute -bottom-40 -right-40 h-80 w-80 rounded-full bg-emerald-500/[0.04] blur-[120px]" />
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 h-96 w-96 rounded-full bg-violet-500/[0.02] blur-[100px]" />
+          <div className="relative">
+            <div className="flex items-center justify-between mb-6">
+              <div className="flex items-center gap-3">
+                <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-cyan-500/20 to-emerald-500/20">
+                  <svg className="h-4 w-4 text-cyan-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}><path strokeLinecap="round" strokeLinejoin="round" d="M3.75 3v11.25A2.25 2.25 0 006 16.5h2.25M3.75 3h-1.5m1.5 0h16.5m0 0h1.5m-1.5 0v11.25A2.25 2.25 0 0118 16.5h-2.25m-7.5 0h7.5m-7.5 0l-1 3m8.5-3l1 3m0 0l.5 1.5m-.5-1.5h-9.5m0 0l-.5 1.5" /></svg>
+                </div>
+                <h2 className="text-2xl font-bold tracking-wider text-white">BOARDROOM INTELLIGENCE DASHBOARD</h2>
+              </div>
+              <div className="flex items-center gap-2">
+                <span className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
+                <span className="text-[10px] text-slate-500 font-mono tracking-wider">LIVE · Q3 2026</span>
+              </div>
+            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3">
+              <motion.div className="relative group rounded-xl border border-white/[0.08] bg-white/[0.03] backdrop-blur-xl p-5 overflow-hidden hover:border-emerald-500/30 transition-all duration-500">
+                <div className="absolute inset-0 bg-gradient-to-br from-emerald-500/[0.05] to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
+                <div className="absolute -top-4 -right-4 opacity-30 group-hover:opacity-60 transition-opacity duration-500">
+                  <RingGauge value={85} size={48} stroke={3.5} color="#22c55e" />
+                </div>
+                <div className="relative">
+                  <div className="text-[10px] text-slate-500 font-mono tracking-wider mb-1">Annual Savings</div>
+                  <div className="text-5xl font-bold text-emerald-400 font-mono tracking-tight leading-none">$<AnimatedCounter value={annualSavings / 1000000} decimals={1} />M</div>
+                  <div className="flex items-center gap-1.5 mt-3">
+                    <svg className="h-3.5 w-3.5 text-emerald-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M2.25 18L9 11.25l4.306 4.307a11.95 11.95 0 015.814-5.519l2.74-1.22m0 0l-5.94-2.28m5.94 2.28l-2.28 5.941" /></svg>
+                    <span className="text-[11px] text-emerald-500/70 font-mono">+{data.roi.percentage}% ROI</span>
+                  </div>
+                </div>
+              </motion.div>
+              <motion.div className="relative group rounded-xl border border-white/[0.08] bg-white/[0.03] backdrop-blur-xl p-5 overflow-hidden hover:border-cyan-500/30 transition-all duration-500">
+                <div className="absolute inset-0 bg-gradient-to-br from-cyan-500/[0.05] to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
+                <div className="absolute -top-4 -right-4 opacity-30 group-hover:opacity-60 transition-opacity duration-500">
+                  <RingGauge value={72} size={48} stroke={3.5} color="#06b6d4" />
+                </div>
+                <div className="relative">
+                  <div className="text-[10px] text-slate-500 font-mono tracking-wider mb-1">Revenue Protected</div>
+                  <div className="text-5xl font-bold text-cyan-400 font-mono tracking-tight leading-none">$<AnimatedCounter value={Math.round(data.roi.monthlySavings / 1000)} />K</div>
+                  <div className="text-[11px] text-slate-500 font-mono mt-3">Monthly incident prevention</div>
+                </div>
+              </motion.div>
+              <motion.div className="relative group rounded-xl border border-white/[0.08] bg-white/[0.03] backdrop-blur-xl p-5 overflow-hidden hover:border-amber-500/30 transition-all duration-500">
+                <div className="absolute inset-0 bg-gradient-to-br from-amber-500/[0.05] to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
+                <div className="absolute -top-4 -right-4 opacity-30 group-hover:opacity-60 transition-opacity duration-500">
+                  <RingGauge value={opEx} size={48} stroke={3.5} color="#f59e0b" />
+                </div>
+                <div className="relative">
+                  <div className="text-[10px] text-slate-500 font-mono tracking-wider mb-1">Operational Efficiency</div>
+                  <div className="text-5xl font-bold text-amber-400 font-mono tracking-tight leading-none"><AnimatedCounter value={opEx} suffix="%" /></div>
+                  <div className="text-[11px] text-slate-500 font-mono mt-3">Team readiness avg</div>
+                </div>
+              </motion.div>
+              <motion.div className="relative group rounded-xl border border-white/[0.08] bg-white/[0.03] backdrop-blur-xl p-5 overflow-hidden hover:border-violet-500/30 transition-all duration-500">
+                <div className="absolute inset-0 bg-gradient-to-br from-violet-500/[0.05] to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
+                <div className="absolute -top-4 -right-4 opacity-30 group-hover:opacity-60 transition-opacity duration-500">
+                  <RingGauge value={data.verdict.confidence} size={48} stroke={3.5} color="#8b5cf6" />
+                </div>
+                <div className="relative">
+                  <div className="text-[10px] text-slate-500 font-mono tracking-wider mb-1">Deployment Confidence</div>
+                  <div className="text-5xl font-bold text-violet-400 font-mono tracking-tight leading-none"><AnimatedCounter value={data.verdict.confidence} suffix="%" /></div>
+                  <div className="text-[11px] text-slate-500 font-mono mt-3">Decision confidence</div>
+                </div>
+              </motion.div>
+              <motion.div className="relative group rounded-xl border border-white/[0.08] bg-white/[0.03] backdrop-blur-xl p-5 overflow-hidden hover:border-red-500/30 transition-all duration-500">
+                <div className="absolute inset-0 bg-gradient-to-br from-red-500/[0.05] to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
+                <div className="absolute -top-4 -right-4 opacity-30 group-hover:opacity-60 transition-opacity duration-500">
+                  <RingGauge value={data.scenarios[1].riskReduction} size={48} stroke={3.5} color="#ef4444" />
+                </div>
+                <div className="relative">
+                  <div className="text-[10px] text-slate-500 font-mono tracking-wider mb-1">Risk Reduction</div>
+                  <div className="text-5xl font-bold text-red-400 font-mono tracking-tight leading-none"><AnimatedCounter value={data.scenarios[1].riskReduction} suffix="%" /></div>
+                  <div className="text-[11px] text-slate-500 font-mono mt-3">Expected scenario</div>
+                </div>
+              </motion.div>
+            </div>
+          </div>
+        </motion.div>
+
+        {/* B2. Executive Impact Radar */}
+        <motion.div variants={item} className="rounded-xl border border-white/[0.06] bg-slate-900/50 p-6 overflow-hidden relative">
+          <div className="absolute -top-20 -right-20 h-48 w-48 rounded-full bg-cyan-500/[0.03] blur-3xl" />
+          <div className="absolute -bottom-20 -left-20 h-48 w-48 rounded-full bg-teal-500/[0.02] blur-3xl" />
+          <div className="flex items-center gap-2 mb-4 relative">
+            <div className="flex h-6 w-6 items-center justify-center rounded-lg bg-cyan-500/20">
+              <svg className="h-3.5 w-3.5 text-cyan-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M3 4.5h14.25M3 9h9.75M3 13.5h5.25m5.25-.75H17.25m-2.25 3h6" /></svg>
+            </div>
+            <h2 className="text-sm font-bold text-white">Executive Impact Radar</h2>
+            <StatusBadge status="success" label="6-dimension analysis" />
+          </div>
+          <div className="flex justify-center">
+            <svg viewBox="0 0 420 420" className="w-full max-w-[400px] h-auto" style={{ filter: 'drop-shadow(0 0 30px rgba(6,182,212,0.08))' }}>
+              {(() => {
+                const cx = 210, cy = 210, r = 140
+                const axes = [
+                  { label: 'Risk Score', value: data.riskLevel.score },
+                  { label: 'Impact', value: data.businessImpact.businessScore },
+                  { label: 'ROI', value: Math.min(data.roi.percentage, 100) },
+                  { label: 'Readiness', value: opEx },
+                  { label: 'Confidence', value: data.verdict.confidence },
+                  { label: 'Efficiency', value: data.engineeringCost.costScore },
+                ]
+                const n = axes.length
+                const angleStep = (2 * Math.PI) / n
+                const startAngle = -Math.PI / 2
+
+                const gridLevels = [20, 40, 60, 80, 100]
+                const gridPolys = gridLevels.map(level => {
+                  const pts = []
+                  for (let i = 0; i < n; i++) {
+                    const angle = startAngle + i * angleStep
+                    const d = (level / 100) * r
+                    pts.push({ x: cx + d * Math.cos(angle), y: cy + d * Math.sin(angle) })
+                  }
+                  return pts
+                })
+
+                const dataPts = axes.map((a, i) => {
+                  const angle = startAngle + i * angleStep
+                  const d = (a.value / 100) * r
+                  return { x: cx + d * Math.cos(angle), y: cy + d * Math.sin(angle), value: a.value, label: a.label }
+                })
+
+                const dataPath = dataPts.map((p, i) => `${i === 0 ? 'M' : 'L'} ${p.x} ${p.y}`).join(' ') + ' Z'
+
+                return (
+                  <>
+                    {gridPolys.map((pts, li) => (
+                      <polygon key={li} points={pts.map(p => `${p.x},${p.y}`).join(' ')}
+                        fill="none" stroke="rgba(255,255,255,0.06)" strokeWidth={li === gridPolys.length - 1 ? 1 : 0.5}
+                        strokeDasharray={li === gridPolys.length - 1 ? 'none' : '3 3'} />
+                    ))}
+                    {axes.map((a, i) => {
+                      const angle = startAngle + i * angleStep
+                      return <line key={i} x1={cx} y1={cy} x2={cx + r * Math.cos(angle)} y2={cy + r * Math.sin(angle)} stroke="rgba(255,255,255,0.05)" strokeWidth="0.5" />
+                    })}
+                    <path d={dataPath} fill="rgba(6,182,212,0.12)" stroke="#06b6d4" strokeWidth="2.5" strokeLinejoin="round" />
+                    {dataPts.map((p, i) => (
+                      <g key={i}>
+                        <motion.circle cx={p.x} cy={p.y} r="5" fill="#06b6d4" stroke="#0e7490" strokeWidth="2"
+                          initial={{ r: 0, opacity: 0 }} animate={{ r: 5, opacity: 1 }} transition={{ delay: 0.3 + i * 0.1, duration: 0.4 }} />
+                        <motion.circle cx={p.x} cy={p.y} r="14" fill="none" stroke="#06b6d4" strokeWidth="1"
+                          initial={{ r: 0, opacity: 0 }} animate={{ r: 14, opacity: 0.25 }} transition={{ delay: 0.5 + i * 0.1, duration: 0.6 }} />
+                      </g>
+                    ))}
+                    {axes.map((a, i) => {
+                      const angle = startAngle + i * angleStep
+                      const lr = r + 32
+                      const lx = cx + lr * Math.cos(angle)
+                      const ly = cy + lr * Math.sin(angle)
+                      const isTop = angle === -Math.PI / 2
+                      const isBottom = angle === Math.PI / 2
+                      const isRight = angle > -Math.PI / 2 && angle < Math.PI / 2
+                      const ta = isTop || isBottom ? 'middle' : isRight ? 'start' : 'end'
+                      const dy = isTop ? -4 : isBottom ? 16 : 4
+                      return (
+                        <g key={`l-${i}`}>
+                          <text x={lx} y={ly + dy} textAnchor={ta} fill="#94a3b8" fontSize="10" fontWeight="600" fontFamily="monospace">{a.label}</text>
+                          <text x={lx} y={ly + dy + (isTop ? -14 : 14)} textAnchor={ta} fill="#06b6d4" fontSize="13" fontWeight="700" fontFamily="monospace">{a.value}</text>
+                        </g>
+                      )
+                    })}
+                    <circle cx={cx} cy={cy} r="3" fill="#06b6d4" />
+                  </>
+                )
+              })()}
+            </svg>
+          </div>
+        </motion.div>
+
+        {/* B3. Revenue Exposure Heatmap */}
+        <motion.div variants={item} className="rounded-xl border border-white/[0.06] bg-slate-900/50 p-6 relative overflow-hidden">
+          <div className="absolute -top-20 -left-20 h-48 w-48 rounded-full bg-red-500/[0.03] blur-3xl" />
+          <div className="flex items-center gap-2 mb-4 relative">
+            <div className="flex h-6 w-6 items-center justify-center rounded-lg bg-red-500/20">
+              <svg className="h-3.5 w-3.5 text-red-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" /></svg>
+            </div>
+            <h2 className="text-sm font-bold text-white">Revenue Exposure Heatmap</h2>
+            <StatusBadge status="warning" label={`${data.businessImpact.revenueAtRisk.toLocaleString()}/hr at risk`} />
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-3 relative">
+            {[
+              { title: 'Payment Gateway', avg: 78, color: '#ef4444', bgGrad: 'from-red-500/[0.02]', risks: [
+                { name: data.riskCategories[0].name, score: data.riskCategories[0].score, level: 'high' },
+                { name: data.riskCategories[1].name, score: data.riskCategories[1].score, level: 'high' },
+                { name: data.riskCategories[2].name, score: data.riskCategories[2].score, level: 'high' },
+              ]},
+              { title: 'Infrastructure', avg: 38, color: '#f59e0b', bgGrad: 'from-amber-500/[0.02]', risks: [
+                { name: data.riskCategories[8].name, score: data.riskCategories[8].score, level: 'med' },
+                { name: data.riskCategories[6].name, score: data.riskCategories[6].score, level: 'med' },
+                { name: data.riskCategories[4].name, score: data.riskCategories[4].score, level: 'low' },
+              ]},
+              { title: 'Security / Compliance', avg: 33, color: '#22c55e', bgGrad: 'from-emerald-500/[0.02]', risks: [
+                { name: data.riskCategories[3].name, score: data.riskCategories[3].score, level: 'med' },
+                { name: data.riskCategories[10].name, score: data.riskCategories[10].score, level: 'low' },
+                { name: data.riskCategories[5].name, score: data.riskCategories[5].score, level: 'low' },
+              ]},
+            ].map((div, di) => {
+              const scoreColor = (s) => s >= 60 ? 'text-red-400 bg-red-500/10 border-red-500/20' : s >= 30 ? 'text-amber-400 bg-amber-500/10 border-amber-500/20' : 'text-green-400 bg-green-500/10 border-green-500/20'
+              return (
+                <div key={di} className={`rounded-xl border border-white/[0.08] bg-gradient-to-br ${div.bgGrad} to-transparent backdrop-blur-xl p-4`}>
+                  <div className="flex items-center justify-between mb-3">
+                    <h3 className="text-xs font-bold text-white">{div.title}</h3>
+                    <RingGauge value={div.avg} size={44} stroke={3.5} color={div.color} />
+                  </div>
+                  <div className="space-y-2">
+                    {div.risks.map((r, ri) => (
+                      <div key={ri} className={`flex items-center justify-between rounded-lg border px-3 py-2 ${scoreColor(r.score)}`}>
+                        <span className="text-[9px] font-mono truncate mr-2">{r.name}</span>
+                        <span className="text-sm font-bold shrink-0">{r.score}</span>
+                      </div>
+                    ))}
+                  </div>
+                  <div className="mt-3 pt-3 border-t border-white/[0.06] flex items-center justify-between">
+                    <span className="text-[9px] text-slate-500">Avg Risk Score</span>
+                    <span className="text-lg font-bold font-mono" style={{ color: div.color }}>{div.avg}</span>
+                  </div>
+                </div>
+              )
+            })}
+          </div>
+          <div className="mt-4 flex items-center justify-between text-[9px] text-slate-500 pt-3 border-t border-white/[0.04] relative">
+            <span>Revenue at Risk: <span className="text-red-400 font-bold">${data.businessImpact.revenueAtRisk.toLocaleString()}/hr</span> <span className="text-slate-400">${(data.businessImpact.revenueAtRisk * 24 * 30).toLocaleString()}/mo worst case</span></span>
+            <span className="text-slate-600">Assessed across {data.riskCategories.length} vectors</span>
+          </div>
+        </motion.div>
+
+        {/* B4. ROI Planetarium */}
+        <motion.div variants={item} className="rounded-xl border border-white/[0.06] bg-slate-900/50 p-6 relative overflow-hidden">
+          <div className="absolute -top-20 left-1/3 h-48 w-48 rounded-full bg-cyan-500/[0.03] blur-3xl" />
+          <div className="absolute -bottom-20 right-1/3 h-48 w-48 rounded-full bg-emerald-500/[0.03] blur-3xl" />
+          <div className="flex items-center gap-2 mb-4 relative">
+            <div className="flex h-6 w-6 items-center justify-center rounded-lg bg-emerald-500/20">
+              <svg className="h-3.5 w-3.5 text-emerald-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M20.25 6.375c0 2.278-3.694 4.125-8.25 4.125S3.75 8.653 3.75 6.375m16.5 0c0-2.278-3.694-4.125-8.25-4.125S3.75 4.097 3.75 6.375m16.5 0v11.25c0 2.278-3.694 4.125-8.25 4.125s-8.25-1.847-8.25-4.125V6.375m16.5 0v3.75m-16.5-3.75v3.75m16.5 0v3.75C20.25 16.153 16.556 18 12 18s-8.25-1.847-8.25-4.125v-3.75m16.5 0c0 2.278-3.694 4.125-8.25 4.125s-8.25-1.847-8.25-4.125" /></svg>
+            </div>
+            <h2 className="text-sm font-bold text-white">ROI Planetarium</h2>
+            <StatusBadge status="success" label={`${data.roi.percentage}% projected`} />
+          </div>
+          <div className="flex justify-center relative py-4">
+            <svg viewBox="0 0 480 320" className="w-full max-w-[480px] h-auto">
+              <defs>
+                <radialGradient id="sphereInvest" cx="30%" cy="30%" r="60%">
+                  <stop offset="0%" stopColor="#fb923c" />
+                  <stop offset="40%" stopColor="#ea580c" />
+                  <stop offset="100%" stopColor="#9a3412" />
+                </radialGradient>
+                <radialGradient id="sphereSave" cx="30%" cy="30%" r="60%">
+                  <stop offset="0%" stopColor="#4ade80" />
+                  <stop offset="40%" stopColor="#22c55e" />
+                  <stop offset="100%" stopColor="#15803d" />
+                </radialGradient>
+                <radialGradient id="sphereEffic" cx="30%" cy="30%" r="60%">
+                  <stop offset="0%" stopColor="#67e8f9" />
+                  <stop offset="40%" stopColor="#06b6d4" />
+                  <stop offset="100%" stopColor="#0e7490" />
+                </radialGradient>
+                <filter id="glowInvest"><feGaussianBlur stdDeviation="6" result="blur" /><feMerge><feMergeNode in="blur" /><feMergeNode in="SourceGraphic" /></feMerge></filter>
+                <filter id="glowSave"><feGaussianBlur stdDeviation="8" result="blur" /><feMerge><feMergeNode in="blur" /><feMergeNode in="SourceGraphic" /></feMerge></filter>
+                <filter id="glowEffic"><feGaussianBlur stdDeviation="10" result="blur" /><feMerge><feMergeNode in="blur" /><feMergeNode in="SourceGraphic" /></feMerge></filter>
+                <style>{`@keyframes orbitSpin1 { from { transform: rotate(0deg) } to { transform: rotate(360deg) } } @keyframes orbitSpin2 { from { transform: rotate(0deg) } to { transform: rotate(-360deg) } } @keyframes orbitSpin3 { from { transform: rotate(0deg) } to { transform: rotate(360deg) } }`}</style>
+              </defs>
+              <motion.g initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.8 }}>
+                <line x1="120" y1="220" x2="360" y2="220" stroke="rgba(255,255,255,0.08)" strokeWidth="1.5" strokeDasharray="6 4">
+                  <animate attributeName="stroke-dashoffset" from="0" to="-20" dur="1.5s" repeatCount="indefinite" />
+                </line>
+                <line x1="120" y1="220" x2="240" y2="60" stroke="rgba(255,255,255,0.08)" strokeWidth="1.5" strokeDasharray="6 4">
+                  <animate attributeName="stroke-dashoffset" from="0" to="-20" dur="1.5s" repeatCount="indefinite" />
+                </line>
+                <line x1="360" y1="220" x2="240" y2="60" stroke="rgba(255,255,255,0.08)" strokeWidth="1.5" strokeDasharray="6 4">
+                  <animate attributeName="stroke-dashoffset" from="0" to="-20" dur="1.5s" repeatCount="indefinite" />
+                </line>
+              </motion.g>
+              <g>
+                <circle cx="120" cy="220" r="52" fill="#ea580c" opacity="0.08" filter="url(#glowInvest)" />
+                <motion.g initial={{ scale: 0 }} animate={{ scale: 1 }} transition={{ type: 'spring', stiffness: 100, damping: 15, delay: 0.2 }}>
+                  <circle cx="120" cy="220" r="38" fill="url(#sphereInvest)" filter="url(#glowInvest)" />
+                  <motion.g animate={{ rotate: 360 }} transition={{ repeat: Infinity, duration: 8, ease: 'linear' }} style={{ transformOrigin: '120px 220px' }}>
+                    <circle cx="120" cy="220" r="42" fill="none" stroke="rgba(251,146,60,0.25)" strokeWidth="1.5" strokeDasharray="6 6" />
+                  </motion.g>
+                  <text x="120" y="224" textAnchor="middle" fill="white" fontSize="13" fontWeight="700" fontFamily="monospace">$<tspan fontSize="10">{Math.round(data.roi.investment / 1000)}K</tspan></text>
+                  <text x="120" y="250" textAnchor="middle" fill="#fb923c" fontSize="9" fontWeight="600" fontFamily="monospace">INVESTMENT</text>
+                </motion.g>
+              </g>
+              <g>
+                <circle cx="360" cy="220" r="62" fill="#22c55e" opacity="0.08" filter="url(#glowSave)" />
+                <motion.g initial={{ scale: 0 }} animate={{ scale: 1 }} transition={{ type: 'spring', stiffness: 100, damping: 15, delay: 0.4 }}>
+                  <circle cx="360" cy="220" r="48" fill="url(#sphereSave)" filter="url(#glowSave)" />
+                  <motion.g animate={{ rotate: -360 }} transition={{ repeat: Infinity, duration: 12, ease: 'linear' }} style={{ transformOrigin: '360px 220px' }}>
+                    <circle cx="360" cy="220" r="52" fill="none" stroke="rgba(74,222,128,0.25)" strokeWidth="1.5" strokeDasharray="6 6" />
+                  </motion.g>
+                  <text x="360" y="224" textAnchor="middle" fill="white" fontSize="13" fontWeight="700" fontFamily="monospace">$<tspan fontSize="10">{Math.round(data.roi.monthlySavings / 1000)}K</tspan></text>
+                  <text x="360" y="250" textAnchor="middle" fill="#4ade80" fontSize="9" fontWeight="600" fontFamily="monospace">SAVINGS / MO</text>
+                </motion.g>
+              </g>
+              <g>
+                <circle cx="240" cy="60" r="72" fill="#06b6d4" opacity="0.08" filter="url(#glowEffic)" />
+                <motion.g initial={{ scale: 0 }} animate={{ scale: 1 }} transition={{ type: 'spring', stiffness: 100, damping: 15, delay: 0.6 }}>
+                  <circle cx="240" cy="60" r="55" fill="url(#sphereEffic)" filter="url(#glowEffic)" />
+                  <motion.g animate={{ rotate: 360 }} transition={{ repeat: Infinity, duration: 10, ease: 'linear' }} style={{ transformOrigin: '240px 60px' }}>
+                    <circle cx="240" cy="60" r="60" fill="none" stroke="rgba(103,232,249,0.25)" strokeWidth="1.5" strokeDasharray="6 6" />
+                  </motion.g>
+                  <text x="240" y="64" textAnchor="middle" fill="white" fontSize="14" fontWeight="700" fontFamily="monospace">{data.roi.percentage}<tspan fontSize="10">%</tspan></text>
+                  <text x="240" y="90" textAnchor="middle" fill="#67e8f9" fontSize="9" fontWeight="600" fontFamily="monospace">EFFICIENCY</text>
+                </motion.g>
+              </g>
+            </svg>
+          </div>
+          <div className="flex items-center justify-center gap-6 text-[9px] text-slate-500 font-mono mt-2 relative">
+            <span className="flex items-center gap-2"><span className="h-2.5 w-2.5 rounded-full bg-orange-500" /> ${(data.roi.investment / 1000).toFixed(0)}K Investment</span>
+            <span className="flex items-center gap-2"><span className="h-2.5 w-2.5 rounded-full bg-emerald-500" /> ${Math.round(data.roi.monthlySavings / 1000)}K/mo Savings</span>
+            <span className="flex items-center gap-2"><span className="h-2.5 w-2.5 rounded-full bg-cyan-500" /> {data.roi.percentage}% ROI</span>
+          </div>
+        </motion.div>
+
+        {/* === END PREMIUM BOARDROOM SECTIONS === */}
+
         {/* 1. Executive Verdict Hero */}
         <motion.div variants={item} className="rounded-xl border border-white/[0.06] bg-gradient-to-br from-slate-900 via-slate-900 to-slate-950 p-4 overflow-hidden relative">
           <div className="absolute -top-20 -right-20 h-48 w-48 rounded-full bg-emerald-500/[0.03] blur-3xl" />

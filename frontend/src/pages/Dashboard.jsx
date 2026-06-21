@@ -1,4 +1,5 @@
-﻿import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef } from 'react'
+import { Link } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import Layout from '../components/Layout'
 import StatusBadge from '../components/StatusBadge'
@@ -1315,64 +1316,194 @@ function PredictionWall() {
         <span className="text-amber-400/80">Recommend proactive mitigation in 3 service areas</span>
         <span className="text-slate-700">AI Confidence: 91%</span>
       </div>
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mt-4">
+        <EnterpriseRiskGalaxy selectedRisk={null} onSelectRisk={() => {}} />
+        <AISpotlightPanel selectedRisk={null} />
+      </div>
     </motion.div>
   )
 }
-function TopRisksLeaderboard() {
-  const risks = mockData.topRisksLeaderboard
-  const severityConfig = { critical: { color: '#ef4444', glow: 'rgba(239,68,68,0.3)', label: 'CRITICAL', ring: '#ef4444' }, high: { color: '#f97316', glow: 'rgba(249,115,22,0.25)', label: 'HIGH', ring: '#f97316' }, medium: { color: '#eab308', glow: 'rgba(234,179,8,0.2)', label: 'MEDIUM', ring: '#eab308' }, low: { color: '#22c55e', glow: 'rgba(34,197,94,0.15)', label: 'LOW', ring: '#22c55e' } }
+
+function EnterpriseRiskGalaxy({ selectedRisk, onSelectRisk }) {
+  const risks = mockData.topRisks || []
+  
   return (
-    <motion.div variants={item} className="rounded-xl bg-slate-950/40 backdrop-blur-[12px] border border-white/[0.06] p-4">
-      <div className="flex items-center justify-between mb-4">
-        <div className="flex items-center gap-3">
-          <div className="relative">
-            <svg className="h-5 w-5 text-red-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}><path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" /></svg>
-            <span className="absolute -top-1 -right-1 h-2 w-2 rounded-full bg-red-500 animate-ping" />
-          </div>
-          <h2 className="text-sm font-bold text-white tracking-wider">Threat Command Center</h2>
-          <StatusBadge status="critical" label="ACTIVE THREATS" />
+    <div className="relative overflow-hidden rounded-xl border border-white/[0.08] bg-slate-950/70 backdrop-blur-xl p-4 sm:p-5 h-[380px] flex flex-col justify-between group">
+      <div className="absolute inset-0 bg-grid-pattern opacity-5 pointer-events-none" />
+      <div className="flex items-center justify-between mb-2">
+        <div className="flex items-center gap-2">
+          <span className="relative flex h-2.5 w-2.5">
+            <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-cyan-500 opacity-75" />
+            <span className="relative inline-flex h-2.5 w-2.5 rounded-full bg-cyan-500" />
+          </span>
+          <h3 className="text-xs font-semibold text-white font-mono uppercase tracking-[0.15em]">Enterprise Risk Galaxy</h3>
         </div>
+        <span className="text-[10px] text-slate-500 font-mono">Interactive Gravity Node Map</span>
       </div>
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
-        {risks.slice(0, 4).map((r, idx) => {
-          const cfg = severityConfig[r.severity] || severityConfig.medium
-          const circumference = 2 * Math.PI * 22
+
+      <div className="relative flex-1 flex items-center justify-center overflow-hidden">
+        {/* Galaxy background grid / circles */}
+        <div className="absolute inset-0 flex items-center justify-center opacity-40 pointer-events-none">
+          <div className="absolute w-[100px] h-[100px] rounded-full border border-dashed border-cyan-500/10 animate-[spin_40s_linear_infinite]" />
+          <div className="absolute w-[200px] h-[200px] rounded-full border border-dashed border-cyan-500/10 animate-[spin_60s_linear_infinite]" style={{ animationDirection: 'reverse' }} />
+          <div className="absolute w-[300px] h-[300px] rounded-full border border-dashed border-cyan-500/5 animate-[spin_80s_linear_infinite]" />
+        </div>
+
+        {/* Central Core */}
+        <div className="relative z-10 flex flex-col items-center justify-center">
+          <div className="w-16 h-16 rounded-full bg-cyan-500/10 border border-cyan-500/30 flex items-center justify-center shadow-[0_0_30px_rgba(6,182,212,0.15)] animate-pulse">
+            <svg className="h-7 w-7 text-cyan-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M12 21a9.004 9.004 0 008.716-6.747M12 21a9.004 9.004 0 01-8.716-6.747M12 21c2.485 0 4.5-4.03 4.5-9S14.485 3 12 3m0 18c-2.485 0-4.5-4.03-4.5-9s2.015-9 4.5-9m0 0a9.004 9.004 0 018.716 2.253M12 3a9.004 9.004 0 00-8.716 2.253" />
+            </svg>
+          </div>
+          <span className="text-[8px] font-mono text-cyan-400/80 mt-1 uppercase tracking-widest">Orbit Core</span>
+        </div>
+
+        {/* Nodes */}
+        {risks.map((r, i) => {
+          const orbitIndex = i % 3;
+          const radius = [60, 95, 130][orbitIndex];
+          const angle = (i * (360 / risks.length) * Math.PI) / 180;
+          const x = radius * Math.cos(angle);
+          const y = radius * Math.sin(angle);
+
+          const isSelected = selectedRisk && selectedRisk.service === r.service;
+
+          const size = Math.max(16, Math.min(36, (r.impact / 202000) * 20 + 16));
+          const colorClass =
+            r.status === 'Critical' ? 'bg-red-500 text-red-400 border-red-400/30' :
+            r.status === 'Warning' ? 'bg-orange-500 text-orange-400 border-orange-400/30' :
+            r.status === 'Elevated' ? 'bg-amber-500 text-amber-400 border-amber-400/30' :
+            r.status === 'Monitor' ? 'bg-yellow-500 text-yellow-400 border-yellow-400/30' :
+            'bg-cyan-500 text-cyan-400 border-cyan-400/30';
+
+          const glowShadow =
+            r.status === 'Critical' ? 'shadow-[0_0_20px_rgba(239,68,68,0.5)]' :
+            r.status === 'Warning' ? 'shadow-[0_0_15px_rgba(249,115,22,0.4)]' :
+            r.status === 'Elevated' ? 'shadow-[0_0_15px_rgba(245,158,11,0.3)]' :
+            'shadow-[0_0_10px_rgba(6,182,212,0.2)]';
+
           return (
-            <motion.div key={r.id} variants={item} className="glass-card p-4 relative overflow-hidden group hover:border-white/[0.12] transition-all duration-300">
-              <div className="absolute inset-0 bg-gradient-to-br from-transparent via-transparent to-current opacity-[0.02] group-hover:opacity-[0.04] transition-opacity" />
-              <div className="flex items-center justify-between mb-3">
-                <div className="flex items-center gap-2">
-                  <span className={'h-2.5 w-2.5 rounded-full animate-pulse ' + (r.severity === 'critical' ? 'bg-red-500 shadow-[0_0_8px_rgba(239,68,68,0.5)]' : r.severity === 'high' ? 'bg-orange-500 shadow-[0_0_8px_rgba(249,115,22,0.4)]' : r.severity === 'medium' ? 'bg-yellow-500 shadow-[0_0_8px_rgba(234,179,8,0.3)]' : 'bg-green-500 shadow-[0_0_8px_rgba(34,197,94,0.2)]')} />
-                  <span className="text-[9px] font-mono font-bold tracking-wider" style={{ color: cfg.color }}>{cfg.label}</span>
-                </div>
-                <svg width="52" height="52" viewBox="0 0 52 52" className="-rotate-90">
-                  <circle cx="26" cy="26" r="22" fill="none" stroke="rgba(255,255,255,0.04)" strokeWidth="4" />
-                  <motion.circle cx="26" cy="26" r="22" fill="none" stroke={cfg.ring} strokeWidth="4" strokeLinecap="round"
-                    strokeDasharray={circumference} initial={{ strokeDashoffset: circumference }}
-                    animate={{ strokeDashoffset: circumference * (1 - r.score / 100) }} transition={{ duration: 1.2, delay: idx * 0.15, ease: 'easeOut' }} />
-                  <text x="26" y="30" textAnchor="middle" fill={cfg.ring} fontSize="14" fontWeight="700" fontFamily="monospace" transform="rotate(90 26 26)">{r.score}</text>
+            <motion.div
+              key={r.service}
+              className="absolute z-20 cursor-pointer"
+              style={{ x, y }}
+              animate={{
+                y: [y, y - 3, y + 3, y],
+                x: [x, x + 2, x - 2, x]
+              }}
+              transition={{
+                duration: 5 + i,
+                repeat: Infinity,
+                ease: 'easeInOut',
+              }}
+              onClick={() => onSelectRisk(r)}
+            >
+              <div className="relative group">
+                <svg className="absolute pointer-events-none origin-top-left" style={{
+                  width: Math.abs(x) || 1,
+                  height: Math.abs(y) || 1,
+                  left: x > 0 ? -x : 0,
+                  top: y > 0 ? -y : 0,
+                  transform: `scaleX(${x > 0 ? -1 : 1}) scaleY(${y > 0 ? -1 : 1})`,
+                  overflow: 'visible',
+                  zIndex: -1
+                }}>
+                  <line x1="0" y1="0" x2={Math.abs(x)} y2={Math.abs(y)} stroke={isSelected ? 'rgba(34,211,238,0.25)' : 'rgba(255,255,255,0.03)'} strokeWidth={isSelected ? 1.5 : 0.5} strokeDasharray={isSelected ? '3 3' : 'none'} />
                 </svg>
-              </div>
-              <p className="text-xs font-medium text-slate-200 leading-snug mb-2 line-clamp-2">{r.title}</p>
-              <div className="space-y-1.5">
-                <div className="flex items-center justify-between">
-                  <span className="text-[9px] text-slate-600 font-mono">Service</span>
-                  <span className="text-[9px] text-slate-400 font-mono">{r.service}</span>
+
+                <div
+                  className={`rounded-full ${colorClass} ${glowShadow} border flex items-center justify-center transition-all duration-300 ${
+                    isSelected ? 'ring-2 ring-cyan-400 scale-110' : 'hover:scale-105'
+                  }`}
+                  style={{ width: size, height: size }}
+                >
+                  <div className="w-1.5 h-1.5 rounded-full bg-white opacity-80" />
                 </div>
-                <div className="flex items-center justify-between">
-                  <span className="text-[9px] text-slate-600 font-mono">Exposure</span>
-                  <span className="text-[9px] text-red-400 font-mono font-semibold">{r.impact}</span>
-                </div>
-                <div className="flex items-center justify-between">
-                  <span className="text-[9px] text-slate-600 font-mono">Priority</span>
-                  <span className="text-[9px] text-cyan-400/80 font-mono">P{idx + 1}</span>
+
+                <div className="absolute top-full left-1/2 -translate-x-1/2 mt-1.5 whitespace-nowrap bg-slate-900/90 border border-white/[0.08] rounded-md px-1.5 py-0.5 pointer-events-none select-none">
+                  <span className="text-[8px] font-mono text-slate-300 font-semibold">{r.service}</span>
+                  <span className="text-[7px] font-mono text-slate-500 ml-1">({r.impactLabel})</span>
                 </div>
               </div>
             </motion.div>
           )
         })}
       </div>
-    </motion.div>
+
+      <div className="flex items-center gap-4 text-[9px] font-mono text-slate-500 border-t border-white/[0.04] pt-2">
+        <span className="text-[8px] uppercase tracking-wider font-semibold">Severity Keys:</span>
+        <span className="flex items-center gap-1"><span className="h-1.5 w-1.5 rounded-full bg-red-500" /> Critical</span>
+        <span className="flex items-center gap-1"><span className="h-1.5 w-1.5 rounded-full bg-orange-500" /> Warning</span>
+        <span className="flex items-center gap-1"><span className="h-1.5 w-1.5 rounded-full bg-amber-500" /> Elevated</span>
+        <span className="flex items-center gap-1"><span className="h-1.5 w-1.5 rounded-full bg-cyan-500" /> Stable</span>
+      </div>
+    </div>
+  )
+}
+
+function AISpotlightPanel({ selectedRisk }) {
+  const r = selectedRisk || mockData.topRisks[0]
+  
+  return (
+    <div className="rounded-xl border border-white/[0.08] bg-slate-950/80 p-4 sm:p-5 h-[380px] flex flex-col justify-between font-mono relative overflow-hidden group">
+      <div className="absolute inset-0 bg-grid-pattern opacity-10 pointer-events-none" />
+      <div className="absolute top-0 right-0 p-2 text-[8px] text-slate-700 select-none">ORBIT_TERMINAL_V4.2</div>
+      
+      <div className="space-y-4 relative z-10">
+        <div className="border-b border-white/[0.06] pb-2">
+          <div className="flex items-center justify-between text-[10px] text-cyan-400 font-semibold uppercase tracking-wider">
+            <span>[AI Strategic Diagnostics]</span>
+            <span className="text-[8px] text-slate-500">CONFIDENCE: {r.failureProbability}%</span>
+          </div>
+          <h3 className="text-sm font-bold text-slate-200 mt-1 uppercase tracking-tight">{r.service} - Incident Outage Threat</h3>
+        </div>
+
+        <div className="grid grid-cols-2 gap-3 text-[10px]">
+          <div className="bg-white/[0.02] border border-white/[0.04] p-2 rounded-lg">
+            <span className="text-slate-500 block uppercase text-[8px]">Projected Loss</span>
+            <span className="text-sm font-bold text-red-400 mt-0.5 block">{r.impactLabel}</span>
+            <span className="text-[7px] text-slate-600 block">SLA credits & billing exposure</span>
+          </div>
+          <div className="bg-white/[0.02] border border-white/[0.04] p-2 rounded-lg">
+            <span className="text-slate-500 block uppercase text-[8px]">Threat Priority</span>
+            <span className="text-sm font-bold text-orange-400 mt-0.5 block">LEVEL-0{r.rank}</span>
+            <span className="text-[7px] text-slate-600 block">Immediate action required</span>
+          </div>
+        </div>
+
+        <div className="space-y-1.5 text-[9px] bg-slate-800/20 p-2.5 rounded-lg border border-white/[0.04]">
+          <div className="flex items-start gap-1">
+            <span className="text-cyan-500 font-bold shrink-0">DIAGNOSTIC:</span>
+            <span className="text-slate-400">
+              High telemetry anomaly patterns matching historical cascading failures. Circuit breaker saturation in {r.service} likely to trigger downstream degradations.
+            </span>
+          </div>
+          <div className="flex items-start gap-1 mt-1.5">
+            <span className="text-emerald-500 font-bold shrink-0">REACTION:</span>
+            <span className="text-slate-300">
+              Scale cluster capacity, spin up additional worker nodes, and authorize cache memory expansions to contain blast radius.
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <div className="relative z-10 border-t border-white/[0.06] pt-3 flex items-center justify-between gap-2">
+        <div className="flex flex-col">
+          <span className="text-[7px] text-slate-600 uppercase">Recommendation Level</span>
+          <span className="text-[9px] font-bold text-emerald-400 uppercase">Containment Active</span>
+        </div>
+        <Link
+          to="/execution-planner"
+          className="inline-flex items-center gap-1.5 rounded-lg bg-gradient-to-r from-cyan-500 to-blue-600 px-3.5 py-2 text-[10px] font-bold text-white hover:shadow-lg hover:shadow-cyan-500/20 transition-all hover:scale-[1.02]"
+        >
+          EXECUTE MITIGATION
+          <svg className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
+          </svg>
+        </Link>
+      </div>
+    </div>
   )
 }
 
@@ -1647,76 +1778,28 @@ function PredictionWallExpanded() {
               <p className="text-[9px] text-slate-600 mt-1">{p.description}</p>
               <div className="flex items-center gap-2 mt-2">
                 <span className="h-1 w-1 rounded-full" style={{ backgroundColor: p.trend === 'declining' ? '#ef4444' : p.trend === 'stable' ? '#22d3ee' : '#34d399' }} />
-                <span className="text-[8px] font-mono text-slate-700">{String(p.trend ?? '').charAt(0).toUpperCase() + String(p.trend ?? '').slice(1)}</span>
+<span className="text-[8px] font-mono text-slate-700">{String(p.trend ?? '').charAt(0).toUpperCase() + String(p.trend ?? '').slice(1)}</span>
               </div>
               <div className="flex flex-wrap gap-1 mt-2 pt-2 border-t border-white/[0.03]">{p.factors.map((f, fi) => (<span key={fi} className="rounded-md bg-white/[0.02] border border-white/[0.03] px-1.5 py-0.5 text-[7px] font-mono text-slate-700">{f}</span>))}</div>
             </motion.div>
           )
         })}
       </div>
-      <div className="mt-3 pt-3 border-t border-white/[0.04] flex items-center justify-between text-[10px] font-mono">
-        <span className="text-slate-500">Risk Direction: <span className="text-red-400">Increasing</span></span>
-        <span className="text-amber-400/80">Recommend proactive mitigation in 3 service areas</span>
-        <span className="text-slate-700">AI Confidence: 91%</span>
-      </div>
     </motion.div>
   )
 }
+
 function TopRisksLeaderboardExpanded() {
-  const risks = mockData.topRisksLeaderboard
-  const severityConfig = { critical: { color: '#ef4444', glow: 'rgba(239,68,68,0.3)', label: 'CRITICAL', ring: '#ef4444' }, high: { color: '#f97316', glow: 'rgba(249,115,22,0.25)', label: 'HIGH', ring: '#f97316' }, medium: { color: '#eab308', glow: 'rgba(234,179,8,0.2)', label: 'MEDIUM', ring: '#eab308' }, low: { color: '#22c55e', glow: 'rgba(34,197,94,0.15)', label: 'LOW', ring: '#22c55e' } }
+  const [selectedRisk, setSelectedRisk] = useState(mockData.topRisks[0])
   return (
-    <motion.div variants={item} className="rounded-xl bg-slate-950/40 backdrop-blur-[12px] border border-white/[0.06] p-4">
-      <div className="flex items-center justify-between mb-4">
-        <div className="flex items-center gap-3">
-          <div className="relative">
-            <svg className="h-5 w-5 text-red-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}><path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" /></svg>
-            <span className="absolute -top-1 -right-1 h-2 w-2 rounded-full bg-red-500 animate-ping" />
-          </div>
-          <h2 className="text-base font-bold text-white tracking-wider">Threat Command Center</h2>
-          <StatusBadge status="critical" label="ACTIVE THREATS" />
-        </div>
+    <div className="grid grid-cols-1 lg:grid-cols-5 gap-4">
+      <div className="lg:col-span-3">
+        <EnterpriseRiskGalaxy selectedRisk={selectedRisk} onSelectRisk={setSelectedRisk} />
       </div>
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
-        {risks.map((r, idx) => {
-          const cfg = severityConfig[r.severity] || severityConfig.medium
-          const circumference = 2 * Math.PI * 22
-          return (
-            <motion.div key={r.id} variants={item} className="glass-card p-4 relative overflow-hidden group hover:border-white/[0.12] transition-all duration-300">
-              <div className="absolute inset-0 bg-gradient-to-br from-transparent via-transparent to-current opacity-[0.02] group-hover:opacity-[0.04] transition-opacity" />
-              <div className="flex items-center justify-between mb-3">
-                <div className="flex items-center gap-2">
-                  <span className={'h-2.5 w-2.5 rounded-full animate-pulse ' + (r.severity === 'critical' ? 'bg-red-500 shadow-[0_0_8px_rgba(239,68,68,0.5)]' : r.severity === 'high' ? 'bg-orange-500 shadow-[0_0_8px_rgba(249,115,22,0.4)]' : r.severity === 'medium' ? 'bg-yellow-500 shadow-[0_0_8px_rgba(234,179,8,0.3)]' : 'bg-green-500 shadow-[0_0_8px_rgba(34,197,94,0.2)]')} />
-                  <span className="text-[9px] font-mono font-bold tracking-wider" style={{ color: cfg.color }}>{cfg.label}</span>
-                </div>
-                <svg width="52" height="52" viewBox="0 0 52 52" className="-rotate-90">
-                  <circle cx="26" cy="26" r="22" fill="none" stroke="rgba(255,255,255,0.04)" strokeWidth="4" />
-                  <motion.circle cx="26" cy="26" r="22" fill="none" stroke={cfg.ring} strokeWidth="4" strokeLinecap="round"
-                    strokeDasharray={circumference} initial={{ strokeDashoffset: circumference }}
-                    animate={{ strokeDashoffset: circumference * (1 - r.score / 100) }} transition={{ duration: 1.2, delay: idx * 0.15, ease: 'easeOut' }} />
-                  <text x="26" y="30" textAnchor="middle" fill={cfg.ring} fontSize="14" fontWeight="700" fontFamily="monospace" transform="rotate(90 26 26)">{r.score}</text>
-                </svg>
-              </div>
-              <p className="text-xs font-medium text-slate-200 leading-snug mb-2 line-clamp-2">{r.title}</p>
-              <div className="space-y-1.5">
-                <div className="flex items-center justify-between">
-                  <span className="text-[9px] text-slate-600 font-mono">Service</span>
-                  <span className="text-[9px] text-slate-400 font-mono">{r.service}</span>
-                </div>
-                <div className="flex items-center justify-between">
-                  <span className="text-[9px] text-slate-600 font-mono">Exposure</span>
-                  <span className="text-[9px] text-red-400 font-mono font-semibold">{r.impact}</span>
-                </div>
-                <div className="flex items-center justify-between">
-                  <span className="text-[9px] text-slate-600 font-mono">Priority</span>
-                  <span className="text-[9px] text-cyan-400/80 font-mono">P{idx + 1}</span>
-                </div>
-              </div>
-            </motion.div>
-          )
-        })}
+      <div className="lg:col-span-2">
+        <AISpotlightPanel selectedRisk={selectedRisk} />
       </div>
-    </motion.div>
+    </div>
   )
 }
 
@@ -1987,87 +2070,389 @@ function KpiRibbon() {
   )
 }
 
+function AnimatedCounter({ value, suffix = '', prefix = '', delay = 0, decimals = 2 }) {
+  const count = useCounter(value, delay, 1500, false)
+  const displayVal = typeof count === 'number' && !Number.isInteger(count) && decimals > 0 ? count.toFixed(decimals) : typeof count === 'number' ? count : count
+  return <>{prefix}{displayVal}{suffix}</>
+}
+
+function ExecutiveIntelligenceHero() {
+  const metrics = [
+    { label: 'Revenue Protected', value: 2.4, prefix: '$', suffix: 'M', color: 'text-emerald-400', decimals: 1, ref: mockData.executiveSummaryExpanded.revenueProtected,
+      icon: 'M2.25 18.75a60.07 60.07 0 0115.797 2.101c.727.198 1.453-.342 1.453-1.096V18.75M3.75 4.5v.75A.75.75 0 013 6h-.75m0 0v-.375c0-.621.504-1.125 1.125-1.125H20.25M2.25 6v9m18-10.5v.75c0 .414.336.75.75.75h.75m-1.5-1.5h.375c.621 0 1.125.504 1.125 1.125v9.75c0 .621-.504 1.125-1.125 1.125h-.375m1.5-1.5H21a.75.75 0 00-.75.75v.75m0 0H3.75m0 0h-.375a1.125 1.125 0 01-1.125-1.125V15m1.5 1.5v-.75A.75.75 0 003 15h-.75M15 10.5a3 3 0 11-6 0 3 3 0 016 0zm3 0h.008v.008H18V10.5zm-12 0h.008v.008H6V10.5z',
+      bgGrad: 'from-emerald-500/10 via-emerald-500/5 to-transparent' },
+    { label: 'Services At Risk', value: 3, prefix: '', suffix: '', color: 'text-red-400', decimals: 0, ref: mockData.executiveInsights.length,
+      icon: 'M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z',
+      bgGrad: 'from-red-500/10 via-red-500/5 to-transparent' },
+    { label: 'AI Confidence', value: 96.8, prefix: '', suffix: '%', color: 'text-cyan-400', decimals: 1, ref: mockData.executiveSummaryExpanded.aiAccuracy,
+      icon: 'M9 12.75L11.25 15 15 9.75m-3-7.036A11.959 11.959 0 013.598 6 11.99 11.99 0 003 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285z',
+      bgGrad: 'from-cyan-500/10 via-cyan-500/5 to-transparent' },
+    { label: 'Predicted Incident Cost', value: 288, prefix: '$', suffix: 'K', color: 'text-orange-400', decimals: 0, ref: mockData.costAnalysis.riskMitigationSavings,
+      icon: 'M2.25 18.75a60.07 60.07 0 0115.797 2.101c.727.198 1.453-.342 1.453-1.096V18.75M3.75 4.5v.75A.75.75 0 013 6h-.75m0 0v-.375c0-.621.504-1.125 1.125-1.125H20.25M2.25 6v9m18-10.5v.75c0 .414.336.75.75.75h.75m-1.5-1.5h.375c.621 0 1.125.504 1.125 1.125v9.75c0 .621-.504 1.125-1.125 1.125h-.375m1.5-1.5H21a.75.75 0 00-.75.75v.75m0 0H3.75m0 0h-.375a1.125 1.125 0 01-1.125-1.125V15m1.5 1.5v-.75A.75.75 0 003 15h-.75M15 10.5a3 3 0 11-6 0 3 3 0 016 0zm3 0h.008v.008H18V10.5zm-12 0h.008v.008H6V10.5z',
+      bgGrad: 'from-orange-500/10 via-orange-500/5 to-transparent' },
+    { label: 'MTTR Reduction', value: 18.7, prefix: '', suffix: 'm', color: 'text-violet-400', decimals: 1, ref: mockData.executiveSummaryExpanded.meanTimeToResolve,
+      icon: 'M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0zm-4.5 4.5h.008v.008H12v-.008z',
+      bgGrad: 'from-violet-500/10 via-violet-500/5 to-transparent' },
+    { label: 'Risk Forecast', value: 72, prefix: '', suffix: '', color: 'text-amber-400', decimals: 0, ref: mockData.riskTrends.weekOverWeek.current,
+      icon: 'M3.75 13.5l10.5-11.25L12 10.5h8.25L9.75 21.75 12 13.5H3.75z',
+      bgGrad: 'from-amber-500/10 via-amber-500/5 to-transparent' },
+  ]
+  return (
+    <motion.div variants={item} className="relative overflow-hidden rounded-2xl border border-white/[0.08] bg-slate-900/30 backdrop-blur-2xl p-3 sm:p-4 md:p-6 shadow-2xl">
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,rgba(6,182,212,0.08),transparent_70%)]" />
+      <div className="relative z-10">
+        <div className="flex items-center justify-between mb-3 sm:mb-4 flex-wrap gap-2">
+          <div>
+            <span className="text-[9px] sm:text-[10px] font-mono text-cyan-400 uppercase tracking-[0.2em] font-semibold">Orbit Intelligence Suite</span>
+            <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold text-white tracking-tight mt-1">Executive Intelligence Command Center</h1>
+          </div>
+          <div className="flex items-center gap-2">
+            <span className="relative flex h-2 w-2">
+              <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-500 opacity-75" />
+              <span className="relative inline-flex h-2 w-2 rounded-full bg-emerald-500" />
+            </span>
+            <span className="text-[9px] sm:text-[10px] font-mono text-emerald-400 font-semibold tracking-wider">LIVE</span>
+          </div>
+        </div>
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2 sm:gap-3">
+          {metrics.map((m, idx) => (
+            <motion.div
+              key={m.label}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: idx * 0.08, duration: 0.5, ease: 'easeOut' }}
+              className="relative overflow-hidden rounded-xl border border-white/[0.06] bg-slate-900/50 backdrop-blur-xl p-3 sm:p-4 group hover:border-white/[0.15] hover:shadow-lg hover:shadow-white/5 transition-all duration-300"
+            >
+              <div className={`absolute inset-0 bg-gradient-to-br ${m.bgGrad} opacity-40 group-hover:opacity-60 transition-opacity duration-500`} />
+              <div className="relative z-10">
+                <div className="flex items-center gap-1.5 sm:gap-2 mb-1.5 sm:mb-2">
+                  <svg className={`h-3 w-3 sm:h-3.5 sm:w-3.5 ${m.color}`} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d={m.icon} />
+                  </svg>
+                  <span className="text-[8px] sm:text-[9px] font-mono text-slate-500 uppercase tracking-wider truncate">{m.label}</span>
+                </div>
+                <div className={`text-xl sm:text-2xl md:text-3xl lg:text-4xl font-extrabold font-mono tracking-tight ${m.color}`}>
+                  <AnimatedCounter value={m.value} prefix={m.prefix} suffix={m.suffix} delay={idx * 80} decimals={m.decimals === 0 ? 0 : 1} />
+                </div>
+                <div className="mt-1 pt-1 border-t border-white/[0.03] flex items-center justify-between">
+                  <span className="text-[7px] sm:text-[8px] font-mono text-slate-700">{m.ref}</span>
+                </div>
+              </div>
+            </motion.div>
+          ))}
+        </div>
+      </div>
+    </motion.div>
+  )
+}
+
+function EnterpriseRiskGalaxySVG() {
+  const [selectedIdx, setSelectedIdx] = useState(null)
+  const risks = mockData.topRisks || []
+  const leaderboard = mockData.topRisksLeaderboard || []
+  const maxImpact = Math.max(...risks.map(r => r.impact), 1)
+  const w = 800; const h = 300
+  const cx = w / 2; const cy = h / 2
+  const radius = 110
+  const positions = risks.map((_, i) => {
+    const angle = (i / risks.length) * Math.PI * 2 - Math.PI / 2
+    return { x: cx + radius * Math.cos(angle), y: cy + radius * Math.sin(angle) }
+  })
+  const connections = [[0,1],[0,2],[1,5],[2,5],[3,0],[3,4]]
+  const getSev = (s) => s === 'Critical' ? { fill: '#ef4444', glow: 'rgba(239,68,68,0.5)', cls: 'bg-red-500' } : s === 'Warning' ? { fill: '#f97316', glow: 'rgba(249,115,22,0.4)', cls: 'bg-orange-500' } : s === 'Elevated' ? { fill: '#eab308', glow: 'rgba(234,179,8,0.3)', cls: 'bg-amber-500' } : { fill: '#22d3ee', glow: 'rgba(34,211,238,0.2)', cls: 'bg-cyan-500' }
+  return (
+    <motion.div variants={item} className="relative overflow-hidden rounded-2xl border border-white/[0.06] bg-slate-900/30 backdrop-blur-xl p-3 sm:p-4">
+      <div className="flex items-center justify-between mb-2">
+        <div className="flex items-center gap-2">
+          <span className="relative flex h-2.5 w-2.5">
+            <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-cyan-500 opacity-75" />
+            <span className="relative inline-flex h-2.5 w-2.5 rounded-full bg-cyan-500" />
+          </span>
+          <h2 className="text-[11px] font-semibold text-slate-400 uppercase tracking-[0.15em] font-mono">Enterprise Risk Galaxy</h2>
+        </div>
+        <span className="text-[8px] sm:text-[9px] font-mono text-slate-600">Risk Network Topology</span>
+      </div>
+      <div className="relative w-full overflow-hidden rounded-xl bg-[radial-gradient(ellipse_at_center,#0f172a_0%,#020617_100%)]" style={{ height: 300 }}>
+        <svg className="absolute inset-0 w-full h-full opacity-[0.08]" viewBox={`0 0 ${w} ${h}`}>
+          <defs>
+            <pattern id="rg-grid" width="40" height="40" patternUnits="userSpaceOnUse">
+              <path d="M 40 0 L 0 0 0 40" fill="none" stroke="rgba(6,182,212,0.15)" strokeWidth="0.5" />
+            </pattern>
+          </defs>
+          <rect width={w} height={h} fill="url(#rg-grid)" />
+        </svg>
+        <div className="absolute inset-0 flex items-center justify-center opacity-30 pointer-events-none">
+          <div className="w-[120px] h-[120px] rounded-full border border-dashed border-cyan-500/10 animate-[spin_40s_linear_infinite]" />
+          <div className="absolute w-[220px] h-[220px] rounded-full border border-dashed border-cyan-500/10 animate-[spin_60s_linear_infinite]" style={{ animationDirection: 'reverse' }} />
+        </div>
+        <svg className="absolute inset-0 w-full h-full" viewBox={`0 0 ${w} ${h}`} style={{ pointerEvents: 'none' }}>
+          {connections.map((conn, i) => {
+            const from = positions[conn[0]]; const to = positions[conn[1]]
+            const hl = selectedIdx !== null && (conn[0] === selectedIdx || conn[1] === selectedIdx)
+            return <motion.line key={i} x1={from.x} y1={from.y} x2={to.x} y2={to.y} stroke={hl ? 'rgba(34,211,238,0.3)' : 'rgba(255,255,255,0.04)'} strokeWidth={hl ? 1.5 : 0.5} strokeDasharray={hl ? '4 3' : 'none'} initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.3 + i * 0.04 }} />
+          })}
+        </svg>
+        {risks.map((r, i) => {
+          const pos = positions[i]; const sev = getSev(r.status)
+          const sz = 14 + (r.impact / maxImpact) * 28; const hl = selectedIdx === i
+          return (
+            <motion.div key={r.service} className="absolute cursor-pointer z-10" style={{ left: pos.x - sz / 2, top: pos.y - sz / 2 }}
+              initial={{ opacity: 0, scale: 0 }} animate={{ opacity: 1, scale: 1 }}
+              transition={{ delay: 0.2 + i * 0.08, type: 'spring', stiffness: 150, damping: 12 }}
+              whileHover={{ scale: 1.15 }} onClick={() => setSelectedIdx(hl ? null : i)}
+            >
+              <div className="absolute rounded-full animate-pulse" style={{ width: sz * 2.5, height: sz * 2.5, left: -sz * 0.75, top: -sz * 0.75, background: `radial-gradient(circle, ${sev.glow}, transparent 70%)`, opacity: hl ? 0.8 : 0.25 }} />
+              <div className={`rounded-full border-2 flex items-center justify-center ${hl ? 'ring-2 ring-cyan-400 ring-offset-2 ring-offset-slate-950' : ''}`}
+                style={{ width: sz, height: sz, backgroundColor: sev.fill + '25', borderColor: sev.fill + '50', boxShadow: hl ? `0 0 ${sz}px ${sev.glow}` : `0 0 10px ${sev.glow}` }}>
+                <div className="rounded-full bg-white/70" style={{ width: sz * 0.3, height: sz * 0.3 }} />
+              </div>
+              <div className="absolute whitespace-nowrap pointer-events-none" style={{ left: '50%', transform: 'translateX(-50%)', top: sz + 3 }}>
+                <span className="text-[7px] sm:text-[8px] font-mono text-slate-400 font-semibold">{r.service}</span>
+                <span className="text-[6px] sm:text-[7px] font-mono text-slate-600 ml-0.5">{r.impactLabel}</span>
+              </div>
+            </motion.div>
+          )
+        })}
+      </div>
+      <AnimatePresence>
+        {selectedIdx !== null && risks[selectedIdx] && (
+          <motion.div initial={{ opacity: 0, y: -8, height: 0 }} animate={{ opacity: 1, y: 0, height: 'auto' }} exit={{ opacity: 0, y: -8, height: 0 }} transition={{ duration: 0.3 }} className="mt-2 rounded-xl border border-cyan-500/20 bg-cyan-500/[0.04] p-3 overflow-hidden">
+            <div className="flex items-start justify-between gap-3 flex-wrap">
+              <div className="flex-1 min-w-0">
+                <div className="flex items-center gap-2 mb-1 flex-wrap">
+                  <div className={`h-2 w-2 rounded-full ${getSev(risks[selectedIdx].status).cls}`} />
+                  <span className="text-xs font-semibold text-slate-200">{risks[selectedIdx].service}</span>
+                  <StatusBadge status={risks[selectedIdx].status === 'Critical' ? 'critical' : risks[selectedIdx].status === 'Warning' ? 'warning' : 'info'} label={risks[selectedIdx].status} />
+                  <span className="text-[8px] font-mono text-slate-700 ml-auto">Risk Score: {risks[selectedIdx].riskScore}</span>
+                </div>
+                <p className="text-[10px] text-slate-400 mb-1.5">{leaderboard[selectedIdx]?.title || `${risks[selectedIdx].service} - Risk assessment`}</p>
+                <div className="flex items-center gap-3 text-[9px] font-mono flex-wrap">
+                  <span className="text-red-400">Impact: {risks[selectedIdx].impactLabel}</span>
+                  <span className="text-amber-400">Failure Probability: {risks[selectedIdx].failureProbability}%</span>
+                </div>
+                <p className="text-[9px] text-slate-500 mt-1">Recommended: {leaderboard[selectedIdx]?.title?.replace(/^.*? /, '').replace(/ .*$/, '') || 'Mitigate risk'} - {risks[selectedIdx].impactLabel} exposure</p>
+              </div>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+      <div className="flex items-center gap-3 mt-2 pt-2 border-t border-white/[0.04] text-[8px] font-mono text-slate-700 flex-wrap">
+        <span className="text-[8px] uppercase tracking-wider font-semibold">Severity:</span>
+        <span className="flex items-center gap-1"><span className="h-1.5 w-1.5 rounded-full bg-red-500" />Critical</span>
+        <span className="flex items-center gap-1"><span className="h-1.5 w-1.5 rounded-full bg-orange-500" />Warning</span>
+        <span className="flex items-center gap-1"><span className="h-1.5 w-1.5 rounded-full bg-amber-500" />Elevated</span>
+        <span className="flex items-center gap-1"><span className="h-1.5 w-1.5 rounded-full bg-cyan-500" />Stable</span>
+        <span className="ml-auto text-[7px] text-slate-700">Click node for details</span>
+      </div>
+    </motion.div>
+  )
+}
+
+function AIStrategicInsightsPanel() {
+  const fullText = mockData.dailyBriefing.body
+  const [textIdx, setTextIdx] = useState(0)
+  const [cursor, setCursor] = useState(true)
+  const predictions = mockData.aiPredictions || []
+  const topInsight = mockData.executiveInsights[0] || {}
+  useEffect(() => {
+    const t = setTimeout(() => {
+      const i = setInterval(() => { setTextIdx(p => p >= fullText.length ? p : p + 1) }, 18)
+      return () => clearInterval(i)
+    }, 400)
+    return () => clearTimeout(t)
+  }, [fullText])
+  useEffect(() => { const i = setInterval(() => setCursor(c => !c), 530); return () => clearInterval(i) }, [])
+  const trendColors = { declining: '#ef4444', stable: '#22d3ee', improving: '#34d399' }
+  return (
+    <motion.div variants={item} className="relative overflow-hidden rounded-2xl border border-white/[0.06] bg-slate-950/90 backdrop-blur-xl p-3 sm:p-4 font-mono">
+      <div className="absolute inset-0 bg-[linear-gradient(rgba(34,197,94,0.025)_1px,transparent_1px),linear-gradient(90deg,rgba(34,197,94,0.025)_1px,transparent_1px)] bg-[size:20px_20px]" />
+      <div className="relative z-10">
+        <div className="flex items-center justify-between mb-3 border-b border-green-500/10 pb-2 flex-wrap gap-1">
+          <div className="flex items-center gap-2">
+            <span className="h-2 w-2 rounded-full bg-green-500 animate-pulse" />
+            <span className="text-[9px] sm:text-[10px] text-green-500 font-semibold uppercase tracking-wider">ORBIT_AI_TERMINAL v4.2.1</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <span className="text-[8px] text-green-700">CONFIDENCE: {mockData.dailyBriefing.confidence}%</span>
+            <span className="text-[8px] text-slate-700">|</span>
+            <span className="text-[8px] text-slate-600">{mockData.refreshIntervals.predictions}</span>
+          </div>
+        </div>
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-3 sm:gap-4">
+          <div className="space-y-2">
+            <div className="flex items-center gap-1.5 mb-1.5">
+              <span className="text-[9px] text-green-500 font-bold">$</span>
+              <span className="text-[9px] sm:text-[10px] text-green-400 font-semibold uppercase tracking-wider">STRATEGIC FORECAST</span>
+            </div>
+            <div className="rounded-lg bg-green-950/30 border border-green-500/10 p-2.5 sm:p-3 min-h-[90px]">
+              <p className="text-[10px] sm:text-[11px] text-green-400/90 leading-relaxed">
+                {fullText.slice(0, textIdx)}
+                {cursor && textIdx < fullText.length && <span className="text-green-500 animate-pulse">_</span>}
+                {textIdx >= fullText.length && <span className={`text-green-500 ${cursor ? 'opacity-100' : 'opacity-0'} transition-opacity`}>_</span>}
+              </p>
+            </div>
+            <div className="flex items-center gap-2 text-[7px] sm:text-[8px] text-green-700 flex-wrap">
+              <span>AI_GENERATED</span>
+              <span className="text-slate-700">|</span>
+              <span>ANALYZED: {mockData.dailyBriefing.analyzed}</span>
+              <span className="text-slate-700">|</span>
+              <span>ACCURACY: {mockData.dailyBriefing.accuracy}</span>
+            </div>
+          </div>
+          <div className="space-y-2">
+            <div className="flex items-center gap-1.5 mb-1.5">
+              <span className="text-[9px] text-green-500 font-bold">#</span>
+              <span className="text-[9px] sm:text-[10px] text-green-400 font-semibold uppercase tracking-wider">PREDICTIVE ANALYTICS</span>
+            </div>
+            <div className="grid grid-cols-2 gap-1.5 sm:gap-2">
+              {predictions.slice(0, 4).map((p, idx) => {
+                const pVal = parseInt(p.value) || 0
+                const circumference = 2 * Math.PI * 10
+                const pct = Math.min(pVal, 100)
+                return (
+                  <div key={p.title} className="rounded-lg bg-green-950/30 border border-green-500/10 p-2 sm:p-2.5 group hover:bg-green-950/40 transition-colors">
+                    <div className="flex items-center justify-between mb-1">
+                      <span className="text-[7px] sm:text-[8px] text-green-600 uppercase tracking-wider truncate">{p.title}</span>
+                      <svg width="24" height="24" viewBox="0 0 24 24" className="shrink-0 -rotate-90">
+                        <circle cx="12" cy="12" r="10" fill="none" stroke="rgba(34,197,94,0.12)" strokeWidth="2.5" />
+                        <motion.circle cx="12" cy="12" r="10" fill="none" stroke={p.color || '#22d3ee'} strokeWidth="2.5" strokeLinecap="round"
+                          strokeDasharray={circumference}
+                          initial={{ strokeDashoffset: circumference }}
+                          animate={{ strokeDashoffset: circumference * (1 - pct / 100) }}
+                          transition={{ duration: 1.2, delay: idx * 0.1, ease: 'easeOut' }} />
+                        <text x="12" y="15" textAnchor="middle" fill={p.color || '#22d3ee'} fontSize="7" fontWeight="700" fontFamily="monospace" transform="rotate(90 12 12)">{pVal}%</text>
+                      </svg>
+                    </div>
+                    <div className={`text-[10px] sm:text-xs font-bold ${p.textColor || 'text-green-400'}`}>{p.value}{p.unit}</div>
+                    <div className="flex flex-wrap gap-1 mt-1">
+                      {p.factors.slice(0, 2).map((f, fi) => (
+                        <span key={fi} className="text-[6px] sm:text-[7px] text-green-700 bg-green-950/50 px-1 py-0.5 rounded">{f}</span>
+                      ))}
+                    </div>
+                    <div className="flex items-center gap-1 mt-1">
+                      <span className="h-1 w-1 rounded-full" style={{ backgroundColor: trendColors[p.trend] || '#64748b' }} />
+                      <span className="text-[6px] text-green-700">{String(p.trend ?? '').charAt(0).toUpperCase() + String(p.trend ?? '').slice(1)}</span>
+                    </div>
+                  </div>
+                )
+              })}
+            </div>
+          </div>
+        </div>
+        {topInsight.title && (
+          <div className="mt-3 pt-3 border-t border-green-500/10">
+            <div className="rounded-lg bg-red-950/20 border border-red-500/20 p-2.5 sm:p-3">
+              <div className="flex items-center gap-2 mb-1.5">
+                <span className="h-2 w-2 rounded-full bg-red-500 animate-ping" />
+                <span className="text-[9px] text-red-400 font-bold uppercase tracking-wider">MOST LIKELY OUTAGE</span>
+              </div>
+              <p className="text-[10px] sm:text-[11px] text-slate-300 mb-2">{topInsight.title}</p>
+              <div className="flex items-center gap-3 sm:gap-4 text-[8px] sm:text-[9px] font-mono flex-wrap">
+                <span className="text-red-400">Projected Loss: {topInsight.impact}</span>
+                <span className="text-emerald-400">Confidence: {topInsight.confidence}</span>
+              </div>
+              <p className="text-[8px] sm:text-[9px] text-amber-400/80 mt-1.5">Recommended Action: {topInsight.action}</p>
+            </div>
+          </div>
+        )}
+      </div>
+    </motion.div>
+  )
+}
+
 export default function Dashboard() {
   const [mounted, setMounted] = useState(false)
   useEffect(() => { setMounted(true) }, [])
   if (!mounted) return <DashboardSkeleton />
   return (
-    <div className="min-h-screen bg-slate-950">
-      <div className="fixed inset-0 pointer-events-none">
-        <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.015)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.015)_1px,transparent_1px)] bg-[size:40px_40px]" />
-      </div>
-      <motion.div initial="hidden" animate="show" variants={container} className="relative z-10 max-w-[2000px] mx-auto px-2 sm:px-4 lg:px-6 py-2 sm:py-3 lg:py-4 space-y-1 sm:space-y-1.5">
-        <ExecutiveCommandHeader />
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-1.5 sm:gap-2">
-          {[
-            { label: 'Total Incidents', value: 1423, suffix: '', prefix: '~', color: 'text-red-400', dot: 'bg-red-500', trend: 'up', pct: 3.7, description: 'Across all service tiers', sparkData: [54,82,73,91,68,87,78,95,84,92] },
-            { label: 'Uptime', value: 99.97, suffix: '%', prefix: '', color: 'text-emerald-400', dot: 'bg-emerald-500', trend: 'up', pct: 0.02, description: 'Current uptime across services', sparkData: [99.95,99.96,99.97,99.96,99.97,99.98,99.97,99.97,99.96,99.97] },
-            { label: 'Active Alerts', value: 342, suffix: '', prefix: '', color: 'text-amber-400', dot: 'bg-amber-500', trend: 'down', pct: 14.2, description: 'Requires immediate attention', sparkData: [45,52,38,61,44,49,33,41,36,29] },
-            { label: 'SLA Compliance', value: 98.7, suffix: '%', prefix: '', color: 'text-cyan-400', dot: 'bg-cyan-500', trend: 'up', pct: 0.8, description: 'Against contractual targets', sparkData: [97.2,97.8,98.1,98.4,98.6,98.5,98.7,98.7,98.6,98.7] },
-            { label: 'Deployment Freq', value: '14', suffix: '/d', prefix: '', color: 'text-violet-400', dot: 'bg-violet-500', trend: 'up', pct: 7.5, description: 'Average daily deployment count', sparkData: [10,12,11,13,14,13,15,14,14,14] },
-            { label: 'Mean MTTR', value: '24', suffix: 'm', prefix: '', color: 'text-rose-400', dot: 'bg-rose-500', trend: 'down', pct: 12.5, description: 'Average resolution cycle time', sparkData: [35,32,30,28,26,25,25,24,24,24] },
-          ].map((kpi, idx) => (
-            <motion.div key={kpi.label} variants={item} className="rounded-xl border border-white/[0.05] bg-gradient-to-br from-slate-900/90 to-slate-900/30 p-3 sm:p-4 hover:border-white/[0.08] transition-all duration-300 group">
-              <div className="flex items-center gap-1.5 mb-2"><span className={`h-2 w-2 rounded-full ${kpi.dot} ${kpi.label === 'Active Alerts' ? 'animate-ping' : ''} ${kpi.trend === 'up' && kpi.label === 'Total Incidents' ? 'animate-ping' : ''}`} /><span className="text-[10px] font-mono text-slate-500 uppercase tracking-wider">{kpi.label}</span></div>
-              <div className="flex items-center justify-between gap-2">
-                <div className="min-w-0"><div className={`text-xl sm:text-2xl font-bold font-mono ${kpi.color} truncate`}>{kpi.prefix}{kpi.value}{kpi.suffix}</div></div>
-                <MiniSparkline data={kpi.sparkData} color={kpi.color.includes('red') ? '#ef4444' : kpi.color.includes('emerald') ? '#34d399' : kpi.color.includes('amber') ? '#f59e0b' : kpi.color.includes('cyan') ? '#22d3ee' : kpi.color.includes('violet') ? '#8b5cf6' : '#f43f5e'} width={72} height={20} />
-              </div>
-              <div className="flex items-center gap-1.5 mt-1"><span className={`text-[10px] font-mono ${kpi.trend === 'up' ? (kpi.label === 'Total Incidents' || kpi.label === 'Active Alerts' ? 'text-red-400' : 'text-emerald-400') : 'text-emerald-400'}`}>{kpi.trend === 'up' ? '\u2191' : '\u2193'} {kpi.pct}%</span></div>
-              <p className="text-[9px] text-slate-600 mt-1">{kpi.description}</p>
-              <p className="text-[8px] text-slate-700 mt-0.5">{kpi.trend === 'up' ? (kpi.label === 'Total Incidents' || kpi.label === 'Active Alerts' ? 'Needs attention' : 'Positive trend') : 'Improving'}</p>
-            </motion.div>
-          ))}
+    <Layout>
+      <motion.div initial="hidden" animate="show" variants={container} className="relative z-10 max-w-[2000px] mx-auto space-y-4">
+        <ExecutiveIntelligenceHero />
+
+        <EnterpriseRiskGalaxySVG />
+
+        <AIStrategicInsightsPanel />
+
+        {/* Executive Intelligence Command Center Header & Metrics */}
+        <div className="rounded-xl border border-white/[0.08] bg-slate-900/40 backdrop-blur-md p-5 shadow-2xl">
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-4">
+            <div>
+              <span className="text-[9px] font-mono text-cyan-400 uppercase tracking-[0.2em] font-semibold">Mission Control HUD</span>
+              <h1 className="text-xl sm:text-2xl font-bold text-white tracking-tight mt-0.5">Executive Intelligence Command Center</h1>
+            </div>
+            <div className="flex items-center gap-2">
+              <span className="relative flex h-2 w-2">
+                <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-500 opacity-75" />
+                <span className="relative inline-flex h-2 w-2 rounded-full bg-emerald-500" />
+              </span>
+              <span className="text-[10px] font-mono text-emerald-400 font-semibold tracking-wider">ALL CORE OPERATIONS STABLE</span>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-3">
+            {[
+              { label: 'Revenue Protected', value: 2.8, prefix: '$', suffix: 'M', color: 'text-emerald-400', trend: 'up', pct: 12, sparkData: [1.8, 2.0, 2.2, 2.4, 2.5, 2.7, 2.8] },
+              { label: 'Services At Risk', value: 3, prefix: '', suffix: ' Critical', color: 'text-red-400', trend: 'up', pct: 20, sparkData: [1, 2, 2, 3, 2, 3, 3] },
+              { label: 'AI Confidence', value: 96, prefix: '', suffix: '%', color: 'text-cyan-400', trend: 'stable', pct: 0.5, sparkData: [94, 95, 95, 96, 96, 96, 96] },
+              { label: 'Predicted Incident Cost', value: 4.5, prefix: '$', suffix: 'K/m', color: 'text-orange-400', trend: 'down', pct: 8.4, sparkData: [5.2, 5.0, 4.8, 4.7, 4.5, 4.5, 4.5] },
+              { label: 'MTTR Reduction', value: 31, prefix: '-', suffix: '%', color: 'text-violet-400', trend: 'up', pct: 14.3, sparkData: [24, 26, 27, 28, 30, 29, 31] },
+              { label: 'Risk Forecast', value: 72, prefix: 'Score: ', suffix: '', color: 'text-amber-400', trend: 'down', pct: 5.2, sparkData: [78, 76, 75, 74, 72, 72, 72] }
+            ].map((kpi, idx) => {
+              const val = useCounter(kpi.value, idx * 60, 1500, kpi.value >= 1000)
+              const displayVal = typeof val === 'number' ? val : kpi.value
+              return (
+                <div key={kpi.label} className="rounded-xl border border-white/[0.05] bg-slate-900/30 p-3 hover:border-white/[0.1] transition-all group relative overflow-hidden">
+                  <span className="text-[8px] font-mono text-slate-500 uppercase tracking-wider block mb-0.5">{kpi.label}</span>
+                  <div className="flex items-baseline justify-between gap-1 mt-1">
+                    <span className={`text-2xl sm:text-3xl font-extrabold font-mono tracking-tight ${kpi.color}`}>
+                      {kpi.prefix}{displayVal}{kpi.suffix}
+                    </span>
+                  </div>
+                  <div className="flex items-center justify-between gap-2 mt-2 pt-2 border-t border-white/[0.02]">
+                    <span className={`text-[9px] font-mono ${kpi.trend === 'up' && kpi.color.includes('red') ? 'text-red-400' : 'text-emerald-400'}`}>
+                      {kpi.trend === 'up' ? '↑' : kpi.trend === 'down' ? '↓' : '→'} {kpi.pct}%
+                    </span>
+                    <MiniSparkline data={kpi.sparkData} color={kpi.color.includes('red') ? '#ef4444' : kpi.color.includes('emerald') ? '#34d399' : kpi.color.includes('cyan') ? '#22d3ee' : kpi.color.includes('orange') ? '#f97316' : kpi.color.includes('violet') ? '#a78bfa' : '#f59e0b'} width={44} height={12} />
+                  </div>
+                </div>
+              )
+            })}
+          </div>
         </div>
-        <ExecutiveInsightsExpanded />
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-1.5 sm:gap-2">
-          {[
-            { label: 'System Health', value: 87.2, color: 'text-emerald-400', pct: 2.1, trend: 'up', icon: 'M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z' },
-            { label: 'Incident Density', value: 42.8, color: 'text-amber-400', pct: 8.3, trend: 'down', icon: 'M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z' },
-            { label: 'Error Budget', value: 82.1, color: 'text-cyan-400', pct: 1.5, trend: 'up', icon: 'M3.75 13.5l10.5-11.25L12 10.5h8.25L9.75 21.75 12 13.5H3.75z' },
-            { label: 'SLO Attainment', value: 94.3, color: 'text-violet-400', pct: 0.5, trend: 'up', icon: 'M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636' },
-          ].map((g, idx) => (
-            <motion.div key={g.label} variants={item} className="rounded-xl border border-white/[0.05] bg-gradient-to-br from-slate-900/90 to-slate-900/30 p-3 sm:p-4 hover:border-white/[0.08] transition-all duration-300 group">
-              <div className="flex items-center gap-1.5 mb-2"><svg className={`h-3.5 w-3.5 ${g.color}`} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}><path strokeLinecap="round" strokeLinejoin="round" d={g.icon} /></svg><span className="text-[10px] font-mono text-slate-500 uppercase tracking-wider">{g.label}</span></div>
-              <div className={`text-xl sm:text-2xl font-bold font-mono ${g.color}`}>{g.value}%</div>
-              <div className="flex items-center gap-1.5 mt-1"><span className={`text-[10px] font-mono ${g.trend === 'up' ? 'text-emerald-400' : 'text-red-400'}`}>{g.trend === 'up' ? '\u2191' : '\u2193'} {g.pct}%</span></div>
-            </motion.div>
-          ))}
-        </div>
-        <RiskAnalyticsDashboard />
-        <PredictionWallExpanded />
+
+        {/* Core Galaxy and Bloomberg Insights Panel */}
         <TopRisksLeaderboardExpanded />
-        <RootCauseSnapshotsExpanded />
-        <ExecutiveRecommendationsExpanded />
-        <RiskHeatmap />
-        <AlertsFeed />
+
+        {/* Topology Mesh map */}
         <LiveSystemTopologyExpanded />
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-1.5 sm:gap-2">
-          {(mockData.serviceHealthCards || []).map((svc, idx) => (
-            <ServiceHealthCard key={svc?.name || idx} svc={svc} idx={idx} />
-          ))}
+
+        {/* Executive Insights & Highlights */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+          <ExecutiveInsightsExpanded />
+          <PredictionWallExpanded />
         </div>
-        <DeploymentForecastExpanded />
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-1.5 sm:gap-2">
+
+        {/* Heatmap & Alerts Feed Combined */}
+        <div className="grid grid-cols-1 xl:grid-cols-2 gap-4">
+          <RiskHeatmap />
+          <AlertsFeed />
+        </div>
+
+        {/* Lower graphs / timelines */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
           <DeploymentTimeline />
           <ActivityTimeline />
         </div>
+
         <BoardroomViewExpanded />
-        <VelocityBarChart />
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-1.5 sm:gap-2">
+        
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
           <IncidentsByService />
           <SloSummary />
         </div>
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-1.5 sm:gap-2">
-          <ChangeFailureRate />
-          <OnCallBanner />
-        </div>
-        <PredictionCards />
-        <BusinessImpactCalculator />
-        <QuickActionPanel />
-        <FooterBar />
+
         <NarrativeCTA currentPage="/dashboard" confidence={96} impact="$288K potential exposure" />
       </motion.div>
-    </div>
+    </Layout>
   )
 }

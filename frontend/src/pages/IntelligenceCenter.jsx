@@ -426,6 +426,441 @@ export default function IntelligenceCenter() {
     <Layout>
       <motion.div variants={container} initial="hidden" animate="show"           className="space-y-2 pb-4">
 
+        
+        {/* ===== PREMIUM SECTION 1: ROOT CAUSE COMMAND CENTER HERO ===== */}
+        <motion.div variants={item} className="relative overflow-hidden rounded-2xl border border-white/[0.08] bg-gradient-to-br from-slate-900 via-slate-900/95 to-slate-950">
+          <div className="absolute inset-0 bg-gradient-to-br from-cyan-500/[0.04] via-transparent to-purple-500/[0.03] pointer-events-none" />
+          <div className="absolute -top-24 -right-24 w-64 h-64 bg-cyan-500/[0.06] rounded-full blur-[100px] pointer-events-none" />
+          <div className="absolute -bottom-24 -left-24 w-64 h-64 bg-purple-500/[0.05] rounded-full blur-[100px] pointer-events-none" />
+          <div className="relative p-6">
+            <div className="flex items-center justify-between mb-4">
+              <div>
+                <h1 className="text-2xl font-bold tracking-[0.2em] text-white uppercase">ROOT CAUSE COMMAND CENTER</h1>
+                <p className="text-xs text-slate-400 font-mono mt-1 max-w-3xl">{data.title}</p>
+              </div>
+              <div className="flex items-center gap-3 shrink-0">
+                <button onClick={copyId} className="group flex items-center gap-1.5 font-mono text-[10px] text-slate-500 border border-white/[0.08] rounded-lg px-3 py-1.5 tracking-wider hover:border-cyan-500/30 hover:text-cyan-400 transition-all">
+                  {copied ? 'Copied!' : data.caseId}
+                  <svg className="h-3 w-3 text-slate-600 group-hover:text-cyan-400 transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M16.5 8.25V6a2.25 2.25 0 00-2.25-2.25H6A2.25 2.25 0 003.75 6v8.25A2.25 2.25 0 006 16.5h2.25m8.25-8.25H18a2.25 2.25 0 012.25 2.25V18A2.25 2.25 0 0118 20.25h-7.5A2.25 2.25 0 018.25 18v-1.5m8.25-8.25h-3a4.5 4.5 0 01-4.5-4.5v-3" />
+                  </svg>
+                </button>
+                <span className="flex items-center gap-1.5 text-[10px] text-green-400 font-mono tracking-wider border border-green-500/20 rounded-lg px-3 py-1.5">
+                  <span className="h-2 w-2 rounded-full bg-green-400 animate-pulse shadow-[0_0_8px_rgba(74,222,128,0.5)]" />
+                  {data.status}
+                </span>
+                <span className="text-[10px] text-slate-600 font-mono border border-white/[0.06] rounded-lg px-3 py-1.5">
+                  Updated {timeAgo}
+                </span>
+              </div>
+            </div>
+            <div className="grid grid-cols-4 gap-4 mb-4">
+              <div className="relative group">
+                <div className="absolute inset-0 bg-gradient-to-b from-cyan-500/[0.08] to-transparent opacity-0 group-hover:opacity-100 transition-opacity rounded-xl pointer-events-none" />
+                <div className="relative rounded-xl border border-white/[0.06] bg-white/[0.03] p-4 text-center backdrop-blur-sm">
+                  <div className="text-4xl font-bold text-cyan-400 font-mono tracking-tight"><AnimatedCounter value={data.totalFailures} /></div>
+                  <div className="text-[10px] text-slate-500 font-mono tracking-wider uppercase mt-1">Total Failures</div>
+                  <div className="flex items-center justify-center gap-1.5 mt-2 text-[9px] text-slate-600">
+                    <span className="text-red-400">{data.criticalFailures}C</span>
+                    <span className="text-orange-400">{data.highFailures}H</span>
+                    <span className="text-yellow-400">{data.mediumFailures}M</span>
+                    <span className="text-green-400">{data.lowFailures}L</span>
+                  </div>
+                </div>
+              </div>
+              <div className="relative group">
+                <div className="absolute inset-0 bg-gradient-to-b from-blue-500/[0.08] to-transparent opacity-0 group-hover:opacity-100 transition-opacity rounded-xl pointer-events-none" />
+                <div className="relative rounded-xl border border-white/[0.06] bg-white/[0.03] p-4 text-center backdrop-blur-sm">
+                  <div className="text-4xl font-bold text-blue-400 font-mono tracking-tight"><AnimatedCounter value={data.mrsAnalyzed} /></div>
+                  <div className="text-[10px] text-slate-500 font-mono tracking-wider uppercase mt-1">MRs Analyzed</div>
+                  <div className="mt-2 text-[9px] text-slate-600 font-mono">Across {data.deps.length} services</div>
+                </div>
+              </div>
+              <div className="relative group">
+                <div className="absolute inset-0 bg-gradient-to-b from-green-500/[0.08] to-transparent opacity-0 group-hover:opacity-100 transition-opacity rounded-xl pointer-events-none" />
+                <div className="relative rounded-xl border border-white/[0.06] bg-white/[0.03] p-4 text-center backdrop-blur-sm">
+                  <div className="text-4xl font-bold text-green-400 font-mono tracking-tight"><AnimatedCounter value={data.incidentsPrevented} /></div>
+                  <div className="text-[10px] text-slate-500 font-mono tracking-wider uppercase mt-1">Incidents Prevented</div>
+                  <div className="mt-2 text-[9px] text-slate-600 font-mono">AI-driven prevention</div>
+                </div>
+              </div>
+              <div className="relative group">
+                <div className="absolute inset-0 bg-gradient-to-b from-purple-500/[0.08] to-transparent opacity-0 group-hover:opacity-100 transition-opacity rounded-xl pointer-events-none" />
+                <div className="relative rounded-xl border border-white/[0.06] bg-white/[0.03] p-4 text-center backdrop-blur-sm">
+                  <div className="text-4xl font-bold text-purple-400 font-mono tracking-tight">{data.confidence}<span className="text-xl text-purple-500/60">%</span></div>
+                  <div className="text-[10px] text-slate-500 font-mono tracking-wider uppercase mt-1">Confidence</div>
+                  <div className="mt-2 text-[9px] text-slate-600 font-mono">AI forensic certainty</div>
+                </div>
+              </div>
+            </div>
+            <div className="flex items-center gap-4">
+              <div className="flex items-center gap-2">
+                <RiskGauge score={data.riskScore} />
+                <div className="w-32">
+                  <ConfidenceMeter confidence={data.confidence} label="INVESTIGATION CONFIDENCE" />
+                </div>
+              </div>
+              <div className="flex items-center gap-3 border-l border-white/[0.06] pl-4">
+                <div>
+                  <span className="text-[9px] text-slate-600 font-mono uppercase tracking-wider">Impact Score</span>
+                  <div className="flex items-baseline gap-1">
+                    <span className="text-xl font-bold text-amber-400 font-mono">{data.impactScore}</span>
+                    <span className="text-[9px] text-amber-400/60 font-mono">/100</span>
+                  </div>
+                </div>
+                <StatusBadge status="critical" label="HIGH RISK" />
+                <div className="flex items-center gap-1.5">
+                  {(data.affectedSystems || []).slice(0, 3).map((sys, i) => (
+                    <div key={i} className="inline-flex items-center gap-1 rounded-lg border px-2 py-1 text-[9px] border-white/[0.06] bg-white/[0.02]">
+                      <span className={(sys?.impact === 'Critical' ? 'bg-red-500 animate-pulse' : sys?.impact === 'High' ? 'bg-orange-500' : 'bg-yellow-500') + ' h-1.5 w-1.5 rounded-full'} />
+                      <span className="text-slate-300 font-mono">{sys?.name}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
+        </motion.div>
+
+        {/* ===== PREMIUM SECTION 2: ANIMATED AI BRAIN (NEURAL NETWORK) ===== */}
+        <motion.div variants={item} className="relative overflow-hidden rounded-2xl border border-white/[0.08]">
+          <div className="absolute inset-0 bg-gradient-to-br from-slate-900 via-slate-900 to-slate-950" />
+          <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_rgba(6,182,212,0.08)_0%,_transparent_60%)] pointer-events-none" />
+          <div className="relative p-4">
+            <div className="flex items-center gap-2 mb-3">
+              <div className="flex h-6 w-6 items-center justify-center rounded-lg bg-gradient-to-br from-cyan-500/20 to-blue-500/20">
+                <svg className="h-3.5 w-3.5 text-cyan-300" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09z" />
+                </svg>
+              </div>
+              <h3 className="text-sm font-bold text-white tracking-wider">AI Neural Forensics Engine</h3>
+              <span className="text-[10px] text-slate-600 font-mono">deep learning analysis</span>
+            </div>
+            <div className="w-full min-h-[350px] relative">
+              <svg viewBox="0 0 600 350" className="w-full h-full">
+                <defs>
+                  <linearGradient id="brainBg" x1="0" y1="0" x2="1" y2="1">
+                    <stop offset="0%" stopColor="rgba(6,182,212,0.15)" />
+                    <stop offset="100%" stopColor="rgba(168,85,247,0.15)" />
+                  </linearGradient>
+                  <filter id="glowBrain"><feGaussianBlur stdDeviation="3" result="blur" /><feMerge><feMergeNode in="blur" /><feMergeNode in="SourceGraphic" /></feMerge></filter>
+                  <filter id="glowBrainIntense"><feGaussianBlur stdDeviation="6" result="blur" /><feMerge><feMergeNode in="blur" /><feMergeNode in="SourceGraphic" /></feMerge></filter>
+                </defs>
+                <rect width="600" height="350" fill="url(#brainBg)" rx="12" />
+                <motion.g style={{ transformOrigin: '300px 175px' }} animate={{ rotate: 360 }} transition={{ duration: 20, repeat: Infinity, ease: 'linear' }}>
+                  <circle cx="300" cy="175" r="130" fill="none" stroke="rgba(6,182,212,0.08)" strokeWidth="1" strokeDasharray="4 8" />
+                </motion.g>
+                <motion.g style={{ transformOrigin: '300px 175px' }} animate={{ rotate: -360 }} transition={{ duration: 25, repeat: Infinity, ease: 'linear' }}>
+                  <circle cx="300" cy="175" r="110" fill="none" stroke="rgba(168,85,247,0.08)" strokeWidth="1" strokeDasharray="6 10" />
+                </motion.g>
+                {[
+                  { label: 'Services', angle: -90, color: '#06b6d4' },
+                  { label: 'Logs', angle: -18, color: '#f59e0b' },
+                  { label: 'Deployments', angle: 54, color: '#8b5cf6' },
+                  { label: 'Dependencies', angle: 126, color: '#ef4444' },
+                  { label: 'Incidents', angle: 198, color: '#22c55e' },
+                ].map((node, i) => {
+                  const angleRad = (node.angle * Math.PI) / 180
+                  const nx = 300 + 140 * Math.cos(angleRad)
+                  const ny = 175 + 140 * Math.sin(angleRad)
+                  return (
+                    <g key={'node-' + i}>
+                      <motion.path d={'M 300 175 L ' + nx + ' ' + ny} stroke={node.color} strokeWidth="1.5" strokeOpacity={0.3} strokeDasharray="6 4"
+                        initial={{ pathLength: 0 }} animate={{ pathLength: 1 }} transition={{ duration: 1.5, delay: i * 0.2, ease: 'easeInOut' }} />
+                      <motion.circle cx={nx} cy={ny} r="22" fill={node.color + '15'} stroke={node.color} strokeWidth="1.5" strokeOpacity={0.5}
+                        initial={{ scale: 0 }} animate={{ scale: 1 }} transition={{ type: 'spring', stiffness: 100, delay: 0.5 + i * 0.2 }} />
+                      <motion.circle cx={nx} cy={ny} r="5" fill={node.color} opacity={0.7}
+                        animate={{ opacity: [0.4, 0.8, 0.4] }} transition={{ duration: 2, repeat: Infinity, delay: i * 0.3 }} />
+                      <text x={nx} y={ny + 4} textAnchor="middle" fill={node.color} fontSize="7.5" fontWeight="600" fontFamily="monospace">{node.label}</text>
+                    </g>
+                  )
+                })}
+                <motion.circle cx="300" cy="175" r="32" fill="rgba(6,182,212,0.15)" stroke="rgba(6,182,212,0.5)" strokeWidth="2" filter="url(#glowBrain)"
+                  animate={{ scale: [1, 1.05, 1] }} transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut' }} />
+                <circle cx="300" cy="175" r="8" fill="rgba(6,182,212,0.6)" filter="url(#glowBrainIntense)" />
+                <circle cx="300" cy="175" r="4" fill="#06b6d4" />
+                <motion.circle cx="300" cy="175" r="40" fill="none" stroke="rgba(6,182,212,0.15)" strokeWidth="1"
+                  animate={{ scale: [1, 1.3, 1], opacity: [0.3, 0, 0.3] }} transition={{ duration: 2.5, repeat: Infinity, ease: 'easeOut' }} />
+                <motion.circle cx="300" cy="175" r="55" fill="none" stroke="rgba(6,182,212,0.1)" strokeWidth="1"
+                  animate={{ scale: [1, 1.2, 1], opacity: [0.2, 0, 0.2] }} transition={{ duration: 3, repeat: Infinity, ease: 'easeOut', delay: 0.5 }} />
+                <motion.g style={{ transformOrigin: '300px 175px' }} animate={{ rotate: 360 }} transition={{ duration: 10, repeat: Infinity, ease: 'linear' }}>
+                  <circle cx="300" cy="175" r="28" fill="none" stroke="rgba(6,182,212,0.3)" strokeWidth="1" strokeDasharray="3 5" />
+                </motion.g>
+                <text x="300" y="178" textAnchor="middle" fill="#06b6d4" fontSize="8" fontWeight="700" fontFamily="monospace" letterSpacing="2">AI BRAIN</text>
+                {Array.from({ length: 20 }).map((_, i) => {
+                  const px = 30 + Math.random() * 540
+                  const py = 20 + Math.random() * 310
+                  const size = 1.5 + Math.random() * 2
+                  return (
+                    <motion.circle key={'p-' + i} cx={px} cy={py} r={size} fill={i % 2 === 0 ? 'rgba(6,182,212,0.4)' : 'rgba(168,85,247,0.3)'}
+                      animate={{ y: [0, -10 - Math.random() * 15, 0], opacity: [0.2, 0.6, 0.2] }}
+                      transition={{ duration: 3 + Math.random() * 3, repeat: Infinity, delay: Math.random() * 2, ease: 'easeInOut' }} />
+                  )
+                })}
+              </svg>
+            </div>
+          </div>
+        </motion.div>
+
+        {/* ===== PREMIUM SECTION 3: EVIDENCE CONSTELLATION ===== */}
+        <motion.div variants={item} className="relative overflow-hidden rounded-2xl border border-white/[0.08]">
+          <div className="absolute inset-0 bg-gradient-to-br from-slate-950 via-slate-900 to-indigo-950/50" />
+          <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_rgba(168,85,247,0.05)_0%,_transparent_60%)] pointer-events-none" />
+          <div className="relative p-4">
+            <div className="flex items-center gap-2 mb-3">
+              <div className="flex h-6 w-6 items-center justify-center rounded-lg bg-gradient-to-br from-purple-500/20 to-indigo-500/20">
+                <svg className="h-3.5 w-3.5 text-purple-300" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09z" />
+                </svg>
+              </div>
+              <h3 className="text-sm font-bold text-white tracking-wider">Evidence Constellation</h3>
+              <span className="text-[10px] text-slate-600 font-mono">{data.evidenceItems.length} forensic artifacts mapped</span>
+            </div>
+            <div className="relative w-full h-[380px] sm:h-[420px]">
+              <svg viewBox="0 0 100 100" className="w-full h-full" preserveAspectRatio="xMidYMid meet">
+                {(() => {
+                  const typeColors = {
+                    Metric: 'rgba(6,182,212,', Log: 'rgba(245,158,11,', Alert: 'rgba(239,68,68,', Signal: 'rgba(168,85,247,', Event: 'rgba(34,197,94,'
+                  }
+                  const positions = [
+                    { x: 50, y: 40 }, { x: 82, y: 65 }, { x: 30, y: 75 },
+                    { x: 68, y: 88 }, { x: 45, y: 20 }, { x: 18, y: 50 },
+                  ]
+                  const lines = []
+                  const nodes = []
+                  data.evidenceItems.forEach((ev, i) => {
+                    const from = positions[i]
+                    for (let j = i + 1; j < data.evidenceItems.length; j++) {
+                      if (j - i <= 2) {
+                        const to = positions[j]
+                        if (to) {
+                          lines.push(
+                            <motion.line key={'el-' + i + '-' + j} x1={from.x} y1={from.y} x2={to.x} y2={to.y}
+                              stroke="rgba(255,255,255,0.06)" strokeWidth="0.3" strokeDasharray="1 2"
+                              initial={{ pathLength: 0 }} animate={{ pathLength: 1 }} transition={{ duration: 2, delay: i * 0.15 }} />
+                          )
+                        }
+                      }
+                    }
+                    const colorKey = typeColors[ev.type] || 'rgba(148,163,184,'
+                    const r = ev.critical ? 5 : 3.5
+                    nodes.push(
+                      <g key={'ev-' + i}>
+                        <motion.circle cx={from.x} cy={from.y} r={r + 3} fill={colorKey + '0.1)'} stroke="none"
+                          animate={{ scale: [1, 1.4, 1] }} transition={{ duration: 3, repeat: Infinity, delay: i * 0.4, ease: 'easeInOut' }} />
+                        <motion.circle cx={from.x} cy={from.y} r={r} fill={colorKey + '0.5)'} stroke={colorKey + '0.7)'} strokeWidth="0.5"
+                          initial={{ scale: 0 }} animate={{ scale: 1 }} transition={{ type: 'spring', stiffness: 150, delay: 0.3 + i * 0.15 }} />
+                        {ev.critical && (
+                          <motion.circle cx={from.x} cy={from.y} r={r + 4} fill="none" stroke="rgba(239,68,68,0.3)" strokeWidth="0.5"
+                            animate={{ scale: [1, 1.6, 1], opacity: [0.4, 0, 0.4] }} transition={{ duration: 2, repeat: Infinity, delay: i * 0.4 }} />
+                        )}
+                        <motion.text x={from.x} y={from.y + r + 6} textAnchor="middle" fill={colorKey + '0.8)'} fontSize="2.5" fontFamily="monospace" fontWeight="600"
+                          initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.8 + i * 0.15 }}>
+                          {ev.title}
+                        </motion.text>
+                        <text x={from.x} y={from.y - r - 2} textAnchor="middle" fill={colorKey + '0.6)'} fontSize="2" fontFamily="monospace">
+                          {ev.type}
+                        </text>
+                      </g>
+                    )
+                  })
+                  for (let k = 0; k < 30; k++) {
+                    nodes.push(
+                      <motion.circle key={'star-' + k} cx={5 + Math.random() * 90} cy={5 + Math.random() * 90} r={0.3 + Math.random() * 0.5} fill="rgba(255,255,255,0.1)"
+                        animate={{ opacity: [0.1, 0.4, 0.1] }} transition={{ duration: 2 + Math.random() * 3, repeat: Infinity, delay: Math.random() * 2 }} />
+                    )
+                  }
+                  return [...lines, ...nodes]
+                })()}
+              </svg>
+              <div className="absolute bottom-2 left-1/2 -translate-x-1/2 flex items-center gap-3 text-[8px] text-slate-600 font-mono bg-slate-900/80 backdrop-blur-sm px-3 py-1.5 rounded-lg border border-white/[0.06]">
+                <span className="flex items-center gap-1"><span className="h-1.5 w-1.5 rounded-full bg-cyan-500" />Metric</span>
+                <span className="flex items-center gap-1"><span className="h-1.5 w-1.5 rounded-full bg-amber-500" />Log</span>
+                <span className="flex items-center gap-1"><span className="h-1.5 w-1.5 rounded-full bg-red-500" />Alert</span>
+                <span className="flex items-center gap-1"><span className="h-1.5 w-1.5 rounded-full bg-purple-500" />Signal</span>
+                <span className="flex items-center gap-1"><span className="h-1.5 w-1.5 rounded-full bg-green-500" />Event</span>
+                <span className="flex items-center gap-1"><span className="h-2 w-2 rounded-full bg-red-500 animate-pulse" />Critical</span>
+              </div>
+            </div>
+          </div>
+        </motion.div>
+
+        {/* ===== PREMIUM SECTION 4: BLAST RADIUS SIMULATION ===== */}
+        <motion.div variants={item} className="relative overflow-hidden rounded-2xl border border-white/[0.08]">
+          <div className="absolute inset-0 bg-gradient-to-br from-slate-950 via-slate-900 to-orange-950/30" />
+          <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_rgba(239,68,68,0.05)_0%,_transparent_60%)] pointer-events-none" />
+          <div className="relative p-4">
+            <div className="flex items-center gap-2 mb-3">
+              <div className="flex h-6 w-6 items-center justify-center rounded-lg bg-gradient-to-br from-orange-500/20 to-red-500/20">
+                <svg className="h-3.5 w-3.5 text-orange-300" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" />
+                </svg>
+              </div>
+              <h3 className="text-sm font-bold text-white tracking-wider">Blast Radius Simulation</h3>
+              <StatusBadge status="critical" label={data.blastRadius.totalServices + ' services in range'} />
+              <span className="text-[10px] text-slate-600 font-mono">depth: {data.blastRadius.depth}</span>
+            </div>
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 items-center">
+              <div className="relative w-full max-w-[420px] mx-auto aspect-square">
+                <svg viewBox="0 0 400 400" className="w-full h-full">
+                  <defs>
+                    <radialGradient id="zone3Grad"><stop offset="0%" stopColor="rgba(234,179,8,0)" /><stop offset="100%" stopColor="rgba(234,179,8,0.06)" /></radialGradient>
+                    <radialGradient id="zone2Grad"><stop offset="0%" stopColor="rgba(249,115,22,0)" /><stop offset="100%" stopColor="rgba(249,115,22,0.08)" /></radialGradient>
+                    <radialGradient id="zone1Grad"><stop offset="0%" stopColor="rgba(239,68,68,0)" /><stop offset="100%" stopColor="rgba(239,68,68,0.1)" /></radialGradient>
+                  </defs>
+                  <circle cx="200" cy="200" r="185" fill="url(#zone3Grad)" stroke="rgba(234,179,8,0.15)" strokeWidth="1" strokeDasharray="4 6" />
+                  <circle cx="200" cy="200" r="130" fill="url(#zone2Grad)" stroke="rgba(249,115,22,0.2)" strokeWidth="1" strokeDasharray="3 5" />
+                  <circle cx="200" cy="200" r="75" fill="url(#zone1Grad)" stroke="rgba(239,68,68,0.3)" strokeWidth="1.5" strokeDasharray="2 4" />
+                  <motion.circle cx="200" cy="200" r="18" fill="rgba(239,68,68,0.15)" stroke="rgba(239,68,68,0.5)" strokeWidth="1.5"
+                    animate={{ scale: [1, 1.08, 1] }} transition={{ duration: 2.5, repeat: Infinity }} />
+                  <circle cx="200" cy="200" r="6" fill="rgba(239,68,68,0.6)" />
+                  <motion.circle cx="200" cy="200" r="30" fill="none" stroke="rgba(239,68,68,0.2)" strokeWidth="1"
+                    animate={{ scale: [1, 1.5, 1], opacity: [0.2, 0, 0.2] }} transition={{ duration: 2, repeat: Infinity }} />
+                  <text x="200" y="203" textAnchor="middle" fill="#ef4444" fontSize="6" fontWeight="600" fontFamily="monospace">{data.blastRadius.center}</text>
+                  <circle cx="60" cy="200" r="14" fill="rgba(234,179,8,0.12)" stroke="rgba(234,179,8,0.3)" strokeWidth="1" />
+                  <text x="60" y="198" textAnchor="middle" fill="#eab308" fontSize="5" fontFamily="monospace" fontWeight="600">Notification</text>
+                  <text x="60" y="206" textAnchor="middle" fill="#854d0e" fontSize="4" fontFamily="monospace">R:45%</text>
+                  <circle cx="280" cy="140" r="14" fill="rgba(249,115,22,0.12)" stroke="rgba(249,115,22,0.3)" strokeWidth="1" />
+                  <text x="280" y="138" textAnchor="middle" fill="#f97316" fontSize="5" fontFamily="monospace" fontWeight="600">Billing</text>
+                  <text x="280" y="146" textAnchor="middle" fill="#7c2d12" fontSize="4" fontFamily="monospace">R:65%</text>
+                  <circle cx="310" cy="240" r="14" fill="rgba(249,115,22,0.12)" stroke="rgba(249,115,22,0.3)" strokeWidth="1" />
+                  <text x="310" y="238" textAnchor="middle" fill="#f97316" fontSize="5" fontFamily="monospace" fontWeight="600">API GW</text>
+                  <text x="310" y="246" textAnchor="middle" fill="#7c2d12" fontSize="4" fontFamily="monospace">R:72%</text>
+                  <circle cx="200" cy="130" r="14" fill="rgba(239,68,68,0.15)" stroke="rgba(239,68,68,0.4)" strokeWidth="1.5" />
+                  <text x="200" y="128" textAnchor="middle" fill="#ef4444" fontSize="5" fontFamily="monospace" fontWeight="600">Payment</text>
+                  <text x="200" y="136" textAnchor="middle" fill="#7f1d1d" fontSize="4" fontFamily="monospace">R:87%</text>
+                  <motion.path d="M 200 130 L 200 118" stroke="rgba(239,68,68,0.4)" strokeWidth="1" fill="none"
+                    animate={{ pathLength: [0, 1] }} transition={{ duration: 1.5, repeat: Infinity, ease: 'linear' }} />
+                  <motion.path d={'M 200 130 Q 240 120 280 140'} stroke="rgba(249,115,22,0.3)" strokeWidth="1" fill="none" strokeDasharray="3 3"
+                    animate={{ pathLength: [0, 1] }} transition={{ duration: 2, repeat: Infinity, delay: 0.5, ease: 'linear' }} />
+                  <motion.path d={'M 200 130 Q 260 180 310 240'} stroke="rgba(249,115,22,0.25)" strokeWidth="1" fill="none" strokeDasharray="3 3"
+                    animate={{ pathLength: [0, 1] }} transition={{ duration: 2.5, repeat: Infinity, delay: 1, ease: 'linear' }} />
+                  <motion.path d={'M 200 130 Q 140 160 60 200'} stroke="rgba(234,179,8,0.2)" strokeWidth="1" fill="none" strokeDasharray="3 3"
+                    animate={{ pathLength: [0, 1] }} transition={{ duration: 3, repeat: Infinity, delay: 1.5, ease: 'linear' }} />
+                  <text x="360" y="340" textAnchor="middle" fill="rgba(234,179,8,0.3)" fontSize="4.5" fontFamily="monospace">Zone 3</text>
+                  <text x="340" y="80" textAnchor="middle" fill="rgba(249,115,22,0.3)" fontSize="4.5" fontFamily="monospace">Zone 2</text>
+                  <text x="200" y="60" textAnchor="middle" fill="rgba(239,68,68,0.3)" fontSize="4.5" fontFamily="monospace">Zone 1</text>
+                </svg>
+              </div>
+              <div className="space-y-2">
+                <div className="rounded-lg border border-red-500/20 bg-red-500/[0.04] p-3">
+                  <div className="flex items-center gap-2 mb-1">
+                    <span className="h-2 w-2 rounded-full bg-red-500 animate-pulse" />
+                    <span className="text-[10px] font-mono text-white font-semibold">Zone 1 - Critical Impact</span>
+                    <StatusBadge status="critical" label="IMMEDIATE" />
+                  </div>
+                  <div className="text-[9px] text-slate-400">Payment Service - Risk: 87% - Files: 12 - Status: Degraded</div>
+                </div>
+                <div className="rounded-lg border border-orange-500/20 bg-orange-500/[0.04] p-3">
+                  <div className="flex items-center gap-2 mb-1">
+                    <span className="h-2 w-2 rounded-full bg-orange-500" />
+                    <span className="text-[10px] font-mono text-white font-semibold">Zone 2 - Medium Impact</span>
+                    <StatusBadge status="warning" label="AT RISK" />
+                  </div>
+                  <div className="text-[9px] text-slate-400">Billing Service - Risk: 65% - Files: 8</div>
+                  <div className="text-[9px] text-slate-400">API Gateway - Risk: 72% - Files: 5 - Status: Degraded</div>
+                </div>
+                <div className="rounded-lg border border-yellow-500/20 bg-yellow-500/[0.04] p-3">
+                  <div className="flex items-center gap-2 mb-1">
+                    <span className="h-2 w-2 rounded-full bg-yellow-500" />
+                    <span className="text-[10px] font-mono text-white font-semibold">Zone 3 - Low Impact</span>
+                    <StatusBadge status="info" label="STABLE" />
+                  </div>
+                  <div className="text-[9px] text-slate-400">Notification Service - Risk: 45% - Files: 3</div>
+                </div>
+                <div className="rounded-lg border border-cyan-500/15 bg-cyan-500/[0.03] p-2.5 text-[9px] text-slate-500 leading-relaxed">
+                  <span className="text-cyan-400 font-mono text-[9px] block mb-1">Risk Propagation Path</span>
+                  <span className="text-red-400">Payment Service 87%</span> <span className="text-slate-600">{'->'}</span> <span className="text-orange-400">Billing Service 65%</span> <span className="text-slate-600">{'->'}</span> <span className="text-yellow-400">Notification Service 45%</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </motion.div>
+
+        {/* ===== PREMIUM SECTION 5: CINEMATIC AI REASONING TIMELINE ===== */}
+        <motion.div variants={item} className="relative overflow-hidden rounded-2xl border border-white/[0.08]">
+          <div className="absolute inset-0 bg-gradient-to-br from-slate-900 via-slate-900 to-slate-950" />
+          <div className="absolute -top-20 -left-20 w-60 h-60 bg-cyan-500/[0.04] rounded-full blur-[80px] pointer-events-none" />
+          <div className="absolute -bottom-20 -right-20 w-60 h-60 bg-purple-500/[0.03] rounded-full blur-[80px] pointer-events-none" />
+          <div className="relative p-4">
+            <div className="flex items-center gap-2 mb-4">
+              <div className="flex h-6 w-6 items-center justify-center rounded-lg bg-gradient-to-br from-cyan-500/20 to-blue-500/20">
+                <svg className="h-3.5 w-3.5 text-cyan-300" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+              </div>
+              <h3 className="text-sm font-bold text-white tracking-wider">Cinematic AI Reasoning Timeline</h3>
+              <span className="text-[10px] text-slate-600 font-mono">{data.investigationTimeline.length} phases</span>
+            </div>
+            <div className="overflow-x-auto pb-2 -mx-1 px-1">
+              <div className="flex gap-3 min-w-max relative">
+                {(() => {
+                  const timelineIcons = {
+                    Detection: <svg key="det" className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5}><path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" /></svg>,
+                    Analysis: <svg key="ana" className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5}><path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" /></svg>,
+                    Escalation: <svg key="esc" className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5}><path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" /></svg>,
+                    Resolution: <svg key="res" className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5}><path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>,
+                    Review: <svg key="rev" className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5}><path strokeLinecap="round" strokeLinejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z" /></svg>,
+                    Closed: <svg key="clo" className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5}><path strokeLinecap="round" strokeLinejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z" /></svg>,
+                  }
+                  const dotColors = {
+                    Detection: 'bg-blue-500 border-blue-500/30',
+                    Analysis: 'bg-cyan-500 border-cyan-500/30',
+                    Escalation: 'bg-orange-500 border-orange-500/30',
+                    Resolution: 'bg-green-500 border-green-500/30',
+                    Review: 'bg-purple-500 border-purple-500/30',
+                    Closed: 'bg-slate-500 border-slate-500/30',
+                  }
+                  const badgeColors = {
+                    Detection: 'bg-blue-500/10 text-blue-400 border-blue-500/20',
+                    Analysis: 'bg-cyan-500/10 text-cyan-400 border-cyan-500/20',
+                    Escalation: 'bg-orange-500/10 text-orange-400 border-orange-500/20',
+                    Resolution: 'bg-green-500/10 text-green-400 border-green-500/20',
+                    Review: 'bg-purple-500/10 text-purple-400 border-purple-500/20',
+                    Closed: 'bg-slate-500/10 text-slate-400 border-slate-500/20',
+                  }
+                  return data.investigationTimeline.map((phase, i) => {
+                    const icon = timelineIcons[phase.type] || null
+                    const dotColor = dotColors[phase.type] || 'bg-slate-500 border-slate-500/30'
+                    const bdgColor = badgeColors[phase.type] || 'bg-slate-500/10 text-slate-400'
+                    return (
+                      <motion.div key={i} className="relative flex flex-col items-center w-[180px] shrink-0"
+                        initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.12, type: 'spring', stiffness: 80 }}>
+                        {i < data.investigationTimeline.length - 1 && (
+                          <svg className="absolute top-[7px] left-[90px] w-[180px] h-px pointer-events-none" style={{ zIndex: 0 }}>
+                            <line x1="0" y1="0" x2="180" y2="0" stroke="rgba(6,182,212,0.15)" strokeWidth="1" strokeDasharray="4 4" />
+                          </svg>
+                        )}
+                        <motion.div className={'relative z-10 mb-2 h-4 w-4 rounded-full border-2 ' + dotColor + ' shadow-[0_0_12px_rgba(6,182,212,0.15)]'}
+                          animate={{ scale: [1, 1.3, 1] }} transition={{ duration: 2, repeat: Infinity, delay: i * 0.5 }} />
+                        <div className="relative glass-card p-3 rounded-xl border border-white/[0.06] hover:border-cyan-500/25 transition-all w-full backdrop-blur-md bg-white/[0.03]">
+                          <div className="flex items-center gap-1.5 mb-1.5">
+                            <span className="text-slate-400 shrink-0">{icon}</span>
+                            <span className={'rounded-md px-1.5 py-0.5 text-[7px] font-bold ' + bdgColor}>{phase.type}</span>
+                          </div>
+                          <h4 className="text-[8px] font-bold text-white uppercase tracking-wider mb-1">{phase.title}</h4>
+                          <p className="text-[7px] text-slate-500 leading-tight mb-1.5 line-clamp-2">{phase.description}</p>
+                          <div className="flex items-center justify-between text-[6px] text-slate-600 font-mono">
+                            <span className="flex items-center gap-0.5">
+                              <svg className="h-2.5 w-2.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5}>
+                                <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" />
+                              </svg>
+                              {phase.team}
+                            </span>
+                            <span className="bg-white/[0.04] px-1 py-0.5 rounded">{phase.duration}</span>
+                          </div>
+                        </div>
+                        <span className="mt-1.5 text-[7px] text-slate-700 font-mono">{phase.date}</span>
+                      </motion.div>
+                    )
+                  })
+                })()}
+              </div>
+            </div>
+          </div>
+        </motion.div>
+
+
         <ExecutiveBanner currentPage="/intelligence" />
 
         {/* ===== SECTION 1: CASE COMMAND HEADER (COMPACT) ===== */}

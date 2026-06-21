@@ -514,6 +514,410 @@ export default function OrbitExecutionPlanner() {
     <Layout>
       <motion.div variants={container} initial="hidden" animate="show" className="space-y-4 pb-8">
         <ExecutiveBanner currentPage="/execution-planner" />
+
+        {/* ===== 1. NASA MISSION CONTROL HERO BANNER ===== */}
+        <motion.div variants={item} className="relative overflow-hidden rounded-2xl border border-white/[0.08] bg-gradient-to-br from-slate-900 via-slate-950 to-slate-900 p-6 sm:p-8">
+          <div className="absolute -top-20 -left-20 h-60 w-60 rounded-full bg-amber-500/5 blur-[80px]" />
+          <div className="absolute -bottom-20 -right-20 h-60 w-60 rounded-full bg-emerald-500/5 blur-[80px]" />
+          <div className="flex flex-wrap items-center justify-between gap-4 mb-6">
+            <div className="flex items-center gap-3">
+              <div className="flex items-center gap-2 rounded-lg border border-emerald-500/20 bg-emerald-500/5 px-3 py-1.5">
+                <span className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse shadow-[0_0_6px_rgba(34,197,94,0.6)]" />
+                <span className="text-[10px] font-mono font-bold text-emerald-400 tracking-[0.15em]">MISSION STATUS: ACTIVE</span>
+              </div>
+              <div className="rounded-lg border border-white/[0.06] bg-white/[0.03] px-3 py-1.5">
+                <span className="text-[10px] font-mono font-semibold text-amber-400 tracking-[0.1em]">SPRINT {d.overview.activeSprint}/{d.overview.sprintCount}</span>
+              </div>
+            </div>
+            <div className="flex items-center gap-3">
+              <div className="flex items-center gap-2 rounded-lg border border-white/[0.06] bg-white/[0.03] px-3 py-1.5">
+                <svg className="h-3.5 w-3.5 text-cyan-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                <span className="text-[10px] font-mono text-cyan-400">LAUNCH WINDOW: {d.timeline && d.timeline.length > 0 ? d.timeline[d.timeline.length - 1].end : 'N/A'}</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <svg className="h-8 w-8 -rotate-90" viewBox="0 0 36 36">
+                  <circle cx="18" cy="18" r="16" fill="none" stroke="rgba(255,255,255,0.04)" strokeWidth="2.5" />
+                  <motion.circle cx="18" cy="18" r="16" fill="none" stroke="#f59e0b" strokeWidth="2.5" strokeLinecap="round"
+                    strokeDasharray={2 * Math.PI * 16} initial={{ strokeDashoffset: 2 * Math.PI * 16 }}
+                    animate={{ strokeDashoffset: 2 * Math.PI * 16 * (1 - d.overview.completionPct / 100) }} transition={{ duration: 1.5, delay: 0.2, ease: 'easeOut' }} />
+                  <text x="18" y="21" textAnchor="middle" fill="#f59e0b" fontSize="9" fontWeight="700" fontFamily="monospace" transform="rotate(90 18 18)">{d.overview.completionPct}%</text>
+                </svg>
+                <div>
+                  <span className="text-[8px] text-slate-600 font-mono">COMPLETION</span>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div className="text-center mb-6">
+            <h1 className="text-[28px] font-bold tracking-[0.2em] text-white" style={{ textShadow: '0 0 20px rgba(245,158,11,0.3), 0 0 40px rgba(245,158,11,0.15)' }}>
+              NASA MISSION CONTROL
+            </h1>
+            <p className="text-sm text-slate-500 font-mono tracking-[0.05em] mt-1">
+              Feature: {d.feature}
+            </p>
+          </div>
+          <div className="flex flex-col items-center">
+            <div className="relative">
+              <svg className="w-36 h-36 sm:w-44 sm:h-44" viewBox="0 0 176 176">
+                <circle cx="88" cy="88" r="86" fill="none" stroke="rgba(255,255,255,0.02)" strokeWidth="1" />
+                <circle cx="88" cy="88" r="82" fill="none" stroke="rgba(255,255,255,0.03)" strokeWidth="1" strokeDasharray="4 4" />
+                <circle cx="88" cy="88" r="75" fill="none" stroke="rgba(245,158,11,0.08)" strokeWidth="2" />
+                <motion.circle cx="88" cy="88" r="75" fill="none" stroke="#f59e0b" strokeWidth="2" strokeLinecap="round"
+                  strokeDasharray={2 * Math.PI * 75} initial={{ strokeDashoffset: 2 * Math.PI * 75 }}
+                  animate={{ strokeDashoffset: 2 * Math.PI * 75 * (1 - d.overview.completionPct / 100) }} transition={{ duration: 2, ease: 'easeInOut' }}
+                  className="opacity-50" />
+                {[...Array(60)].map((_, i) => {
+                  const angle = (i * 6 * Math.PI) / 180 - Math.PI / 2
+                  const x1 = 88 + 68 * Math.cos(angle)
+                  const y1 = 88 + 68 * Math.sin(angle)
+                  const x2 = 88 + 72 * Math.cos(angle)
+                  const y2 = 88 + 72 * Math.sin(angle)
+                  return i % 5 === 0 ? (
+                    <line key={i} x1={x1} y1={y1} x2={x2} y2={y2} stroke="rgba(245,158,11,0.3)" strokeWidth="1.5" />
+                  ) : (
+                    <line key={i} x1={x1} y1={y1} x2={x2} y2={y2} stroke="rgba(255,255,255,0.05)" strokeWidth="0.5" />
+                  )
+                })}
+              </svg>
+              <div className="absolute inset-0 flex flex-col items-center justify-center">
+                <span className="text-[10px] font-mono text-slate-600 tracking-[0.15em] mb-1">MISSION CLOCK</span>
+                {(() => {
+                  const lastPhase = d.timeline && d.timeline.length > 0 ? d.timeline[d.timeline.length - 1] : null
+                  const targetDate = lastPhase ? lastPhase.end : 'Jul 8'
+                  const months = {Jan:0,Feb:1,Mar:2,Apr:3,May:4,Jun:5,Jul:6,Aug:7,Sep:8,Oct:9,Nov:10,Dec:11}
+                  const parts = targetDate.split(' ')
+                  const month = months[parts[0]] || 6
+                  const day = parseInt(parts[1]) || 8
+                  const target = new Date(2026, month, day)
+                  const now = new Date()
+                  const diffMs = target - now
+                  const diffDays = Math.max(0, Math.ceil(diffMs / (1000 * 60 * 60 * 24)))
+                  const hours = Math.max(0, Math.floor((diffMs / (1000 * 60 * 60)) % 24))
+                  const mins = Math.max(0, Math.floor((diffMs / (1000 * 60)) % 60))
+                  return (
+                    <>
+                      <span className="text-4xl sm:text-5xl font-bold font-mono text-white tracking-tight">{diffDays}<span className="text-lg text-amber-400/50">d</span></span>
+                      <span className="text-sm font-mono text-amber-400/70 tracking-[0.1em] mt-1">T-MINUS {String(hours).padStart(2,'0')}:{String(mins).padStart(2,'0')}</span>
+                    </>
+                  )
+                })()}
+              </div>
+            </div>
+          </div>
+        </motion.div>
+
+        {/* ===== 2. MISSION STATUS WALL ===== */}
+        <motion.div variants={item} className="rounded-xl bg-slate-950/40 backdrop-blur-[12px] border border-white/[0.06] p-4 sm:p-5">
+          <div className="flex items-center gap-3 mb-4">
+            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-amber-500 to-orange-600 shadow-lg shadow-amber-500/20">
+              <svg className="h-4 w-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M3.75 12h16.5m-16.5 3.75h16.5M3.75 19.5h16.5M5.625 4.5h12.75a1.875 1.875 0 010 3.75H5.625a1.875 1.875 0 010-3.75z" /></svg>
+            </div>
+            <div>
+              <h2 className="text-sm font-bold text-white tracking-wider">Mission Status Wall</h2>
+              <p className="text-[8px] text-slate-600 font-mono tracking-[0.15em]">REAL-TIME MISSION METRICS</p>
+            </div>
+          </div>
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
+            {[
+              { label: 'Sprint Health', value: d.overview.sprintHealth, unit: '%', ring: true, color: d.overview.sprintHealth >= 80 ? '#22c55e' : d.overview.sprintHealth >= 60 ? '#f59e0b' : '#ef4444' },
+              { label: 'Quality Score', value: d.overview.qualityScore, unit: '%', ring: true, color: d.overview.qualityScore >= 80 ? '#22c55e' : d.overview.qualityScore >= 60 ? '#f59e0b' : '#ef4444' },
+              { label: 'Deploy Ready', value: d.overview.deploymentReadiness, unit: '%', ring: true, color: d.overview.deploymentReadiness >= 80 ? '#22c55e' : d.overview.deploymentReadiness >= 60 ? '#f59e0b' : '#ef4444' },
+              { label: 'Total Points', value: d.overview.totalStoryPoints, unit: '', ring: false, color: '#06b6d4' },
+              { label: 'Pts Completed', value: d.overview.pointsCompleted, unit: '', ring: false, color: '#22c55e' },
+              { label: 'Blockers', value: d.overview.blockers, unit: '', ring: false, color: '#ef4444', critical: d.overview.blockers > 0 },
+            ].map((metric, i) => (
+              <motion.div key={metric.label} initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 + i * 0.05 }}
+                className={`rounded-lg border p-3.5 relative overflow-hidden group hover:border-white/[0.12] transition-all ${metric.critical ? 'border-red-500/30 bg-red-500/[0.04]' : 'border-white/[0.06] bg-white/[0.02]'}`}>
+                <div className="absolute inset-0 bg-gradient-to-br from-transparent via-transparent to-current opacity-[0.02]" />
+                {metric.ring ? (
+                  <div className="flex items-center justify-between mb-1">
+                    <span className="text-[9px] text-slate-500 font-mono tracking-wider uppercase">{metric.label}</span>
+                    <svg width="44" height="44" viewBox="0 0 44 44" className="-rotate-90 shrink-0">
+                      <circle cx="22" cy="22" r="18" fill="none" stroke="rgba(255,255,255,0.04)" strokeWidth="3.5" />
+                      <motion.circle cx="22" cy="22" r="18" fill="none" stroke={metric.color} strokeWidth="3.5" strokeLinecap="round"
+                        strokeDasharray={2 * Math.PI * 18} initial={{ strokeDashoffset: 2 * Math.PI * 18 }}
+                        animate={{ strokeDashoffset: 2 * Math.PI * 18 * (1 - metric.value / 100) }} transition={{ duration: 1.2, delay: 0.15 + i * 0.08, ease: 'easeOut' }} />
+                      <text x="22" y="26" textAnchor="middle" fill={metric.color} fontSize="12" fontWeight="700" fontFamily="monospace" transform="rotate(90 22 22)">{metric.value}%</text>
+                    </svg>
+                  </div>
+                ) : (
+                  <div className="flex items-center justify-between mb-1">
+                    <span className="text-[9px] text-slate-500 font-mono tracking-wider uppercase">{metric.label}</span>
+                    {metric.critical && (
+                      <div className="flex items-center gap-1">
+                        <span className="h-1.5 w-1.5 rounded-full bg-red-500 animate-ping" />
+                        <span className="text-[8px] text-red-400 font-mono font-bold">ALERT</span>
+                      </div>
+                    )}
+                  </div>
+                )}
+                <div className={metric.ring ? 'mt-0' : 'mt-2'}>
+                  <span className="text-2xl sm:text-3xl font-bold font-mono tracking-tight" style={{ color: metric.color }}>
+                    <AnimatedCounter value={metric.value} suffix={metric.unit} />
+                  </span>
+                </div>
+              </motion.div>
+            ))}
+          </div>
+        </motion.div>
+
+        {/* ===== 3. SQUAD COORDINATION MAP ===== */}
+        <motion.div variants={item} className="rounded-xl bg-slate-950/40 backdrop-blur-[12px] border border-white/[0.06] p-4 sm:p-5">
+          <div className="flex items-center gap-3 mb-4">
+            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-cyan-500/20">
+              <svg className="h-4 w-4 text-cyan-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M18 18.72a9.094 9.094 0 003.741-.479 3 3 0 00-4.682-2.72m.94 3.198l.001.031c0 .225-.012.447-.037.666A11.944 11.944 0 0112 21c-2.17 0-4.207-.576-5.963-1.584A6.062 6.062 0 016 18.719m12 0a5.971 5.971 0 00-.941-3.197m0 0A5.995 5.995 0 0012 12.75a5.995 5.995 0 00-5.058 2.772m0 0a3 3 0 00-4.681 2.72 8.986 8.986 0 003.74.477m.94-3.197a5.971 5.971 0 00-.94 3.197M15 6.75a3 3 0 11-6 0 3 3 0 016 0zm6 3a2.25 2.25 0 11-4.5 0 2.25 2.25 0 014.5 0zm-13.5 0a2.25 2.25 0 11-4.5 0 2.25 2.25 0 014.5 0z" />
+              </svg>
+            </div>
+            <div>
+              <h2 className="text-sm font-bold text-white tracking-wider">Squad Coordination Map</h2>
+              <p className="text-[8px] text-slate-600 font-mono tracking-[0.15em]">TEAM-SERVICE DEPENDENCY LATTICE</p>
+            </div>
+          </div>
+          <div className="relative w-full h-72 rounded-lg border border-white/[0.04] bg-slate-900/30 overflow-hidden">
+            <svg className="absolute inset-0 w-full h-full" viewBox="0 0 800 290" preserveAspectRatio="xMidYMid meet">
+              {(d.teams || []).map((t, ti) => {
+                const ty = 35 + ti * 85
+                return (d.services || []).map((s, si) => {
+                  const sx = 530 + si * 65
+                  const sy = 20 + si * 60
+                  const hasConnection = (
+                    (t.name === 'Payments' && (s.name === 'Payment Service' || s.name === 'Notification Service')) ||
+                    (t.name === 'Billing' && (s.name === 'Billing Service' || s.name === 'Notification Service')) ||
+                    (t.name === 'Platform' && (s.name === 'API Gateway' || s.name === 'Notification Service'))
+                  )
+                  if (!hasConnection) return null
+                  return (
+                    <motion.path key={`${t.name}-${s.name}`}
+                      d={`M 170 ${ty} C 300 ${ty}, 400 ${sy}, 530 ${sy}`}
+                      fill="none"
+                      stroke="rgba(255,255,255,0.06)"
+                      strokeWidth="1"
+                      initial={{ pathLength: 0 }}
+                      animate={{ pathLength: 1 }}
+                      transition={{ duration: 1.5, delay: 0.3 + ti * 0.15 + si * 0.08 }}
+                    />
+                  )
+                })
+              })}
+              {(d.teams || []).map((t, ti) => {
+                const ty = 35 + ti * 85
+                return (d.services || []).map((s, si) => {
+                  const sy = 20 + si * 60
+                  const hasConnection = (
+                    (t.name === 'Payments' && (s.name === 'Payment Service' || s.name === 'Notification Service')) ||
+                    (t.name === 'Billing' && (s.name === 'Billing Service' || s.name === 'Notification Service')) ||
+                    (t.name === 'Platform' && (s.name === 'API Gateway' || s.name === 'Notification Service'))
+                  )
+                  if (!hasConnection) return null
+                  return (
+                    <motion.circle key={`dot-${t.name}-${s.name}`} r="2" fill="#f59e0b"
+                      initial={{ offsetDistance: '0%' }}
+                      animate={{ offsetDistance: '100%' }}
+                      transition={{ duration: 3, delay: 0.5 + ti * 0.2 + si * 0.1, repeat: Infinity, ease: 'linear' }}
+                      style={{ offsetPath: `path('M 170 ${ty} C 300 ${ty}, 400 ${sy}, 530 ${sy}')` }}
+                    />
+                  )
+                })
+              })}
+            </svg>
+            <div className="absolute inset-0 pointer-events-none">
+              <div className="flex h-full">
+                <div className="w-2/5 flex flex-col gap-2 justify-around p-3">
+                  {(d.teams || []).map((t, i) => {
+                    const loadColor = t.load >= 80 ? '#ef4444' : t.load >= 60 ? '#f59e0b' : '#22c55e'
+                    return (
+                      <motion.div key={t.name} initial={{ opacity: 0, x: -15 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.2 + i * 0.1 }}
+                        className="pointer-events-auto rounded-lg border border-white/[0.08] bg-slate-900/80 backdrop-blur-sm p-3 hover:border-white/[0.15] transition-all">
+                        <div className="flex items-center gap-2 mb-1">
+                          <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded text-[9px] font-bold" style={{ backgroundColor: loadColor + '20', color: loadColor }}>
+                            {t.name[0]}
+                          </div>
+                          <div className="min-w-0">
+                            <span className="text-xs font-semibold text-white">{t.name}</span>
+                            <div className="flex items-center gap-1 text-[7px] text-slate-500 font-mono">
+                              <span>{t.lead}</span>
+                              <span className="text-slate-700">&middot;</span>
+                              <span>{t.sprintPoints} pts</span>
+                              <span className="text-slate-700">&middot;</span>
+                              <span style={{ color: loadColor }}>{t.load}%</span>
+                            </div>
+                          </div>
+                        </div>
+                        <div className="mt-1 h-1 rounded-full bg-white/[0.04] overflow-hidden">
+                          <motion.div initial={{ width: 0 }} animate={{ width: `${t.load}%` }} transition={{ duration: 0.8, delay: 0.3 + i * 0.1 }}
+                            className="h-full rounded-full" style={{ backgroundColor: loadColor }} />
+                        </div>
+                      </motion.div>
+                    )
+                  })}
+                </div>
+                <div className="w-3/5 flex flex-col gap-2 justify-around p-3">
+                  {(d.services || []).map((s, i) => {
+                    const svcStatus = String(s?.status ?? '')
+                    const statusColor = svcStatus === 'in_progress' ? '#f59e0b' : svcStatus === 'healthy' || svcStatus === 'completed' ? '#22c55e' : '#64748b'
+                    const impColor = s.impact === 'critical' ? '#ef4444' : s.impact === 'high' ? '#f59e0b' : '#06b6d4'
+                    return (
+                      <motion.div key={s.name} initial={{ opacity: 0, x: 15 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.3 + i * 0.08 }}
+                        className="pointer-events-auto rounded-lg border border-white/[0.08] bg-slate-900/80 backdrop-blur-sm p-3 hover:border-white/[0.15] transition-all">
+                        <div className="flex items-center gap-2 mb-1">
+                          <span className="h-1.5 w-1.5 shrink-0 rounded-full" style={{ backgroundColor: statusColor }} />
+                          <div className="min-w-0">
+                            <span className="text-xs font-semibold text-white">{s.name}</span>
+                            <div className="flex items-center gap-1 text-[7px] text-slate-500 font-mono">
+                              <span className="rounded px-1 py-0.5 text-[7px] font-bold" style={{ backgroundColor: impColor + '20', color: impColor }}>
+                                {String(s?.impact ?? '').toUpperCase()}
+                              </span>
+                              <span className="text-slate-600">{svcStatus.replace('_', ' ')}</span>
+                              {s.risk && <span className="text-slate-700">{s.risk}% risk</span>}
+                            </div>
+                          </div>
+                        </div>
+                      </motion.div>
+                    )
+                  })}
+                </div>
+              </div>
+            </div>
+          </div>
+        </motion.div>
+
+        {/* ===== 4. LAUNCH READINESS SCORE ===== */}
+        <motion.div variants={item} className="rounded-xl bg-slate-950/40 backdrop-blur-[12px] border border-white/[0.06] p-4 sm:p-5">
+          <div className="flex items-center gap-3 mb-4">
+            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-emerald-500 to-teal-600">
+              <svg className="h-4 w-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M15.59 14.37a6 6 0 01-5.84 7.38v-4.8m5.84-2.58a14.98 14.98 0 006.16-12.12A14.98 14.98 0 009.631 8.41m5.96 5.96a14.926 14.926 0 01-5.841 2.58m-.119-8.54a6 6 0 00-7.381 5.84h4.8m2.581-5.84a14.927 14.927 0 00-2.58 5.84m2.699 2.7c-.103.021-.207.041-.311.06a15.09 15.09 0 01-2.448-2.448 14.9 14.9 0 01.06-.312m-2.24 2.39a4.493 4.493 0 00-1.757 4.306 4.493 4.493 0 004.306-1.758M16.5 9a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0z" />
+              </svg>
+            </div>
+            <div>
+              <h2 className="text-sm font-bold text-white tracking-wider">Launch Readiness Score</h2>
+              <p className="text-[8px] text-slate-600 font-mono tracking-[0.15em]">PRE-FLIGHT CHECKLIST</p>
+            </div>
+          </div>
+          <div className="flex flex-col items-center gap-6 sm:flex-row sm:items-start sm:justify-center">
+            <div className="relative shrink-0">
+              <svg width="200" height="200" viewBox="0 0 200 200" className="animate-[spin_25s_linear_infinite]">
+                <circle cx="100" cy="100" r="96" fill="none" stroke="rgba(255,255,255,0.02)" strokeWidth="1" />
+                <circle cx="100" cy="100" r="88" fill="none" stroke="rgba(255,255,255,0.03)" strokeWidth="1" strokeDasharray="6 3" />
+                <circle cx="100" cy="100" r="78" fill="none" stroke="rgba(245,158,11,0.06)" strokeWidth="2" />
+                <circle cx="100" cy="100" r="68" fill="none" stroke="rgba(255,255,255,0.04)" strokeWidth="2" strokeDasharray="10 5" />
+                <circle cx="100" cy="100" r="55" fill="none" stroke="rgba(34,211,153,0.12)" strokeWidth="3" />
+                <motion.circle cx="100" cy="100" r="55" fill="none" stroke="#22c55e" strokeWidth="3" strokeLinecap="round"
+                  strokeDasharray={2 * Math.PI * 55} initial={{ strokeDashoffset: 2 * Math.PI * 55 }}
+                  animate={{ strokeDashoffset: 2 * Math.PI * 55 * (1 - (d.readinessChecks || []).filter(c => c?.status === 'pass').length / Math.max(1, (d.readinessChecks || []).length)) }} transition={{ duration: 1.5, ease: 'easeOut' }} />
+              </svg>
+              <div className="absolute inset-0 flex flex-col items-center justify-center">
+                {(() => {
+                  const total = (d.readinessChecks || []).length
+                  const passing = (d.readinessChecks || []).filter(c => c?.status === 'pass').length
+                  const pct = total > 0 ? Math.round((passing / total) * 100) : 0
+                  return (
+                    <>
+                      <span className="text-4xl sm:text-5xl font-bold font-mono text-white">{pct}<span className="text-lg text-emerald-400">%</span></span>
+                      <span className="text-[8px] text-slate-500 font-mono tracking-[0.1em] mt-1">LAUNCH READINESS</span>
+                      <span className="text-[7px] text-slate-600 font-mono mt-0.5">{passing}/{total} checks passing</span>
+                    </>
+                  )
+                })()}
+              </div>
+            </div>
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 w-full sm:w-auto">
+              {(d.readinessChecks || []).map((c, i) => {
+                const isPass = String(c?.status ?? '') === 'pass'
+                return (
+                  <motion.div key={c?.name || i} initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: i * 0.04 }}
+                    className={`rounded-lg border p-3 flex items-center gap-2 ${isPass ? 'border-emerald-500/20 bg-emerald-500/[0.03]' : 'border-red-500/20 bg-red-500/[0.03]'}`}>
+                    <div className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-full ${isPass ? 'bg-emerald-500/20' : 'bg-red-500/20'}`}>
+                      {isPass ? (
+                        <svg className="h-3.5 w-3.5 text-emerald-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" />
+                        </svg>
+                      ) : (
+                        <motion.svg animate={{ scale: [1, 1.2, 1] }} transition={{ duration: 2, repeat: Infinity }} className="h-3.5 w-3.5 text-red-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                        </motion.svg>
+                      )}
+                    </div>
+                    <div className="min-w-0">
+                      <div className="text-[9px] text-slate-300 truncate font-mono">{typeof c?.name === 'object' ? JSON.stringify(c.name) : String(c?.name ?? '')}</div>
+                      <span className={`rounded px-1 py-0.5 text-[7px] font-bold ${isPass ? 'bg-emerald-500/10 text-emerald-400' : 'bg-red-500/10 text-red-400'}`}>
+                        {String(c?.category ?? '')}
+                      </span>
+                    </div>
+                  </motion.div>
+                )
+              })}
+            </div>
+          </div>
+        </motion.div>
+
+        {/* ===== 5. MISSION TIMELINE ===== */}
+        <motion.div variants={item} className="rounded-xl bg-slate-950/40 backdrop-blur-[12px] border border-white/[0.06] p-4 sm:p-5">
+          <div className="flex items-center gap-3 mb-4">
+            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-rose-500 to-purple-600">
+              <svg className="h-4 w-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+            </div>
+            <div>
+              <h2 className="text-sm font-bold text-white tracking-wider">Mission Timeline</h2>
+              <p className="text-[8px] text-slate-600 font-mono tracking-[0.15em]">SPACE LAUNCH SEQUENCE</p>
+            </div>
+            <div className="ml-auto flex items-center gap-2 rounded-lg border border-white/[0.06] bg-white/[0.03] px-3 py-1.5">
+              <svg className="h-3 w-3 text-amber-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+              <span className="text-[9px] font-mono text-amber-400">MISSION ELAPSED: {d.timeline ? d.timeline.filter(t => t.status === 'completed' || t.status === 'in_progress').length : 0}/{d.timeline ? d.timeline.length : 0} PHASES</span>
+            </div>
+          </div>
+          <div className="relative pb-2">
+            <div className="absolute top-1/2 left-4 right-4 h-0.5 -translate-y-1/2">
+              <div className="h-full w-full rounded-full bg-gradient-to-r from-emerald-500/40 via-amber-500/40 to-slate-700/40" />
+              <motion.div initial={{ width: '0%' }} animate={{ width: `${d.timeline ? Math.round(d.timeline.filter(t => t.status === 'completed').length / Math.max(1, d.timeline.length) * 100) : 0}%` }} transition={{ duration: 1.5 }}
+                className="absolute top-0 left-0 h-full rounded-full bg-gradient-to-r from-emerald-500 via-amber-500 to-amber-500/60" />
+            </div>
+            <div className="flex gap-3 overflow-x-auto pb-2 scrollbar-thin scrollbar-thumb-slate-700 scrollbar-track-transparent snap-x snap-mandatory">
+              {(d.timeline || []).map((phase, i) => {
+                const phaseStatus = String(phase?.status ?? '')
+                const phaseColor = phaseStatus === 'completed' ? '#22c55e' : phaseStatus === 'in_progress' ? '#f59e0b' : '#64748b'
+                return (
+                  <motion.div key={phase?.phase || i} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 + i * 0.08 }}
+                    className="snap-start shrink-0 w-48 rounded-lg border border-white/[0.06] bg-slate-900/60 p-3.5 hover:border-white/[0.12] transition-all">
+                    <div className="flex items-center gap-2 mb-2">
+                      <span className="h-2 w-2 shrink-0 rounded-full" style={{ backgroundColor: phaseColor }} />
+                      <span className="text-[10px] font-bold text-white tracking-wide font-mono">{typeof phase?.phase === 'object' ? JSON.stringify(phase.phase) : String(phase?.phase ?? '')}</span>
+                    </div>
+                    <div className="flex items-center gap-2 text-[8px] text-slate-500 font-mono mb-2">
+                      <span>{String(phase?.start ?? '')} - {String(phase?.end ?? '')}</span>
+                      <span className="text-slate-700">&middot;</span>
+                      <span>{String(phase?.duration ?? '')}</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <svg width="32" height="32" viewBox="0 0 32 32" className="-rotate-90 shrink-0">
+                        <circle cx="16" cy="16" r="12" fill="none" stroke="rgba(255,255,255,0.04)" strokeWidth="3" />
+                        <motion.circle cx="16" cy="16" r="12" fill="none" stroke={phaseColor} strokeWidth="3" strokeLinecap="round"
+                          strokeDasharray={2 * Math.PI * 12} initial={{ strokeDashoffset: 2 * Math.PI * 12 }}
+                          animate={{ strokeDashoffset: 2 * Math.PI * 12 * (1 - (phase?.progress || 0) / 100) }} transition={{ duration: 0.8, delay: i * 0.1, ease: 'easeOut' }} />
+                        <text x="16" y="19" textAnchor="middle" fill={phaseColor} fontSize="8" fontWeight="700" fontFamily="monospace" transform="rotate(90 16 16)">{phase?.progress || 0}%</text>
+                      </svg>
+                      <div>
+                        <span className={`rounded px-1.5 py-0.5 text-[7px] font-bold font-mono ${
+                          phaseStatus === 'completed' ? 'bg-emerald-500/10 text-emerald-400' :
+                          phaseStatus === 'in_progress' ? 'bg-amber-500/10 text-amber-400 animate-pulse' :
+                          'bg-slate-500/10 text-slate-400'
+                        }`}>{phaseStatus.replace('_', ' ')}</span>
+                      </div>
+                    </div>
+                  </motion.div>
+                )
+              })}
+            </div>
+          </div>
+        </motion.div>
+
         {/* ===== HEADER ===== */}
         <motion.div variants={item}>
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
