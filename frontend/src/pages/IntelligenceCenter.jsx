@@ -4,8 +4,10 @@ import Layout from '../components/Layout'
 import StatusBadge from '../components/StatusBadge'
 import NarrativeCTA from '../components/NarrativeCTA'
 import ExecutiveBanner from '../components/ExecutiveBanner'
-import ExecutiveSummary from '../components/ExecutiveSummary'
 import AIRecommendations from '../components/AIRecommendations'
+import PageHero from '../components/PageHero'
+import BusinessImpact from '../components/BusinessImpact'
+import InvestigationWorkflow from '../components/InvestigationWorkflow'
 
 const API_BASE = import.meta.env.VITE_API_URL || '/api'
 
@@ -781,6 +783,19 @@ export default function IntelligenceCenter() {
     <Layout>
       <motion.div variants={container} initial="hidden" animate="show" className="space-y-2 pb-4 overflow-x-hidden px-1 sm:px-0">
 
+        <div className="space-y-2 mb-2">
+          <PageHero
+            title="Investigate Root Cause"
+            subtitle="AI-powered investigation analyzing 47 services, 128 past incidents, and real-time telemetry to identify root cause and blast radius."
+            impact="$2.4M"
+            impactLabel="Revenue Protected"
+            confidence={94}
+          />
+          <BusinessImpact />
+          <AIRecommendations />
+          <InvestigationWorkflow />
+        </div>
+
         {/* ===== Investigation Query ===== */}
         <motion.div variants={item} className="glass-card p-2">
           <div className="flex items-center gap-1.5 mb-2">
@@ -1268,9 +1283,6 @@ export default function IntelligenceCenter() {
           </div>
         </motion.div>
 
-
-        <ExecutiveSummary pageTitle="Intelligence Center" confidence={94} />
-        <AIRecommendations />
 
         <ExecutiveBanner currentPage="/intelligence" />
 
