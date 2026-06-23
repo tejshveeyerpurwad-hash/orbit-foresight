@@ -1,7 +1,50 @@
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef, Component } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
+import { useNavigate } from 'react-router-dom'
 import Layout from '../components/Layout'
 import StatusBadge from '../components/StatusBadge'
+
+class PlanErrorBoundary extends Component {
+  constructor(props) {
+    super(props)
+    this.state = { hasError: false, error: null }
+  }
+  static getDerivedStateFromError(error) {
+    return { hasError: true, error }
+  }
+  componentDidCatch(error, info) {
+    console.error('[PlanErrorBoundary]', error, info)
+  }
+  render() {
+    if (this.state.hasError) {
+      return (
+        <Layout>
+          <div className="flex flex-col items-center justify-center min-h-[60vh] gap-6 text-center">
+            <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-red-500/10 border border-red-500/20">
+              <svg className="h-8 w-8 text-red-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" />
+              </svg>
+            </div>
+            <div>
+              <h2 className="text-lg font-semibold text-white mb-1">Plan Generation Failed</h2>
+              <p className="text-sm text-slate-400">An unexpected error occurred during plan generation.</p>
+            </div>
+            <button
+              onClick={() => { this.setState({ hasError: false, error: null }); window.location.reload() }}
+              className="inline-flex items-center gap-2 rounded-lg bg-violet-500 px-5 py-2.5 text-sm font-semibold text-white transition-all hover:bg-violet-400 active:scale-[0.97] shadow-lg shadow-violet-500/20"
+            >
+              <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182" />
+              </svg>
+              Retry Analysis
+            </button>
+          </div>
+        </Layout>
+      )
+    }
+    return this.props.children
+  }
+}
 
 const presets = [
   'Add payment retry support',
@@ -410,13 +453,113 @@ function ArchitectureDiagram({ services }) {
 const container = { hidden: {}, show: { transition: { staggerChildren: 0.04 } } }
 const item = { hidden: { opacity: 0, y: 20 }, show: { opacity: 1, y: 0 } }
 
+const loadingSteps = [
+  'AI analyzing...',
+  'Architecture review...',
+  'Risk assessment...',
+  'Sprint planning...',
+  'Finalizing plan...',
+]
+
+function LoadingState() {
+  const [step, setStep] = useState(0)
+  useEffect(() => {
+    if (step >= loadingSteps.length - 1) return
+    const t = setTimeout(() => setStep(s => Math.min(s + 1, loadingSteps.length - 1)), 800)
+    return () => clearTimeout(t)
+  }, [step])
+
+  return (
+    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-8">
+      <div className="flex items-center gap-3 mb-2">
+        <motion.div animate={{ rotate: 360 }} transition={{ repeat: Infinity, duration: 1.5, ease: 'linear' }}>
+          <svg className="h-5 w-5 text-violet-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182" />
+          </svg>
+        </motion.div>
+        <div>
+          <h2 className="text-sm font-semibold text-white">Generating Strategic Plan</h2>
+          <p className="text-[10px] text-slate-500">Analyzing scope, impact, and resources</p>
+        </div>
+      </div>
+      <div className="space-y-2">
+        {loadingSteps.map((s, i) => (
+          <div key={s} className={`flex items-center gap-3 text-sm transition-all duration-300 ${i <= step ? 'opacity-100' : 'opacity-30'}`}>
+            <div className={`flex h-6 w-6 shrink-0 items-center justify-center rounded-full transition-all duration-300 ${
+              i < step ? 'bg-green-500/20 text-green-400' : i === step ? 'bg-violet-500/20 text-violet-400' : 'bg-slate-800/60 text-slate-600'
+            }`}>
+              {i < step ? (
+                <svg className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}><path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" /></svg>
+              ) : i === step ? (
+                <motion.div animate={{ rotate: 360 }} transition={{ repeat: Infinity, duration: 1, ease: 'linear' }} className="h-3 w-3 border-2 border-violet-400 border-t-transparent rounded-full" />
+              ) : (
+                <span className="text-[10px]">{i + 1}</span>
+              )}
+            </div>
+            <span className={`transition-all duration-300 ${i === step ? 'text-white font-medium' : i < step ? 'text-slate-400' : 'text-slate-600'}`}>{s}</span>
+          </div>
+        ))}
+      </div>
+      <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+        {Array.from({ length: 5 }).map((_, i) => (
+          <div key={i} className="rounded-xl border border-slate-800 bg-slate-900/50 p-5 animate-pulse">
+            <div className="h-3 w-24 rounded bg-slate-800 mb-3" />
+            <div className="h-8 w-16 rounded bg-slate-800 mb-2" />
+            <div className="h-2 w-full rounded bg-slate-800" />
+          </div>
+        ))}
+      </div>
+      <div className="grid gap-3 sm:grid-cols-2">
+        <div className="rounded-xl border border-slate-800 bg-slate-900/50 p-5 animate-pulse">
+          <div className="h-3 w-40 rounded bg-slate-800 mb-4" />
+          {Array.from({ length: 5 }).map((_, j) => <div key={j} className="h-12 rounded bg-slate-800 mb-2" />)}
+        </div>
+        <div className="rounded-xl border border-slate-800 bg-slate-900/50 p-5 animate-pulse">
+          <div className="h-3 w-32 rounded bg-slate-800 mb-4" />
+          {Array.from({ length: 4 }).map((_, j) => <div key={j} className="h-10 rounded bg-slate-800 mb-2" />)}
+        </div>
+      </div>
+    </motion.div>
+  )
+}
+
+const suggestedTemplates = [
+  { title: 'Payment Retry System', desc: 'Add idempotent retry logic with circuit breaker', difficulty: 'Medium', duration: '3 sprints', color: 'violet' },
+  { title: 'Auth Migration', desc: 'Migrate from OAuth2 to OIDC with MFA support', difficulty: 'High', duration: '5 sprints', color: 'indigo' },
+  { title: 'Database Sharding', desc: 'Horizontal sharding for PostgreSQL read replicas', difficulty: 'High', duration: '4 sprints', color: 'red' },
+  { title: 'Observability Stack', desc: 'Deploy OpenTelemetry + Datadog across services', difficulty: 'Low', duration: '2 sprints', color: 'emerald' },
+]
+
+const recentPlans = [
+  { title: 'API Rate Limiter Refactor', updated: '2 hours ago', status: 'viewed' },
+  { title: 'Microservices Monitoring', updated: 'Yesterday', status: 'viewed' },
+  { title: 'Database Connection Pool', updated: '3 days ago', status: 'viewed' },
+]
+
 export default function AIEngineeringPlanner() {
+  const navigate = useNavigate()
   const [input, setInput] = useState('')
   const [planning, setPlanning] = useState(false)
-  const [plan, setPlan] = useState(mockPlan)
+  const [plan, setPlan] = useState(null)
   const [showPresets, setShowPresets] = useState(false)
   const [selectedPreset, setSelectedPreset] = useState(-1)
+  const [hasGenerated, setHasGenerated] = useState(false)
   const inputRef = useRef(null)
+
+  useEffect(() => {
+    if (!plan && !planning && !hasGenerated) {
+      const saved = sessionStorage.getItem('ai_planner_plan')
+      if (saved) {
+        try { setPlan(JSON.parse(saved)); setHasGenerated(true) } catch { sessionStorage.removeItem('ai_planner_plan') }
+      }
+    }
+  }, [])
+
+  useEffect(() => {
+    if (plan && hasGenerated) {
+      sessionStorage.setItem('ai_planner_plan', JSON.stringify(plan))
+    }
+  }, [plan, hasGenerated])
 
   const filtered = input.trim() ? presets.filter(p => p.toLowerCase().includes(input.toLowerCase())) : presets
 
@@ -424,10 +567,11 @@ export default function AIEngineeringPlanner() {
     if (!text.trim()) return
     setPlanning(true)
     setPlan(null)
+    setHasGenerated(true)
     setTimeout(() => {
       setPlan(mockPlan)
       setPlanning(false)
-    }, 2000)
+    }, 2800)
   }
 
   const handleKey = (e) => {
@@ -440,46 +584,132 @@ export default function AIEngineeringPlanner() {
 
   useEffect(() => { setSelectedPreset(-1) }, [input])
 
-  
+  const showEmpty = !plan && !planning
 
   return (
+    <PlanErrorBoundary>
     <Layout>
       <motion.div variants={container} initial="hidden" animate="show" className="space-y-6">
-        {planning && (
-          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-6">
-            <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-              {Array.from({ length: 5 }).map((_, i) => (
-                <div key={i} className="rounded-xl border border-slate-800 bg-slate-900/50 p-5 animate-pulse">
-                  <div className="h-3 w-24 rounded bg-slate-800 mb-3" />
-                  <div className="h-8 w-16 rounded bg-slate-800 mb-2" />
-                  <div className="h-2 w-full rounded bg-slate-800" />
-                </div>
-              ))}
-            </div>
-            <div className="grid gap-3 sm:grid-cols-2">
-              <div className="rounded-xl border border-slate-800 bg-slate-900/50 p-5 animate-pulse">
-                <div className="h-3 w-40 rounded bg-slate-800 mb-4" />
-                {Array.from({ length: 5 }).map((_, j) => <div key={j} className="h-12 rounded bg-slate-800 mb-2" />)}
+
+        {showEmpty && (
+          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-8">
+            <div className="flex flex-col items-center text-center gap-4 py-12">
+              <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-br from-violet-600/20 to-violet-500/10 border border-violet-500/20">
+                <svg className="h-8 w-8 text-violet-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25H12" />
+                </svg>
               </div>
-              <div className="rounded-xl border border-slate-800 bg-slate-900/50 p-5 animate-pulse">
-                <div className="h-3 w-32 rounded bg-slate-800 mb-4" />
-                {Array.from({ length: 4 }).map((_, j) => <div key={j} className="h-10 rounded bg-slate-800 mb-2" />)}
+              <div>
+                <h1 className="text-xl font-bold text-white mb-1">AI Engineering Planner</h1>
+                <p className="text-sm text-slate-400 max-w-md">Describe a feature, migration, or initiative and get a complete engineering plan with sprint breakdowns, risk analysis, and team allocation.</p>
               </div>
-            </div>
-            <div className="grid gap-3 sm:grid-cols-3">
-              {Array.from({ length: 3 }).map((_, i) => (
-                <div key={i} className="rounded-xl border border-slate-800 bg-slate-900/50 p-5 animate-pulse">
-                  <div className="h-3 w-28 rounded bg-slate-800 mb-3" />
-                  <div className="h-7 w-12 rounded bg-slate-800 mb-4" />
-                  <div className="h-2 w-full rounded bg-slate-800 mb-2" />
-                  <div className="h-2 w-3/4 rounded bg-slate-800" />
+              <form onSubmit={e => { e.preventDefault(); generate(input) }} className="w-full max-w-lg">
+                <div className="relative">
+                  <svg className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
+                  </svg>
+                  <input
+                    ref={inputRef}
+                    type="text"
+                    value={input}
+                    onChange={e => { setInput(e.target.value); setShowPresets(true) }}
+                    onFocus={() => setShowPresets(true)}
+                    onKeyDown={handleKey}
+                    placeholder="Describe a feature to plan..."
+                    className="w-full rounded-xl border border-slate-800 bg-slate-950 py-3.5 pl-11 pr-36 text-sm text-white placeholder-slate-600 outline-none focus:border-violet-500/40 transition-all"
+                  />
+                  <div className="absolute inset-y-1.5 right-1.5 flex items-center gap-1">
+                    <button
+                      type="submit"
+                      disabled={!input.trim()}
+                      className="inline-flex items-center gap-2 rounded-lg bg-violet-500 px-5 py-2.5 text-sm font-semibold text-white transition-all hover:bg-violet-400 active:scale-[0.97] disabled:opacity-50 disabled:cursor-not-allowed shadow-lg shadow-violet-500/20"
+                    >
+                      <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" /></svg>
+                      Generate Plan
+                    </button>
+                  </div>
                 </div>
-              ))}
+                <AnimatePresence>
+                  {showPresets && filtered.length > 0 && (
+                    <motion.div initial={{ opacity: 0, y: -4 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -4 }} className="mt-2 rounded-xl border border-slate-800 bg-slate-900 overflow-hidden">
+                      {filtered.map((s, i) => (
+                        <button key={s} type="button" className={`flex w-full items-center gap-3 px-4 py-2.5 text-left text-sm transition-colors ${i === selectedPreset ? 'bg-violet-500/10 text-violet-300' : 'text-slate-500 hover:bg-white/[0.04] hover:text-white'}`} onClick={() => { setInput(s); setShowPresets(false); generate(s) }}>
+                          <svg className="h-3.5 w-3.5 shrink-0 text-slate-700" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}><path strokeLinecap="round" strokeLinejoin="round" d="M20.25 7.5l-.625 10.632a2.25 2.25 0 01-2.247 2.118H6.622a2.25 2.25 0 01-2.247-2.118L3.75 7.5m8.25 3v6.75m0 0l-3-3m3 3l3-3M3.375 7.5h17.25c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125z" /></svg>
+                          {s}
+                        </button>
+                      ))}
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </form>
+            </div>
+
+            <div className="grid gap-6 lg:grid-cols-[1fr_auto]">
+              <div className="space-y-4">
+                <h3 className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Suggested Templates</h3>
+                <div className="grid gap-3 sm:grid-cols-2">
+                  {suggestedTemplates.map((t, i) => (
+                    <motion.button
+                      key={t.title}
+                      initial={{ opacity: 0, y: 12 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: 0.06 * i }}
+                      onClick={() => { setInput(t.title); generate(t.title) }}
+                      className="rounded-xl border border-slate-800 bg-slate-900/60 p-4 text-left hover:border-violet-500/30 hover:shadow-lg hover:shadow-violet-500/5 transition-all group"
+                    >
+                      <div className={`flex h-8 w-8 items-center justify-center rounded-lg bg-${t.color}-500/20 mb-3`}>
+                        <svg className={`h-4 w-4 text-${t.color}-400`} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25H12" />
+                        </svg>
+                      </div>
+                      <div className="text-sm font-semibold text-white mb-1 group-hover:text-violet-300 transition-colors">{t.title}</div>
+                      <p className="text-[10px] text-slate-400 leading-relaxed mb-2">{t.desc}</p>
+                      <div className="flex items-center gap-2 text-[9px] text-slate-600">
+                        <span className="rounded-full bg-slate-800/80 px-2 py-0.5">{t.difficulty}</span>
+                        <span className="rounded-full bg-slate-800/80 px-2 py-0.5">{t.duration}</span>
+                      </div>
+                    </motion.button>
+                  ))}
+                </div>
+              </div>
+              <div className="lg:w-64 space-y-4">
+                <h3 className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Recent Plans</h3>
+                <div className="space-y-2">
+                  {recentPlans.map((rp, i) => (
+                    <div key={i} className="rounded-lg border border-slate-800 bg-slate-900/60 p-3 hover:border-violet-500/30 transition-all cursor-pointer">
+                      <div className="text-[11px] font-medium text-white mb-0.5">{rp.title}</div>
+                      <div className="flex items-center gap-2 text-[8px] text-slate-600">
+                        <span>{rp.updated}</span>
+                        <span className="h-1 w-1 rounded-full bg-slate-700" />
+                        <span className="text-violet-400">{rp.status}</span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+                <h3 className="text-xs font-semibold text-slate-500 uppercase tracking-wider pt-4">Quick Start</h3>
+                <div className="grid grid-cols-2 gap-2">
+                  {[
+                    { label: 'Try Examples', icon: 'M2.25 15.75l5.159-5.159a2.25 2.25 0 013.182 0l5.159 5.159m-1.5-1.5l1.409-1.41a2.25 2.25 0 013.182 0l2.909 2.91m-18 3.75h16.5a1.5 1.5 0 001.5-1.5V6a1.5 1.5 0 00-1.5-1.5H3.75A1.5 1.5 0 002.25 6v12a1.5 1.5 0 001.5 1.5zm10.5-11.25h.008v.008h-.008V8.25zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z' },
+                    { label: 'Watch Demo', icon: 'M15.75 10.5l4.72-4.72a.75.75 0 011.28.53v11.38a.75.75 0 01-1.28.53l-4.72-4.72M4.5 18.75h9a2.25 2.25 0 002.25-2.25v-9a2.25 2.25 0 00-2.25-2.25h-9A2.25 2.25 0 002.25 7.5v9a2.25 2.25 0 002.25 2.25z' },
+                    { label: 'View API', icon: 'M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5A2.25 2.25 0 015.25 9h13.5A2.25 2.25 0 0121 11.25v7.5' },
+                    { label: 'Docs', icon: 'M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m2.25 0H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z' },
+                  ].map((q, i) => (
+                    <button key={i} className="flex flex-col items-center gap-1.5 rounded-lg border border-slate-800 bg-slate-900/60 p-3 text-center hover:border-violet-500/30 transition-all">
+                      <svg className="h-4 w-4 text-violet-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                        <path strokeLinecap="round" strokeLinejoin="round" d={q.icon} />
+                      </svg>
+                      <span className="text-[9px] text-slate-400">{q.label}</span>
+                    </button>
+                  ))}
+                </div>
+              </div>
             </div>
           </motion.div>
         )}
 
-        <AnimatePresence>
+        {planning && <LoadingState />}
+
+        <AnimatePresence mode="wait">
           {plan && !planning && (
             <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="space-y-6">
 
@@ -1214,5 +1444,8 @@ export default function AIEngineeringPlanner() {
         </AnimatePresence>
       </motion.div>
     </Layout>
+    </PlanErrorBoundary>
   )
 }
+
+export { PlanErrorBoundary }

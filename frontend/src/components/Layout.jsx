@@ -1,84 +1,463 @@
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useCallback, useRef } from 'react'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import QuickActionBar from './QuickActionBar'
 import Footer from './Footer'
+import CommandPalette from './CommandPalette'
+import NotificationCenter from './NotificationCenter'
+import CommandCenterDrawer from './CommandCenterDrawer'
 
-const workflow = [
-  { to: '/dashboard', label: 'Situation', shortcut: '⌘1', stage: 1, desc: 'What is happening right now?' },
-  { to: '/intelligence', label: 'Investigate', shortcut: '⌘2', stage: 2, desc: 'Find the root cause' },
-  { to: '/time-machine', label: 'Time Machine', shortcut: '⌘3', stage: 3, desc: 'Replay incident history' },
-  { to: '/knowledge-graph', label: 'Dependency Map', shortcut: '⌘4', stage: 4, desc: 'Map the blast radius' },
-  { to: '/cto-report', label: 'Impact', shortcut: '⌘5', stage: 5, desc: 'Quantify business cost' },
-  { to: '/execution-planner', label: 'Execute', shortcut: '⌘6', stage: 6, desc: 'Deploy the fix' },
+/* ─────────────────────────────────────────────────────────────
+   Navigation definition
+───────────────────────────────────────────────────────────── */
+const NAV_ITEMS = [
+  { to: '/dashboard',          label: 'Dashboard',      icon: 'M3.75 6A2.25 2.25 0 016 3.75h2.25A2.25 2.25 0 0110.5 6v2.25a2.25 2.25 0 01-2.25 2.25H6a2.25 2.25 0 01-2.25-2.25V6zM3.75 15.75A2.25 2.25 0 016 13.5h2.25a2.25 2.25 0 012.25 2.25V18a2.25 2.25 0 01-2.25 2.25H6A2.25 2.25 0 013.75 18v-2.25zM13.5 6a2.25 2.25 0 012.25-2.25H18A2.25 2.25 0 0120.25 6v2.25A2.25 2.25 0 0118 10.5h-2.25a2.25 2.25 0 01-2.25-2.25V6zM13.5 15.75a2.25 2.25 0 012.25-2.25H18a2.25 2.25 0 012.25 2.25V18A2.25 2.25 0 0118 20.25h-2.25A2.25 2.25 0 0113.5 18v-2.25z' },
+  { to: '/intelligence',       label: 'Intelligence',   icon: 'M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09zM18.259 8.715L18 9.75l-.259-1.035a3.375 3.375 0 00-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 002.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 002.455 2.456L21.75 6l-1.036.259a3.375 3.375 0 00-2.455 2.456z' },
+  { to: '/time-machine',       label: 'Time Machine',   icon: 'M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z' },
+  { to: '/knowledge-graph',    label: 'Dependency Map', icon: 'M2.25 12.75V12A2.25 2.25 0 014.5 9.75h15A2.25 2.25 0 0121.75 12v.75m-8.69-6.44l-2.12-2.12a1.5 1.5 0 00-1.061-.44H4.5A2.25 2.25 0 002.25 6v12a2.25 2.25 0 002.25 2.25h15A2.25 2.25 0 0021.75 18V9a2.25 2.25 0 00-2.25-2.25h-5.379a1.5 1.5 0 01-1.06-.44z' },
+  { to: '/cto-report',         label: 'Impact',         icon: 'M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z' },
+  { to: '/ai-planner',         label: 'AI Planner',     icon: 'M8.25 3v1.5M4.5 8.25H3m18 0h-1.5M4.5 12H3m18 0h-1.5m-15 3.75H3m18 0h-1.5M8.25 19.5V21M12 3v1.5m0 15V21m3.75-18v1.5m0 15V21m-9-1.5h10.5a2.25 2.25 0 002.25-2.25V6.75a2.25 2.25 0 00-2.25-2.25H6.75A2.25 2.25 0 004.5 6.75v10.5a2.25 2.25 0 002.25 2.25zm.75-12h9v9h-9v-9z' },
+  { to: '/execution-planner',  label: 'Execute',        icon: 'M3.75 12h16.5m-16.5 3.75h16.5M3.75 19.5h16.5M5.625 4.5h12.75a1.875 1.875 0 010 3.75H5.625a1.875 1.875 0 010-3.75z' },
+  { to: '/analytics',          label: 'Analytics',      icon: 'M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v6.75C7.5 20.496 6.996 21 6.375 21h-2.25A1.125 1.125 0 013 19.875v-6.75zM9.75 8.625c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125v11.25c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V8.625zM16.5 4.125c0-.621.504-1.125 1.125-1.125h2.25C20.496 3 21 3.504 21 4.125v15.75c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V4.125z' },
 ]
 
-const storyNarrative = [
-  'anomalies detected',
-  'root cause identified',
-  'historical match found',
-  'blast radius mapped',
-  'business impact estimated',
-  'remediation plan ready',
+const WORKFLOW = [
+  { to: '/dashboard',         label: 'Dashboard',      stage: 1, desc: 'What is happening right now?' },
+  { to: '/intelligence',      label: 'Intelligence',   stage: 2, desc: 'Find the root cause' },
+  { to: '/time-machine',      label: 'Time Machine',   stage: 3, desc: 'Replay incident history' },
+  { to: '/knowledge-graph',   label: 'Dependency Map', stage: 4, desc: 'Map the blast radius' },
+  { to: '/cto-report',        label: 'Impact',         stage: 5, desc: 'Quantify business cost' },
+  { to: '/ai-planner',        label: 'AI Planner',     stage: 6, desc: 'Plan the response' },
+  { to: '/execution-planner', label: 'Execute',        stage: 7, desc: 'Deploy the fix' },
+  { to: '/analytics',         label: 'Analytics',      stage: 8, desc: 'Measure outcomes' },
 ]
 
-const sidebarNav = [
-  { to: '/dashboard', label: 'Dashboard', icon: 'M3.75 6A2.25 2.25 0 016 3.75h2.25A2.25 2.25 0 0110.5 6v2.25a2.25 2.25 0 01-2.25 2.25H6a2.25 2.25 0 01-2.25-2.25V6zM3.75 15.75A2.25 2.25 0 016 13.5h2.25a2.25 2.25 0 012.25 2.25V18a2.25 2.25 0 01-2.25 2.25H6A2.25 2.25 0 013.75 18v-2.25zM13.5 6a2.25 2.25 0 012.25-2.25H18A2.25 2.25 0 0120.25 6v2.25A2.25 2.25 0 0118 10.5h-2.25a2.25 2.25 0 01-2.25-2.25V6zM13.5 15.75a2.25 2.25 0 012.25-2.25H18a2.25 2.25 0 012.25 2.25V18A2.25 2.25 0 0118 20.25h-2.25A2.25 2.25 0 0113.5 18v-2.25z' },
-  { to: '/intelligence', label: 'Investigate', icon: 'M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09zM18.259 8.715L18 9.75l-.259-1.035a3.375 3.375 0 00-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 002.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 002.455 2.456L21.75 6l-1.036.259a3.375 3.375 0 00-2.455 2.456z' },
-  { to: '/time-machine', label: 'Time Machine', icon: 'M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z' },
-  { to: '/knowledge-graph', label: 'Dependency Map', icon: 'M2.25 12.75V12A2.25 2.25 0 014.5 9.75h15A2.25 2.25 0 0121.75 12v.75m-8.69-6.44l-2.12-2.12a1.5 1.5 0 00-1.061-.44H4.5A2.25 2.25 0 002.25 6v12a2.25 2.25 0 002.25 2.25h15A2.25 2.25 0 0021.75 18V9a2.25 2.25 0 00-2.25-2.25h-5.379a1.5 1.5 0 01-1.06-.44z' },
-  { to: '/cto-report', label: 'Impact', icon: 'M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z' },
-  { to: '/execution-planner', label: 'Execute', icon: 'M3.75 12h16.5m-16.5 3.75h16.5M3.75 19.5h16.5M5.625 4.5h12.75a1.875 1.875 0 010 3.75H5.625a1.875 1.875 0 010-3.75z' },
-  { to: '/analytics', label: 'Analytics', icon: 'M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v6.75C7.5 20.496 6.996 21 6.375 21h-2.25A1.125 1.125 0 013 19.875v-6.75zM9.75 8.625c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125v11.25c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V8.625zM16.5 4.125c0-.621.504-1.125 1.125-1.125h2.25C20.496 3 21 3.504 21 4.125v15.75c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V4.125z' },
-  { to: '/help', label: 'Documentation', icon: 'M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0018 18a8.967 8.967 0 00-6 2.292m0-14.25v14.25' },
-  { to: '/settings', label: 'Settings', icon: 'M9.594 3.94c.09-.542.56-.94 1.11-.94h2.593c.55 0 1.02.398 1.11.94l.213 1.281c.063.374.313.686.645.87.074.04.147.083.22.127.325.196.72.257 1.075.124l1.217-.456a1.125 1.125 0 011.37.49l1.296 2.247a1.125 1.125 0 01-.26 1.431l-1.003.827c-.293.241-.438.613-.43.992a7.723 7.723 0 010 .255c-.008.378.137.75.43.991l1.004.827c.424.35.534.955.26 1.43l-1.298 2.247a1.125 1.125 0 01-1.369.491l-1.217-.456c-.355-.133-.75-.072-1.076.124a6.47 6.47 0 01-.22.128c-.331.183-.581.495-.644.869l-.213 1.281c-.09.543-.56.94-1.11.94h-2.594c-.55 0-1.019-.398-1.11-.94l-.213-1.281c-.062-.374-.312-.686-.644-.87a6.52 6.52 0 01-.22-.127c-.325-.196-.72-.257-1.076-.124l-1.217.456a1.125 1.125 0 01-1.369-.49l-1.297-2.247a1.125 1.125 0 01.26-1.431l1.004-.827c.292-.24.437-.613.43-.991a6.932 6.932 0 010-.255c.007-.38-.138-.751-.43-.992l-1.004-.827a1.125 1.125 0 01-.26-1.43l1.297-2.247a1.125 1.125 0 011.37-.491l1.216.456c.356.133.751.072 1.076-.124.072-.044.146-.086.22-.128.332-.183.582-.495.644-.869l.214-1.28z' },
+const SIDEBAR_NAV = [
+  ...NAV_ITEMS,
+  { to: '/help',     label: 'Documentation', icon: 'M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0018 18a8.967 8.967 0 00-6 2.292m0-14.25v14.25' },
+  { to: '/settings', label: 'Settings',      icon: 'M9.594 3.94c.09-.542.56-.94 1.11-.94h2.593c.55 0 1.02.398 1.11.94l.213 1.281c.063.374.313.686.645.87.074.04.147.083.22.127.325.196.72.257 1.075.124l1.217-.456a1.125 1.125 0 011.37.49l1.296 2.247a1.125 1.125 0 01-.26 1.431l-1.003.827c-.293.241-.438.613-.43.992a7.723 7.723 0 010 .255c-.008.378.137.75.43.991l1.004.827c.424.35.534.955.26 1.43l-1.298 2.247a1.125 1.125 0 01-1.369.491l-1.217-.456c-.355-.133-.75-.072-1.076.124a6.47 6.47 0 01-.22.128c-.331.183-.581.495-.644.869l-.213 1.281c-.09.543-.56.94-1.11.94h-2.594c-.55 0-1.019-.398-1.11-.94l-.213-1.281c-.062-.374-.312-.686-.644-.87a6.52 6.52 0 01-.22-.127c-.325-.196-.72-.257-1.076-.124l-1.217.456a1.125 1.125 0 01-1.369-.49l-1.297-2.247a1.125 1.125 0 01.26-1.431l1.004-.827c.292-.24.437-.613.43-.991a6.932 6.932 0 010-.255c.007-.38-.138-.751-.43-.992l-1.004-.827a1.125 1.125 0 01-.26-1.43l1.297-2.247a1.125 1.125 0 011.37-.491l1.216.456c.356.133.751.072 1.076-.124.072-.044.146-.086.22-.128.332-.183.582-.495.644-.869l.214-1.28z' },
 ]
 
+/* ─────────────────────────────────────────────────────────────
+   Theme helpers
+───────────────────────────────────────────────────────────── */
+function getInitialTheme() {
+  try {
+    const saved = localStorage.getItem('of-theme')
+    if (saved) return saved
+    if (window.matchMedia('(prefers-color-scheme: dark)').matches) return 'dark'
+  } catch {}
+  return 'dark'
+}
+
+/* ─────────────────────────────────────────────────────────────
+   Global CSS
+───────────────────────────────────────────────────────────── */
+const GLOBAL_STYLES = `
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+
+  * { font-family: 'Inter', system-ui, -apple-system, sans-serif; box-sizing: border-box; }
+
+  /* ── Theme variables ── */
+  :root {
+    --bg-base: #0a0f1d;
+    --bg-card: rgba(15,23,42,0.6);
+    --border: rgba(255,255,255,0.07);
+    --text-primary: #f1f5f9;
+    --text-secondary: #94a3b8;
+    --text-muted: #475569;
+    --navbar-bg: rgba(10,15,29,0.82);
+    --particle-opacity: 0.45;
+  }
+  .of-light {
+    --bg-base: #f8fafc;
+    --bg-card: rgba(255,255,255,0.85);
+    --border: rgba(0,0,0,0.09);
+    --text-primary: #0f172a;
+    --text-secondary: #475569;
+    --text-muted: #94a3b8;
+    --navbar-bg: rgba(248,250,252,0.88);
+    --particle-opacity: 0.15;
+  }
+
+  /* ── Theme transition ── */
+  .of-theme-transition * { transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease !important; }
+
+  /* ── Background canvas ── */
+  body { background: var(--bg-base); color: var(--text-primary); margin: 0; }
+
+  /* ── Animated grid ── */
+  @keyframes grid-drift {
+    0%   { transform: translate(0,0); }
+    100% { transform: translate(40px,40px); }
+  }
+  .of-bg-grid {
+    position: fixed; inset: -80px; pointer-events: none; z-index: 0;
+    background-image:
+      linear-gradient(rgba(6,182,212,0.04) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(6,182,212,0.04) 1px, transparent 1px);
+    background-size: 48px 48px;
+    animation: grid-drift 20s linear infinite;
+    will-change: transform;
+  }
+  .of-light .of-bg-grid {
+    background-image:
+      linear-gradient(rgba(6,182,212,0.06) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(6,182,212,0.06) 1px, transparent 1px);
+  }
+
+  /* ── Particles ── */
+  @keyframes float-up {
+    0%   { transform: translateY(0) scale(0); opacity: 0; }
+    10%  { opacity: var(--particle-opacity); transform: translateY(-10px) scale(1); }
+    90%  { opacity: var(--particle-opacity); }
+    100% { transform: translateY(-120px) scale(0.4); opacity: 0; }
+  }
+  @keyframes float-drift {
+    0%,100% { transform: translateX(0) translateY(0); }
+    33%  { transform: translateX(18px) translateY(-12px); }
+    66%  { transform: translateX(-12px) translateY(-8px); }
+  }
+  .of-particle { position: absolute; border-radius: 50%; will-change: transform, opacity; }
+  .of-p1 { width:3px; height:3px; background:#06b6d4; animation: float-up 7s ease-in-out infinite; }
+  .of-p2 { width:2px; height:2px; background:#8b5cf6; animation: float-up 9s ease-in-out infinite 2s; }
+  .of-p3 { width:2px; height:2px; background:#22d3ee; animation: float-up 11s ease-in-out infinite 4s; }
+  .of-p4 { width:4px; height:4px; background:#06b6d4; animation: float-drift 14s ease-in-out infinite; opacity:0.2; }
+  .of-p5 { width:3px; height:3px; background:#a78bfa; animation: float-drift 18s ease-in-out infinite 3s; opacity:0.15; }
+
+  /* ── Aurora ── */
+  @keyframes aurora-a { 0%{transform:translate(-30%,-30%) rotate(0deg);} 50%{transform:translate(10%,-10%) rotate(180deg);} 100%{transform:translate(-30%,-30%) rotate(360deg);} }
+  @keyframes aurora-b { 0%{transform:translate(30%,20%) rotate(0deg);} 50%{transform:translate(-10%,10%) rotate(-180deg);} 100%{transform:translate(30%,20%) rotate(-360deg);} }
+  .of-aurora-a { animation: aurora-a 22s ease-in-out infinite; }
+  .of-aurora-b { animation: aurora-b 28s ease-in-out infinite; }
+
+  /* ── Network lines (SVG layer) ── */
+  @keyframes dash-flow { to { stroke-dashoffset: -200; } }
+  .of-net-line { stroke-dasharray: 8 12; animation: dash-flow 4s linear infinite; opacity:0.12; }
+  .of-light .of-net-line { opacity: 0.07; }
+
+  /* ── Navbar ── */
+  @keyframes live-pulse { 0%,100%{box-shadow:0 0 0 0 rgba(52,211,153,0.4);} 50%{box-shadow:0 0 0 5px rgba(52,211,153,0);} }
+  @keyframes active-glow { 0%,100%{box-shadow:0 0 14px -4px rgba(6,182,212,0.15);} 50%{box-shadow:0 0 28px -4px rgba(6,182,212,0.4);} }
+  @keyframes orbit-spin { to { transform: rotate(360deg); } }
+  @keyframes ping-slow { 0%{transform:scale(1);opacity:.8;} 75%,100%{transform:scale(2.1);opacity:0;} }
+  @keyframes glitch-pulse { 0%,100%{opacity:.6;} 50%{opacity:1;} }
+  @keyframes grad-border { 0%,100%{background-position:0% 50%;} 50%{background-position:100% 50%;} }
+  @keyframes slide-down { from{opacity:0;transform:translateY(-8px);} to{opacity:1;transform:translateY(0);} }
+
+  .nb-orbit { animation: orbit-spin 8s linear infinite; }
+  .nb-ping  { animation: ping-slow 1.8s cubic-bezier(0,0,0.2,1) infinite; }
+  .nb-live-pulse { animation: live-pulse 2.2s ease-in-out infinite; }
+  .nb-active-glow { animation: active-glow 3s ease-in-out infinite; }
+  .nb-glitch { animation: glitch-pulse 2s ease-in-out infinite; }
+  .nb-aurora-a { animation: aurora-a 22s ease-in-out infinite; }
+  .nb-aurora-b { animation: aurora-b 28s ease-in-out infinite; }
+
+  .nb-glass {
+    background: var(--navbar-bg);
+    backdrop-filter: blur(24px) saturate(180%);
+    -webkit-backdrop-filter: blur(24px) saturate(180%);
+    border-bottom: 1px solid var(--border);
+    box-shadow: 0 1px 0 rgba(255,255,255,0.03), 0 4px 24px -8px rgba(6,182,212,0.06);
+  }
+  .of-light .nb-glass { box-shadow: 0 1px 0 rgba(0,0,0,0.05), 0 2px 16px -4px rgba(6,182,212,0.04); }
+
+  .nb-nav-link {
+    position: relative; display: flex; align-items: center; gap: 5px;
+    padding: 6px 12px; border-radius: 9px;
+    font-size: 13px; font-weight: 500;
+    color: var(--text-secondary);
+    white-space: nowrap; text-decoration: none;
+    letter-spacing: -0.01em; border: 1px solid transparent;
+    transition: color .2s, background .2s, transform .15s, border-color .2s;
+  }
+  .nb-nav-link:hover { color: var(--text-primary); background: rgba(255,255,255,0.04); transform: translateY(-1px); }
+  .of-light .nb-nav-link:hover { background: rgba(6,182,212,0.06); }
+  .nb-nav-link:active { transform: scale(0.97); }
+  .nb-nav-link.nb-active {
+    color: var(--text-primary); font-weight: 600;
+    background: rgba(6,182,212,0.08); border-color: rgba(6,182,212,0.2);
+  }
+  .nb-nav-link.nb-active::after {
+    content:''; position:absolute; bottom:-1px; left:20%; right:20%;
+    height:2px; border-radius:2px;
+    background: linear-gradient(90deg,transparent,#06b6d4,transparent);
+  }
+  .of-light .nb-nav-link.nb-active { background: rgba(6,182,212,0.1); border-color: rgba(6,182,212,0.25); }
+
+  .nb-sep { width:1px; height:20px; background: var(--border); flex-shrink:0; }
+  .nb-icon-btn {
+    position:relative; display:flex; align-items:center; justify-content:center;
+    width:32px; height:32px; border-radius:9px;
+    color: var(--text-muted); transition: color .2s, background .2s;
+    cursor:pointer; background:none; border:none; padding:0;
+  }
+  .nb-icon-btn:hover { color: var(--text-secondary); background: rgba(255,255,255,0.05); }
+  .of-light .nb-icon-btn:hover { background: rgba(6,182,212,0.08); }
+
+  .nb-search-btn {
+    display:flex; align-items:center; gap:6px;
+    padding:5px 11px; border-radius:9px;
+    border: 1px solid var(--border);
+    background: rgba(255,255,255,0.025);
+    color: var(--text-muted); font-size:12px; font-weight:500;
+    cursor:pointer; transition:all .2s; white-space:nowrap;
+  }
+  .nb-search-btn:hover { border-color:rgba(6,182,212,.25); color:var(--text-secondary); box-shadow:0 0 14px -4px rgba(6,182,212,.12); }
+
+  .nb-avatar {
+    width:30px; height:30px; border-radius:50%;
+    background: linear-gradient(135deg,#06b6d4,#7c3aed);
+    display:flex; align-items:center; justify-content:center;
+    font-size:10px; font-weight:800; color:#fff;
+    box-shadow:0 0 14px -3px rgba(6,182,212,.35), 0 0 0 1px rgba(255,255,255,.08);
+    cursor:pointer; transition:box-shadow .2s;
+  }
+  .nb-avatar:hover { box-shadow:0 0 22px -3px rgba(6,182,212,.5), 0 0 0 2px rgba(6,182,212,.2); }
+
+  .nb-conf-badge {
+    display:flex; align-items:center; gap:4px;
+    padding:3px 9px; border-radius:20px;
+    border:1px solid rgba(6,182,212,.2); background:rgba(6,182,212,.06);
+    font-size:11px; font-weight:700; color:#22d3ee;
+    letter-spacing:.02em; cursor:default;
+    transition:border-color .2s, box-shadow .2s;
+  }
+  .nb-conf-badge:hover { border-color:rgba(6,182,212,.4); box-shadow:0 0 16px -4px rgba(6,182,212,.2); }
+
+  .nb-notif-badge {
+    position:absolute; top:-3px; right:-3px;
+    width:8px; height:8px; border-radius:50%;
+    background:#ef4444; border:1.5px solid var(--bg-base);
+    box-shadow:0 0 6px rgba(239,68,68,.6);
+  }
+
+  .nb-grid {
+    background-image:
+      linear-gradient(rgba(255,255,255,.003) 1px,transparent 1px),
+      linear-gradient(90deg,rgba(255,255,255,.003) 1px,transparent 1px);
+    background-size: 56px 56px;
+  }
+
+  /* ── Back button ── */
+  .nb-back-btn {
+    display:flex; align-items:center; gap:5px;
+    padding:5px 10px; border-radius:8px;
+    border: 1px solid var(--border);
+    background: transparent;
+    color: var(--text-muted); font-size:12px; font-weight:500;
+    cursor:pointer; transition:all .2s;
+    white-space:nowrap;
+  }
+  .nb-back-btn:hover {
+    color: var(--text-secondary);
+    border-color: rgba(6,182,212,.25);
+    background: rgba(6,182,212,.04);
+    transform: translateX(-2px);
+  }
+
+  /* ── Theme toggle ── */
+  .nb-theme-btn {
+    display:flex; align-items:center; gap:6px;
+    padding:5px 10px; border-radius:8px;
+    border:1px solid var(--border);
+    background:transparent; color:var(--text-muted);
+    font-size:11px; font-weight:600; cursor:pointer;
+    transition:all .2s; white-space:nowrap;
+  }
+  .nb-theme-btn:hover { border-color:rgba(6,182,212,.25); color:var(--text-secondary); background:rgba(6,182,212,.04); }
+
+  /* ── Mobile back float ── */
+  .of-mobile-back {
+    position:fixed; bottom:80px; left:16px; z-index:40;
+    display:none;
+  }
+  @media (max-width: 1024px) { .of-mobile-back { display:flex; } }
+
+  /* ── Glass card global ── */
+  .of-glass-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    backdrop-filter: blur(12px);
+    border-radius: 14px;
+    transition: border-color .2s, box-shadow .2s;
+  }
+  .of-glass-card:hover { border-color: rgba(6,182,212,.15); box-shadow: 0 8px 32px -12px rgba(6,182,212,.12); }
+`
+
+/* ─────────────────────────────────────────────────────────────
+   Background canvas — particles + network SVG
+───────────────────────────────────────────────────────────── */
+const PARTICLES = [
+  { style: { left:'8%',  top:'20%' }, cls: 'of-p1' },
+  { style: { left:'25%', top:'65%' }, cls: 'of-p2' },
+  { style: { left:'55%', top:'15%' }, cls: 'of-p3' },
+  { style: { left:'72%', top:'78%' }, cls: 'of-p1' },
+  { style: { left:'88%', top:'40%' }, cls: 'of-p2' },
+  { style: { left:'15%', top:'85%' }, cls: 'of-p3' },
+  { style: { left:'42%', top:'45%' }, cls: 'of-p4' },
+  { style: { left:'65%', top:'30%' }, cls: 'of-p5' },
+  { style: { left:'90%', top:'15%' }, cls: 'of-p1' },
+  { style: { left:'35%', top:'90%' }, cls: 'of-p2' },
+  { style: { left:'78%', top:'60%' }, cls: 'of-p4' },
+  { style: { left:'5%',  top:'50%' }, cls: 'of-p5' },
+]
+
+function PremiumBackground({ isDark }) {
+  return (
+    <div className="fixed inset-0 pointer-events-none overflow-hidden" style={{ zIndex: 0 }} aria-hidden>
+      {/* Animated grid */}
+      <div className="of-bg-grid" />
+
+      {/* Aurora blobs */}
+      <div className="absolute w-1/2 h-1/2 rounded-full blur-[140px] of-aurora-a"
+        style={{ top:'-15%', left:'-15%', background: isDark ? 'rgba(6,182,212,0.028)' : 'rgba(6,182,212,0.06)' }} />
+      <div className="absolute w-1/2 h-1/2 rounded-full blur-[140px] of-aurora-b"
+        style={{ bottom:'-15%', right:'-15%', background: isDark ? 'rgba(139,92,246,0.022)' : 'rgba(139,92,246,0.05)' }} />
+      <div className="absolute w-1/3 h-1/3 rounded-full blur-[100px] of-aurora-a"
+        style={{ top:'40%', left:'40%', background: isDark ? 'rgba(59,130,246,0.018)' : 'rgba(59,130,246,0.04)', animationDelay:'-6s' }} />
+
+      {/* Network SVG lines */}
+      <svg className="absolute inset-0 w-full h-full" viewBox="0 0 1440 900" preserveAspectRatio="xMidYMid slice">
+        <line x1="120" y1="200" x2="360" y2="150" className="of-net-line" stroke="#06b6d4" strokeWidth="1" />
+        <line x1="360" y1="150" x2="720" y2="300" className="of-net-line" stroke="#06b6d4" strokeWidth="1" style={{ animationDelay:'-1s' }} />
+        <line x1="720" y1="300" x2="1080" y2="180" className="of-net-line" stroke="#8b5cf6" strokeWidth="1" style={{ animationDelay:'-2s' }} />
+        <line x1="1080" y1="180" x2="1320" y2="400" className="of-net-line" stroke="#06b6d4" strokeWidth="1" style={{ animationDelay:'-3s' }} />
+        <line x1="200" y1="600" x2="560" y2="500" className="of-net-line" stroke="#8b5cf6" strokeWidth="1" style={{ animationDelay:'-0.5s' }} />
+        <line x1="560" y1="500" x2="900" y2="650" className="of-net-line" stroke="#06b6d4" strokeWidth="1" style={{ animationDelay:'-1.5s' }} />
+        <line x1="900" y1="650" x2="1200" y2="580" className="of-net-line" stroke="#8b5cf6" strokeWidth="1" style={{ animationDelay:'-2.5s' }} />
+        {/* Node dots */}
+        {[[120,200],[360,150],[720,300],[1080,180],[1320,400],[200,600],[560,500],[900,650],[1200,580]].map(([cx,cy],i) => (
+          <circle key={i} cx={cx} cy={cy} r="2.5" fill="#06b6d4" opacity={isDark ? 0.2 : 0.1} />
+        ))}
+      </svg>
+
+      {/* Floating particles */}
+      {PARTICLES.map((p, i) => (
+        <div key={i} className={`of-particle ${p.cls}`} style={{ ...p.style, animationDelay: `${i * 0.7}s` }} />
+      ))}
+    </div>
+  )
+}
+
+/* ─────────────────────────────────────────────────────────────
+   Theme toggle button
+───────────────────────────────────────────────────────────── */
+function ThemeToggle({ theme, onChange }) {
+  const options = [
+    { key: 'dark',   icon: '🌙', label: 'Dark'   },
+    { key: 'light',  icon: '☀️', label: 'Light'  },
+    { key: 'system', icon: '💻', label: 'System' },
+  ]
+  const [open, setOpen] = useState(false)
+  const ref = useRef(null)
+  useEffect(() => {
+    const handler = (e) => { if (ref.current && !ref.current.contains(e.target)) setOpen(false) }
+    document.addEventListener('mousedown', handler)
+    return () => document.removeEventListener('mousedown', handler)
+  }, [])
+  const current = options.find(o => o.key === theme) || options[0]
+  return (
+    <div ref={ref} className="relative hidden md:block">
+      <button className="nb-theme-btn" onClick={() => setOpen(o => !o)} id="nav-theme-toggle" aria-label="Toggle theme">
+        <span>{current.icon}</span>
+        <span className="hidden xl:inline">{current.label}</span>
+        <svg className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+          <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
+        </svg>
+      </button>
+      <AnimatePresence>
+        {open && (
+          <motion.div
+            initial={{ opacity:0, y:-6, scale:0.96 }}
+            animate={{ opacity:1, y:0, scale:1 }}
+            exit={{ opacity:0, y:-4, scale:0.97 }}
+            transition={{ duration:.15 }}
+            className="absolute right-0 top-full mt-2 w-36 rounded-xl border overflow-hidden shadow-2xl"
+            style={{ background:'var(--bg-base)', borderColor:'var(--border)', zIndex:100 }}
+          >
+            {options.map(o => (
+              <button key={o.key}
+                onClick={() => { onChange(o.key); setOpen(false) }}
+                className="w-full flex items-center gap-2.5 px-3 py-2.5 text-sm transition-all text-left"
+                style={{
+                  color: theme === o.key ? '#22d3ee' : 'var(--text-secondary)',
+                  background: theme === o.key ? 'rgba(6,182,212,0.08)' : 'transparent',
+                  fontWeight: theme === o.key ? 600 : 400,
+                }}
+              >
+                <span>{o.icon}</span>
+                <span>{o.label}</span>
+                {theme === o.key && <span className="ml-auto text-cyan-400">✓</span>}
+              </button>
+            ))}
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
+  )
+}
+
+/* ─────────────────────────────────────────────────────────────
+   Main Layout
+───────────────────────────────────────────────────────────── */
 export default function Layout({ children }) {
   const { pathname } = useLocation()
   const navigate = useNavigate()
-  const [sidebarOpen, setSidebarOpen] = useState(false)
-  const [searchOpen, setSearchOpen] = useState(false)
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const [presentMode, setPresentMode] = useState(false)
   const [isFullscreen, setIsFullscreen] = useState(false)
-  const [mounted, setMounted] = useState(false)
+  const [searchOpen, setSearchOpen] = useState(false)
+  const [notificationOpen, setNotificationOpen] = useState(false)
+  const [profileOpen, setProfileOpen] = useState(false)
+  const [commandCenterOpen, setCommandCenterOpen] = useState(false)
+  const [theme, setTheme] = useState(getInitialTheme)
+  const profileRef = useRef(null)
+  const navRef = useRef(null)
 
-  useEffect(() => setMounted(true), [])
+  /* Resolve effective theme */
+  const isDark = theme === 'dark' || (theme === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches)
 
+  /* Apply theme class to document */
   useEffect(() => {
-    const params = new URLSearchParams(window.location.search)
-    if (params.get('present') === '1') {
-      setPresentMode(true)
-    }
-  }, [])
+    const html = document.documentElement
+    html.classList.add('of-theme-transition')
+    if (isDark) html.classList.remove('of-light')
+    else        html.classList.add('of-light')
+    const timer = setTimeout(() => html.classList.remove('of-theme-transition'), 400)
+    return () => clearTimeout(timer)
+  }, [isDark])
+
+  /* Persist theme */
+  useEffect(() => {
+    try { localStorage.setItem('of-theme', theme) } catch {}
+  }, [theme])
 
   const isActive = (to) => pathname === to || (to !== '/dashboard' && pathname.startsWith(to))
 
-  const currentSlideIdx = workflow.findIndex(n => pathname.startsWith(n.to) || pathname === n.to)
-  const spotlightX = currentSlideIdx >= 0 ? ((currentSlideIdx + 0.5) / workflow.length) * 100 : 50
+  const currentSlideIdx = WORKFLOW.findIndex(n => pathname.startsWith(n.to) || pathname === n.to)
 
-  const goToSlide = useCallback((direction) => {
-    const nextIdx = currentSlideIdx + direction
-    if (nextIdx >= 0 && nextIdx < workflow.length) {
-      navigate(workflow[nextIdx].to + '?present=1')
-    }
+  const goToSlide = useCallback((dir) => {
+    const next = currentSlideIdx + dir
+    if (next >= 0 && next < WORKFLOW.length) navigate(WORKFLOW[next].to + '?present=1')
   }, [currentSlideIdx, navigate])
+
+  /* Present mode */
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search)
+    if (params.get('present') === '1') setPresentMode(true)
+  }, [])
 
   useEffect(() => {
     if (!presentMode) return
     const handler = (e) => {
-      if (e.key === 'ArrowRight' || e.key === 'ArrowDown') {
-        e.preventDefault()
-        goToSlide(1)
-      } else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
-        e.preventDefault()
-        goToSlide(-1)
-      } else if (e.key === 'Escape') {
+      if (e.key === 'ArrowRight' || e.key === 'ArrowDown') { e.preventDefault(); goToSlide(1) }
+      else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') { e.preventDefault(); goToSlide(-1) }
+      else if (e.key === 'Escape') {
         setPresentMode(false)
         const p = new URLSearchParams(window.location.search)
         p.delete('present')
-        const qs = p.toString()
-        navigate(pathname + (qs ? '?' + qs : ''), { replace: true })
+        navigate(pathname + (p.toString() ? '?' + p.toString() : ''), { replace: true })
       }
     }
     window.addEventListener('keydown', handler)
@@ -89,26 +468,15 @@ export default function Layout({ children }) {
     setPresentMode(prev => {
       const next = !prev
       const p = new URLSearchParams(window.location.search)
-      if (next) {
-        p.set('present', '1')
-      } else {
-        p.delete('present')
-      }
-      const qs = p.toString()
-      const newUrl = pathname + (qs ? '?' + qs : '')
-      window.history.replaceState(null, '', newUrl)
+      next ? p.set('present','1') : p.delete('present')
+      window.history.replaceState(null, '', pathname + (p.toString() ? '?'+p.toString() : ''))
       return next
     })
   }, [pathname])
 
   const toggleFullscreen = useCallback(() => {
-    if (!document.fullscreenElement) {
-      document.documentElement.requestFullscreen()
-      setIsFullscreen(true)
-    } else {
-      document.exitFullscreen()
-      setIsFullscreen(false)
-    }
+    if (!document.fullscreenElement) { document.documentElement.requestFullscreen(); setIsFullscreen(true) }
+    else { document.exitFullscreen(); setIsFullscreen(false) }
   }, [])
 
   useEffect(() => {
@@ -117,644 +485,565 @@ export default function Layout({ children }) {
     return () => document.removeEventListener('fullscreenchange', handler)
   }, [])
 
-  const slideNavItems = workflow
+  useEffect(() => { setMobileMenuOpen(false); setCommandCenterOpen(false) }, [pathname])
+
+  /* Close profile menu on outside click */
+  useEffect(() => {
+    const handler = (e) => {
+      if (profileRef.current && !profileRef.current.contains(e.target)) setProfileOpen(false)
+    }
+    document.addEventListener('mousedown', handler)
+    return () => document.removeEventListener('mousedown', handler)
+  }, [])
+
+  /* ⌘K */
+  useEffect(() => {
+    const handler = (e) => {
+      if ((e.metaKey || e.ctrlKey) && e.key === 'k') { e.preventDefault(); setSearchOpen(s => !s) }
+      if (e.key === 'Escape') { setSearchOpen(false); setNotificationOpen(false); setCommandCenterOpen(false); setMobileMenuOpen(false) }
+    }
+    window.addEventListener('keydown', handler)
+    return () => window.removeEventListener('keydown', handler)
+  }, [])
+
+  /* Track previous path for smart back label */
+  const prevPathRef = useRef(null)
+  useEffect(() => {
+    prevPathRef.current = pathname
+  }, [pathname])
+
+  /* Build a map of path -> label */
+  const routeLabels = {}
+  NAV_ITEMS.forEach(n => { routeLabels[n.to] = n.label })
+  SIDEBAR_NAV.forEach(n => { routeLabels[n.to] = n.label })
+  routeLabels['/'] = 'Home'
+  routeLabels['/impact-analysis'] = 'Impact Analysis'
+  routeLabels['/deployment-simulator'] = 'Deployment Simulator'
+
+  const getPrevLabel = () => {
+    const prev = prevPathRef.current
+    if (!prev || prev === pathname) return ''
+    const label = routeLabels[prev]
+    if (label) return label
+    const seg = prev.split('/').filter(Boolean).pop()
+    return seg ? seg.replace(/-/g, ' ').replace(/\b\w/g, c => c.toUpperCase()) : ''
+  }
+
+  /* Back navigation */
+  const handleBack = useCallback(() => {
+    const prev = prevPathRef.current
+    if (prev && prev !== pathname) navigate(prev)
+    else if (window.history.length > 1) window.history.back()
+    else navigate('/dashboard')
+  }, [navigate, pathname])
+
+  /* Show back button only when not on dashboard or landing */
+  const showBack = pathname !== '/dashboard' && pathname !== '/'
 
   return (
-    <div className="flex min-h-screen bg-slate-950">
-      <style>{`
-        @keyframes particle-flow {
-          0% { transform: translateX(0) translateY(-50%); opacity: 0; }
-          15% { opacity: 1; }
-          85% { opacity: 1; }
-          100% { transform: translateX(14px) translateY(-50%); opacity: 0; }
-        }
-        @keyframes shine-sweep {
-          0% { transform: translateX(-100%) rotate(25deg); }
-          50% { transform: translateX(300%) rotate(25deg); }
-          100% { transform: translateX(300%) rotate(25deg); }
-        }
-        @keyframes ticker-scroll {
-          0% { transform: translateX(0); }
-          100% { transform: translateX(-33.333%); }
-        }
-        @keyframes gradient-border {
-          0% { background-position: 0% 50%; }
-          50% { background-position: 100% 50%; }
-          100% { background-position: 0% 50%; }
-        }
-        @keyframes float-particle {
-          0% { transform: translate(0, 0) scale(0); opacity: 0; }
-          20% { opacity: 0.5; transform: translate(30px, -20px) scale(1); }
-          80% { opacity: 0.5; }
-          100% { transform: translate(80px, -50px) scale(0.3); opacity: 0; }
-        }
-        @keyframes float-particle-2 {
-          0% { transform: translate(0, 0) scale(0); opacity: 0; }
-          20% { opacity: 0.4; transform: translate(-40px, -30px) scale(1); }
-          80% { opacity: 0.4; }
-          100% { transform: translate(-100px, -60px) scale(0.3); opacity: 0; }
-        }
-        @keyframes pulse-soft {
-          0%, 100% { opacity: 0.4; }
-          50% { opacity: 0.85; }
-        }
-        @keyframes data-packet {
-          0% { left: -4px; opacity: 0; width: 3px; height: 3px; }
-          15% { opacity: 1; }
-          50% { width: 4px; height: 4px; }
-          85% { opacity: 1; }
-          100% { left: calc(100% + 4px); opacity: 0; width: 3px; height: 3px; }
-        }
-        @keyframes glow-pulse {
-          0%, 100% { box-shadow: 0 0 18px -4px rgba(6,182,212,0.15); }
-          50% { box-shadow: 0 0 35px -4px rgba(6,182,212,0.35); }
-        }
-        @keyframes stat-update {
-          0% { opacity: 0.4; transform: scale(1); }
-          50% { opacity: 1; transform: scale(1.05); }
-          100% { opacity: 0.4; transform: scale(1); }
-        }
-        .header-grid {
-          background-image:
-            linear-gradient(rgba(255,255,255,0.004) 1px, transparent 1px),
-            linear-gradient(90deg, rgba(255,255,255,0.004) 1px, transparent 1px);
-          background-size: 64px 64px;
-        }
-        @keyframes orbit-rotate { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-        @keyframes radar-sweep { 0% { transform: rotate(0deg); opacity: 0.3; } 50% { opacity: 0.1; } 100% { transform: rotate(360deg); opacity: 0.3; } }
-        @keyframes scan-line { 0% { top: -2px; } 100% { top: 100%; } }
-        .animate-orbit { animation: orbit-rotate 8s linear infinite; }
-        .animate-radar { animation: radar-sweep 6s ease-in-out infinite; }
-        .animate-scan { animation: scan-line 3s linear infinite; }
-        @keyframes data-stream { 0% { background-position: -200% 0; } 100% { background-position: 200% 0; } }
-        .animate-data-stream { background-size: 200% 1px; animation: data-stream 3s linear infinite; }
-        @keyframes glitch-pulse { 0%, 100% { opacity: 0.6; } 50% { opacity: 1; } }
-        .animate-glitch { animation: glitch-pulse 2s ease-in-out infinite; }
-        @keyframes border-rotate { 0% { background-position: 0% 50%; } 100% { background-position: 100% 50%; } }
-        .animate-border-rotate { background-size: 200% 200%; animation: border-rotate 3s linear infinite; }
-        /* Aurora gradient animation */
-        @keyframes aurora-shift { 0% { transform: translate(-30%, -30%) rotate(0deg); } 50% { transform: translate(10%, -10%) rotate(180deg); } 100% { transform: translate(-30%, -30%) rotate(360deg); } }
-        .animate-aurora { animation: aurora-shift 20s ease-in-out infinite; }
-        @keyframes aurora-shift-2 { 0% { transform: translate(30%, 20%) rotate(0deg); } 50% { transform: translate(-10%, 10%) rotate(-180deg); } 100% { transform: translate(30%, 20%) rotate(-360deg); } }
-        .animate-aurora-2 { animation: aurora-shift-2 25s ease-in-out infinite; }
-        /* Glass card style */
-        .glass-card { background: rgba(15,23,42,0.6); backdrop-filter: blur(12px); border: 1px solid rgba(255,255,255,0.06); box-shadow: 0 8px 32px -12px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.04); }
-        .glass-card:hover { border-color: rgba(255,255,255,0.1); box-shadow: 0 12px 40px -12px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.06); }
-        /* Remove section gaps */
-        section, .space-y-2 > * + * { margin-top: 0 !important; }
-        .section-gap { height: 2px; background: linear-gradient(90deg, transparent, rgba(255,255,255,0.03), transparent); margin: 0.5rem 0; }
-        .animate-particle-flow { animation: particle-flow 1.8s ease-in-out infinite; }
-        .animate-particle-flow-2 { animation: particle-flow 2.4s ease-in-out infinite; }
-        .animate-particle-flow-3 { animation: particle-flow 3s ease-in-out infinite; }
-        .animate-shine-sweep { animation: shine-sweep 5s ease-in-out infinite; }
-        .animate-ticker-scroll { animation: ticker-scroll 50s linear infinite; }
-        .animate-gradient-border { background-size: 200% 200%; animation: gradient-border 4s ease infinite; }
-        .animate-float-particle { animation: float-particle 7s ease-in-out infinite; }
-        .animate-float-particle-2 { animation: float-particle-2 9s ease-in-out infinite; }
-        .animate-pulse-soft { animation: pulse-soft 2.5s ease-in-out infinite; }
-        .animate-data-packet { animation: data-packet 1.8s ease-in-out infinite; }
-        .animate-data-packet-2 { animation: data-packet 2.6s ease-in-out infinite; }
-        .animate-data-packet-3 { animation: data-packet 3.4s ease-in-out infinite; }
-        .animate-glow-pulse { animation: glow-pulse 3s ease-in-out infinite; }
-        .animate-stat-update { animation: stat-update 1.5s ease-in-out infinite; }
-      `}</style>
+    <div className={`flex min-h-screen relative ${isDark ? '' : 'of-light'}`}
+      style={{ fontFamily:"'Inter',system-ui,-apple-system,sans-serif", background:'var(--bg-base)', color:'var(--text-primary)' }}>
+      <style>{GLOBAL_STYLES}</style>
 
-      {/* Present mode overlay chrome */}
+      {/* ── Premium animated background ── */}
+      <PremiumBackground isDark={isDark} />
+
+      {/* ════════════════════════════════════════════════════
+          PRESENT MODE CHROME
+      ════════════════════════════════════════════════════ */}
       {presentMode && (
         <>
-          {/* Top bar — minimal slide info */}
-          <div className="fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-4 py-2 bg-gradient-to-b from-black/80 to-transparent pointer-events-none">
+          <div className="fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-5 py-2.5 bg-gradient-to-b from-black/80 to-transparent pointer-events-none">
             <div className="flex items-center gap-2 pointer-events-auto">
               <div className="relative flex h-5 w-5 items-center justify-center">
-                <div className="absolute h-5 w-5 rounded-full bg-brand/20" />
-                <div className="relative h-1.5 w-1.5 rounded-full bg-brand" />
+                <div className="absolute h-5 w-5 rounded-full bg-cyan-500/20" />
+                <div className="relative h-1.5 w-1.5 rounded-full bg-cyan-400" />
               </div>
-              <span className="text-[9px] font-bold text-white/80">Orbit<span className="text-brand">Foresight</span></span>
-              <span className="text-[7px] text-slate-600 font-mono">PRESENTATION</span>
+              <span className="text-[10px] font-bold text-white/80">Orbit<span className="text-cyan-400">Foresight</span></span>
+              <span className="text-[8px] text-slate-600 font-mono uppercase tracking-widest">Presentation</span>
             </div>
-            <div className="flex items-center gap-2 pointer-events-auto">
-              <div className="flex items-center gap-1.5 text-[8px] font-mono text-slate-500">
-                <span>{currentSlideIdx >= 0 ? currentSlideIdx + 1 : '-'}</span>
-                <span className="text-slate-700">/</span>
-                <span>{slideNavItems.length}</span>
-              </div>
-              <button
-                onClick={() => { navigate('/dashboard'); togglePresentMode() }}
-                className="rounded-lg px-2 py-1 text-[8px] border border-white/[0.10] text-slate-400 hover:text-white hover:border-white/[0.20] transition-all"
-              >
+            <div className="flex items-center gap-3 pointer-events-auto">
+              <span className="text-[9px] font-mono text-slate-500 tabular-nums">
+                {currentSlideIdx >= 0 ? currentSlideIdx + 1 : '–'} / {WORKFLOW.length}
+              </span>
+              <button onClick={() => { navigate('/dashboard'); togglePresentMode() }}
+                className="rounded-lg px-2.5 py-1 text-[9px] border border-white/10 text-slate-400 hover:text-white hover:border-white/20 transition-all">
                 Exit Present
               </button>
             </div>
           </div>
-
-          {/* Slide progress bar */}
           <div className="fixed bottom-0 left-0 right-0 z-50 h-1 bg-slate-900">
-            <motion.div
-              className="h-full bg-gradient-to-r from-cyan-500 to-blue-600"
-              initial={false}
-              animate={{ width: `${((currentSlideIdx + 1) / slideNavItems.length) * 100}%` }}
-              transition={{ duration: 0.3 }}
-            />
+            <motion.div className="h-full bg-gradient-to-r from-cyan-500 to-violet-600"
+              initial={false} animate={{ width:`${((currentSlideIdx+1)/WORKFLOW.length)*100}%` }} transition={{ duration:.3 }} />
           </div>
-
-          {/* Bottom controls */}
-          <div className="fixed bottom-4 left-1/2 -translate-x-1/2 z-50 flex items-center gap-3 bg-slate-950/90 backdrop-blur-xl border border-white/[0.08] rounded-full px-3 py-1.5 shadow-2xl">
-            <button
-              onClick={() => goToSlide(-1)}
-              disabled={currentSlideIdx <= 0}
-              className="flex items-center gap-1 rounded-lg px-2 py-1 text-[9px] text-slate-500 hover:text-cyan-400 hover:bg-white/[0.06] transition-all disabled:opacity-30 disabled:cursor-not-allowed"
-            >
-              <svg className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" />
-              </svg>
+          <div className="fixed bottom-5 left-1/2 -translate-x-1/2 z-50 flex items-center gap-3 bg-slate-950/90 backdrop-blur-xl border border-white/[0.08] rounded-full px-4 py-2 shadow-2xl">
+            <button onClick={() => goToSlide(-1)} disabled={currentSlideIdx <= 0}
+              className="flex items-center gap-1 rounded-lg px-2 py-1 text-[9px] text-slate-500 hover:text-cyan-400 hover:bg-white/[0.06] transition-all disabled:opacity-30 disabled:cursor-not-allowed">
+              <svg className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" /></svg>
               Prev
             </button>
-
             <div className="flex items-center gap-1">
-              {slideNavItems.map((n, i) => (
-                <div
-                  key={n.to}
-                  className={`h-1.5 rounded-full transition-all duration-300 cursor-pointer ${
-                    i === currentSlideIdx
-                      ? 'w-5 bg-cyan-400'
-                      : i < currentSlideIdx
-                      ? 'w-1.5 bg-emerald-500/60'
-                      : 'w-1.5 bg-slate-700 hover:bg-slate-600'
-                  }`}
-                  onClick={() => navigate(n.to + '?present=1')}
-                />
+              {WORKFLOW.map((n,i) => (
+                <div key={n.to} onClick={() => navigate(n.to+'?present=1')}
+                  className={`h-1.5 rounded-full transition-all duration-300 cursor-pointer ${i===currentSlideIdx?'w-5 bg-cyan-400':i<currentSlideIdx?'w-1.5 bg-emerald-500/60':'w-1.5 bg-slate-700 hover:bg-slate-600'}`} />
               ))}
             </div>
-
-            <button
-              onClick={() => goToSlide(1)}
-              disabled={currentSlideIdx >= slideNavItems.length - 1}
-              className="flex items-center gap-1 rounded-lg px-2 py-1 text-[9px] text-slate-500 hover:text-cyan-400 hover:bg-white/[0.06] transition-all disabled:opacity-30 disabled:cursor-not-allowed"
-            >
+            <button onClick={() => goToSlide(1)} disabled={currentSlideIdx >= WORKFLOW.length-1}
+              className="flex items-center gap-1 rounded-lg px-2 py-1 text-[9px] text-slate-500 hover:text-cyan-400 hover:bg-white/[0.06] transition-all disabled:opacity-30 disabled:cursor-not-allowed">
               Next
-              <svg className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
-              </svg>
+              <svg className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" /></svg>
             </button>
           </div>
         </>
       )}
 
-      {/* Mobile sidebar overlay — hidden in present mode */}
-      {!presentMode && (
-        <AnimatePresence>
-          {sidebarOpen && (
-            <motion.div
-              initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-              className="fixed inset-0 z-40 bg-black/60 backdrop-blur-sm md:hidden"
-              onClick={() => setSidebarOpen(false)}
-            />
-          )}
-        </AnimatePresence>
-      )}
-
-      {/* Side drawer — hidden in present mode */}
-      <aside className={`fixed top-0 left-0 z-50 flex h-full w-64 flex-col border-r border-white/[0.06] bg-slate-950/95 backdrop-blur-2xl transition-transform duration-300 md:hidden ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'} ${presentMode ? 'hidden' : ''}`}>
-        <div className="flex h-14 items-center justify-between border-b border-white/[0.06] px-4">
-          <Link to="/" className="flex items-center gap-2">
-            <div className="relative flex h-7 w-7 items-center justify-center"><div className="absolute h-7 w-7 rounded-full bg-brand/20 animate-ping-slow" /><div className="relative h-2 w-2 rounded-full bg-brand shadow-lg shadow-brand/50" /></div>
-            <span className="text-sm font-bold">Orbit<span className="text-brand">Foresight</span></span>
-          </Link>
-          <button onClick={() => setSidebarOpen(false)} className="rounded-lg p-1.5 text-slate-600 hover:bg-white/[0.06]"><svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" /></svg></button>
-        </div>
-        <nav className="flex-1 space-y-0.5 overflow-y-auto p-2.5">
-          {sidebarNav.map((item) => (
-            <Link key={item.to} to={item.to} onClick={() => setSidebarOpen(false)}
-              className={`flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-all ${
-                isActive(item.to) ? 'bg-brand/[0.08] text-brand-light' : 'text-slate-500 hover:bg-white/[0.04] hover:text-slate-300'
-              }`}
-            >
-              <svg className="h-5 w-5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}><path strokeLinecap="round" strokeLinejoin="round" d={item.icon} /></svg>
-              <span className="truncate">{item.label}</span>
-            </Link>
-          ))}
-        </nav>
-      </aside>
-
-      {/* Aurora background — spans entire page */}
-      <div className="fixed inset-0 pointer-events-none overflow-hidden" aria-hidden="true">
-        <div className="absolute -top-1/4 -left-1/4 w-1/2 h-1/2 rounded-full bg-cyan-500/[0.02] blur-[120px] animate-aurora" />
-        <div className="absolute -bottom-1/4 -right-1/4 w-1/2 h-1/2 rounded-full bg-purple-600/[0.02] blur-[120px] animate-aurora-2" />
-        <div className="absolute top-1/3 left-1/2 -translate-x-1/2 w-1/3 h-1/3 rounded-full bg-blue-500/[0.015] blur-[100px] animate-aurora" style={{ animationDelay: '-5s' }} />
-      </div>
-
-      {/* Main area */}
-      <div className="flex flex-1 flex-col min-w-0">
-
-        {/* ===== COMMAND BAR — hidden in present mode ===== */}
-        {!presentMode && (
-          <header className="sticky top-0 z-30 flex h-14 items-center gap-2 sm:gap-3 border-b border-white/[0.06] bg-slate-950/75 backdrop-blur-2xl px-2 sm:px-3 shadow-[0_1px_0_rgba(255,255,255,0.03),0_4px_24px_-8px_rgba(6,182,212,0.08)] before:absolute before:inset-x-0 before:top-0 before:h-px before:bg-gradient-to-r before:from-transparent before:via-cyan-500/20 before:to-transparent">
-
-            {/* HEADER ATMOSPHERE — subtle blueprint texture */}
-            <div className="absolute inset-0 overflow-hidden pointer-events-none" aria-hidden="true">
-              <div className="absolute inset-0 header-grid opacity-30" />
-              <div className="absolute inset-0 transition-all duration-700 ease-out" style={{ background: `radial-gradient(ellipse 500px 60px at ${spotlightX}% 50%, rgba(6,182,212,0.06) 0%, transparent 70%)` }} />
-              {/* Subtle animated particles */}
-              <div className="absolute top-1/4 left-[8%] h-1 w-1 rounded-full bg-cyan-400/20 animate-float-particle" />
-              <div className="absolute top-1/3 left-[35%] h-0.5 w-0.5 rounded-full bg-blue-400/20 animate-float-particle-2" />
-              <div className="absolute top-1/2 left-[70%] h-0.5 w-0.5 rounded-full bg-cyan-300/15 animate-float-particle" style={{ animationDelay: '3s' }} />
-              <div className="absolute bottom-1/4 left-[90%] h-1 w-1 rounded-full bg-cyan-500/15 animate-float-particle-2" style={{ animationDelay: '5s' }} />
-              {/* Radar sweep accent */}
-              <div className="absolute left-[35%] top-1/2 -translate-y-1/2 w-16 h-16 rounded-full border border-cyan-500/5 animate-radar" />
-            </div>
-
-            {/* LEFT: Logo + Status */}
-            <div className="flex items-center gap-2 sm:gap-3 shrink-0 relative z-10">
-              <button onClick={() => setSidebarOpen(true)} className="md:hidden rounded-lg p-1.5 text-slate-500 hover:bg-white/[0.06] hover:text-slate-300 transition-all">
-                <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" /></svg>
-              </button>
-              <Link to="/" className="flex items-center gap-2 group shrink-0">
-                <div className="relative flex h-7 w-7 items-center justify-center">
-                  <div className="absolute h-7 w-7 rounded-full bg-brand/15 animate-ping-slow" />
-                  <div className="relative h-2 w-2 rounded-full bg-brand shadow-lg shadow-brand/50" />
-                  <div className="absolute h-4 w-4 rounded-full border border-brand/20 animate-orbit" />
-                </div>
-                <div className="hidden sm:flex flex-col">
-                  <span className="text-xs font-bold tracking-tight leading-none text-white">Orbit<span className="text-brand">Foresight</span></span>
-                  <span className="text-[6px] font-mono text-slate-600 tracking-wider mt-0.5">PREDICT BEFORE PRODUCTION</span>
-                </div>
-              </Link>
-              <div className="h-6 w-px bg-white/[0.05]" />
-              <div className="hidden sm:flex items-center gap-1.5 rounded-md border border-emerald-500/15 bg-emerald-500/[0.04] px-2 py-1 shadow-[0_0_12px_-4px_rgba(52,211,153,0.12)]">
-                <span className="relative flex h-2 w-2">
-                  <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-500 opacity-75" />
-                  <span className="relative inline-flex h-2 w-2 rounded-full bg-emerald-400 shadow-[0_0_6px_rgba(52,211,153,0.5)]" />
-                </span>
-                <span className="text-[9px] font-mono text-emerald-300 font-semibold tracking-wider">LIVE</span>
-              </div>
-              <div className="hidden sm:flex items-center gap-1.5 rounded-md border border-cyan-500/12 bg-cyan-500/[0.03] px-2 py-1">
-                <span className="relative flex h-2 w-2"><span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-cyan-500 opacity-75" /><span className="relative inline-flex h-2 w-2 rounded-full bg-cyan-500" /></span>
-                <span className="text-[9px] font-mono text-cyan-400/80 font-semibold tracking-wider">AI</span>
-              </div>
-            </div>
-
-            {/* CENTER: Workflow nav — NASA Mission Control centerpiece */}
-            <nav className="hidden md:flex items-center mx-auto relative z-10 h-full">
-              <div className="flex items-center gap-1 bg-white/[0.02] rounded-xl px-2 py-1 border border-white/[0.04]">
-              {workflow.map((item, i) => {
-                const active = isActive(item.to)
-                const isDone = workflow.findIndex(n => isActive(n.to)) > i
-                return (
-                  <div key={item.to} className="flex items-center">
-                    <Link
-                      to={item.to}
-                      className={`group relative flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-semibold whitespace-nowrap transition-all duration-300 hover:scale-[1.04] active:scale-[0.96] ${
-                        active
-                          ? 'text-white drop-shadow-[0_0_10px_rgba(6,182,212,0.6)] font-bold'
-                          : 'text-slate-350 hover:text-white'
-                      }`}
-                    >
-                      {/* Stage number — premium circle */}
-                      <span className={`relative z-10 flex h-6.5 w-6.5 items-center justify-center rounded-full text-[11px] font-bold font-mono transition-all duration-300 ${
-                        active
-                          ? 'bg-cyan-450 text-white border-2 border-cyan-400 shadow-[0_0_16px_rgba(6,182,212,0.8)] scale-110'
-                          : isDone
-                          ? 'bg-emerald-500/25 text-emerald-300 border-2 border-emerald-400/50 shadow-[0_0_8px_rgba(16,185,129,0.3)]'
-                          : 'bg-slate-900/80 text-slate-400 border border-slate-700/80 hover:border-slate-500/60'
-                      }`}>
-                        {isDone ? (
-                          <svg className="h-3.5 w-3.5 text-emerald-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3.5}>
-                            <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" />
-                          </svg>
-                        ) : (
-                          item.stage
-                        )}
-                      </span>
-
-                      {/* Label */}
-                      <span className={`relative z-10 text-[13px] tracking-wide transition-colors duration-300 ${active ? 'text-white font-extrabold' : 'text-slate-300 group-hover:text-white'}`}>{item.label}</span>
-
-                      {/* Description — visible on hover */}
-                      <span className="hidden xl:block relative z-10 text-[9px] text-slate-500 group-hover:text-slate-300 transition-colors ml-0.5 font-mono">{item.desc}</span>
-
-                      {/* Active stage: animated gradient border glow + pulsing ring + neon shadow */}
-                      {active && (
-                        <>
-                          <motion.div
-                            layoutId="nav-glow"
-                            className="absolute inset-0 rounded-lg bg-gradient-to-br from-cyan-500/12 to-blue-600/8 border border-cyan-400/25 shadow-[0_0_24px_-6px_rgba(6,182,212,0.2),inset_0_1px_0_rgba(255,255,255,0.08)]"
-                            transition={{ type: 'spring', stiffness: 400, damping: 30 }}
-                          />
-                          <div className="absolute -inset-1.5 rounded-xl bg-gradient-to-r from-cyan-500/25 via-blue-500/20 to-cyan-500/25 animate-gradient-border opacity-60 blur-[4px]" />
-                          <motion.div
-                            animate={{ boxShadow: ['0 0 20px -4px rgba(6,182,212,0.2)', '0 0 40px -4px rgba(6,182,212,0.4)', '0 0 20px -4px rgba(6,182,212,0.2)'] }}
-                            transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut' }}
-                            className="absolute inset-0 rounded-lg"
-                          />
-                          {/* Floating highlight */}
-                          <div className="absolute top-0 left-1/4 right-1/4 h-px bg-gradient-to-r from-transparent via-cyan-400/60 to-transparent animate-glitch" />
-                          {/* Live indicator dot */}
-                          <span className="absolute -top-1 -right-1 flex h-2 w-2">
-                            <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-cyan-400 opacity-75" />
-                            <span className="relative inline-flex h-2 w-2 rounded-full bg-cyan-400 shadow-[0_0_6px_rgba(6,182,212,0.6)]" />
-                          </span>
-                        </>
-                      )}
-
-                      {/* Hover glow (inactive) */}
-                      {!active && (
-                        <>
-                          <div className="absolute inset-0 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-white/[0.03] border border-white/[0.06]" />
-                          <div className="absolute bottom-0 left-3 right-3 h-px bg-gradient-to-r from-transparent via-cyan-500/30 to-transparent opacity-0 group-hover:opacity-100 transition-all duration-300 scale-x-0 group-hover:scale-x-100 origin-center" />
-                        </>
-                      )}
-                    </Link>
-
-                    {/* Connector: premium intelligence pipeline */}
-                    {i < workflow.length - 1 && (
-                      <div className="relative w-7 sm:w-8 mx-1">
-                        {/* Base connector line */}
-                        <div className={`h-[2px] rounded-full transition-colors duration-500 ${
-                          isDone
-                            ? 'bg-emerald-500/50'
-                            : active
-                            ? 'bg-gradient-to-r from-cyan-500/40 via-blue-500/25 to-slate-700'
-                            : 'bg-slate-800'
-                        }`} />
-                        {/* Flowing data packets */}
-                        {(isDone || active) && (
-                          <div className="absolute inset-0 overflow-hidden">
-                            <div className="absolute top-1/2 -translate-y-1/2 h-1.5 w-1.5 rounded-full bg-cyan-400 shadow-[0_0_6px_rgba(6,182,212,0.6)] animate-data-packet" />
-                            <div className="absolute top-1/2 -translate-y-1/2 h-1 w-1 rounded-full bg-cyan-300 shadow-[0_0_4px_rgba(6,182,212,0.4)] animate-data-packet-2" />
-                            <div className="absolute top-1/2 -translate-y-1/2 h-1 w-1 rounded-full bg-blue-400 shadow-[0_0_4px_rgba(59,130,246,0.4)] animate-data-packet-3" />
-                          </div>
-                        )}
-                        {/* Completion checkpoint */}
-                        {isDone && (
-                          <div className="absolute -right-0.5 top-1/2 -translate-y-1/2">
-                            <div className="h-1.5 w-1.5 rounded-full bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.6)]" />
-                            <div className="absolute -inset-1.5 rounded-full bg-emerald-400/20 animate-ping" />
-                          </div>
-                        )}
-                        {/* Active gradient streaming line */}
-                        {active && (
-                          <div className="absolute inset-0 h-[2px] bg-gradient-to-r from-cyan-400/30 via-cyan-400/10 to-transparent animate-data-stream" />
-                        )}
-                      </div>
-                    )}
+      {/* ════════════════════════════════════════════════════
+          MOBILE SIDEBAR DRAWER
+      ════════════════════════════════════════════════════ */}
+      <AnimatePresence>
+        {mobileMenuOpen && !presentMode && (
+          <>
+            <motion.div initial={{ opacity:0 }} animate={{ opacity:1 }} exit={{ opacity:0 }} transition={{ duration:.2 }}
+              className="fixed inset-0 z-40 bg-black/60 backdrop-blur-sm lg:hidden"
+              onClick={() => setMobileMenuOpen(false)} />
+            <motion.aside initial={{ x:'-100%' }} animate={{ x:0 }} exit={{ x:'-100%' }}
+              transition={{ type:'spring', stiffness:400, damping:40 }}
+              className="fixed top-0 left-0 z-50 flex h-full w-72 flex-col backdrop-blur-2xl border-r lg:hidden"
+              style={{ background:'var(--bg-base)', borderColor:'var(--border)' }}>
+              <div className="flex h-16 items-center justify-between border-b px-5" style={{ borderColor:'var(--border)' }}>
+                <Link to="/" className="flex items-center gap-2.5">
+                  <div className="relative flex h-8 w-8 items-center justify-center">
+                    <div className="absolute h-8 w-8 rounded-full bg-cyan-500/15 nb-ping" />
+                    <div className="relative h-2 w-2 rounded-full bg-cyan-400 shadow-lg shadow-cyan-400/50" />
+                    <div className="absolute h-5 w-5 rounded-full border border-cyan-500/20 nb-orbit" />
                   </div>
-                )
-              })}
+                  <div className="flex flex-col">
+                    <span className="text-sm font-bold tracking-tight" style={{ color:'var(--text-primary)' }}>Orbit<span className="text-cyan-400">Foresight</span></span>
+                    <span className="text-[9px] font-mono tracking-wider uppercase" style={{ color:'var(--text-muted)' }}>Predict Before Production</span>
+                  </div>
+                </Link>
+                <button onClick={() => setMobileMenuOpen(false)} className="nb-icon-btn" aria-label="Close menu">
+                  <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
+                </button>
               </div>
-            </nav>
-
-            {/* RIGHT: Premium glass stats + actions */}
-            <div className="flex items-center gap-1.5 sm:gap-2 shrink-0 relative z-10">
-
-              {/* Premium glass stats badges */}
-              <div className="hidden lg:flex items-center gap-2 mr-1">
-                {[
-                  { label: 'Analyses', value: '847', color: 'cyan', icon: 'M20.25 6.375c0 2.278-3.694 4.125-8.25 4.125S3.75 8.653 3.75 6.375m16.5 0c0-2.278-3.694-4.125-8.25-4.125S3.75 4.097 3.75 6.375m16.5 0v11.25c0 2.278-3.694 4.125-8.25 4.125s-8.25-1.847-8.25-4.125V6.375m16.5 0v3.75m-16.5-3.75v3.75m16.5 0v3.75C20.25 16.153 16.556 18 12 18s-8.25-1.847-8.25-4.125v-3.75m16.5 0c0 2.278-3.694 4.125-8.25 4.125s-8.25-1.847-8.25-4.125' },
-                  { label: 'Accuracy', value: '94%', color: 'emerald', icon: 'M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v6.75C7.5 20.496 6.996 21 6.375 21h-2.25A1.125 1.125 0 013 19.875v-6.75zM9.75 8.625c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125v11.25c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V8.625zM16.5 4.125c0-.621.504-1.125 1.125-1.125h2.25C20.496 3 21 3.504 21 4.125v15.75c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V4.125z' },
-                  { label: 'ROI', value: '320%', color: 'amber', icon: 'M2.25 18L9 11.25l4.306 4.307a11.95 11.95 0 015.814-5.519l2.74-1.22m0 0l-5.94-2.28m5.94 2.28l-2.28 5.941' },
-                ].map(s => {
-                  const c = {
-                    cyan: { border: 'border-cyan-500/20', bg: 'bg-cyan-500/[0.05]', text: 'text-cyan-400', stext: 'text-cyan-600', hborder: 'hover:border-cyan-400/40', hbg: 'hover:bg-cyan-500/[0.08]', ping: 'bg-cyan-500', grad: 'from-cyan-500/10 to-blue-600/5' },
-                    emerald: { border: 'border-emerald-500/20', bg: 'bg-emerald-500/[0.05]', text: 'text-emerald-400', stext: 'text-emerald-600', hborder: 'hover:border-emerald-400/40', hbg: 'hover:bg-emerald-500/[0.08]', ping: 'bg-emerald-500', grad: 'from-emerald-500/10 to-teal-600/5' },
-                    amber: { border: 'border-amber-500/20', bg: 'bg-amber-500/[0.05]', text: 'text-amber-400', stext: 'text-amber-600', hborder: 'hover:border-amber-400/40', hbg: 'hover:bg-amber-500/[0.08]', ping: 'bg-amber-500', grad: 'from-amber-500/10 to-orange-600/5' },
-                  }[s.color]
+              <nav className="flex-1 overflow-y-auto p-3 space-y-0.5">
+                {NAV_ITEMS.map(item => {
+                  const active = isActive(item.to)
                   return (
-                    <div key={s.label} className={`group relative flex items-center gap-2 rounded-lg border ${c.border} ${c.bg} backdrop-blur-sm px-2.5 py-1.5 ${c.hborder} ${c.hbg} hover:translate-y-[-1px] hover:shadow-[0_0_24px_-10px_rgba(255,255,255,0.15)] transition-all duration-300 cursor-default`}>
-                      <div className={`absolute inset-0 rounded-lg bg-gradient-to-br ${c.grad} opacity-0 group-hover:opacity-100 transition-opacity duration-300`} />
-                      <span className="relative flex h-2 w-2">
-                        <span className={`absolute inline-flex h-full w-full animate-ping rounded-full ${c.ping} opacity-60`} />
-                        <span className={`relative inline-flex h-2 w-2 rounded-full ${c.ping}`} />
-                      </span>
-                      <svg className={`h-3 w-3 ${c.text} opacity-50 group-hover:opacity-80 transition-opacity relative z-10`} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-                        <path strokeLinecap="round" strokeLinejoin="round" d={s.icon} />
+                    <Link key={item.to} to={item.to}
+                      className="flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition-all duration-200"
+                      style={{ color: active ? 'var(--text-primary)' : 'var(--text-secondary)', background: active ? 'rgba(6,182,212,0.1)' : 'transparent', border: active ? '1px solid rgba(6,182,212,0.2)' : '1px solid transparent' }}>
+                      <svg className="h-4 w-4 shrink-0" style={{ color: active ? '#22d3ee' : 'var(--text-muted)' }} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                        <path strokeLinecap="round" strokeLinejoin="round" d={item.icon} />
                       </svg>
-                      <div className="relative z-10 flex flex-col items-start">
-                        <span className={`text-[10px] font-bold font-mono ${c.text} tabular-nums leading-none`}>{s.value}</span>
-                        <span className={`text-[6px] font-mono font-semibold ${c.stext} tracking-wider`}>{s.label}</span>
-                      </div>
+                      <span className="truncate">{item.label}</span>
+                      {active && <span className="ml-auto flex h-1.5 w-1.5 rounded-full bg-cyan-400 shadow-[0_0_6px_rgba(6,182,212,0.6)]" />}
+                    </Link>
+                  )
+                })}
+                {/* Separator */}
+                <div className="my-2 border-t" style={{ borderColor:'var(--border)' }} />
+                {/* Notifications */}
+                <button onClick={() => { setMobileMenuOpen(false); setNotificationOpen(true) }}
+                  className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition-all duration-200"
+                  style={{ color:'var(--text-secondary)' }}>
+                  <svg className="h-4 w-4 shrink-0" style={{ color:'var(--text-muted)' }} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M14.857 17.082a23.848 23.848 0 005.454-1.31A8.967 8.967 0 0118 9.75v-.7V9A6 6 0 006 9v.75a8.967 8.967 0 01-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 01-5.714 0m5.714 0a3 3 0 11-5.714 0" />
+                  </svg>
+                  <span>Notifications</span>
+                  <span className="ml-auto flex h-5 w-5 items-center justify-center rounded-full bg-red-500/10 text-[8px] font-bold text-red-400">4</span>
+                </button>
+                {/* Profile */}
+                <Link to="/settings"
+                  className="flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition-all duration-200"
+                  style={{ color:'var(--text-secondary)' }}>
+                  <svg className="h-4 w-4 shrink-0" style={{ color:'var(--text-muted)' }} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" />
+                  </svg>
+                  <span>Profile</span>
+                </Link>
+                {/* Theme toggle */}
+                <div className="flex items-center gap-3 rounded-xl px-3 py-2">
+                  <svg className="h-4 w-4 shrink-0" style={{ color:'var(--text-muted)' }} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M21.752 15.002A9.718 9.718 0 0118 15.75c-5.385 0-9.75-4.365-9.75-9.75 0-1.33.266-2.597.748-3.752A9.753 9.753 0 003 11.25C3 16.635 7.365 21 12.75 21a9.753 9.753 0 009.002-5.998z" />
+                  </svg>
+                  <span className="text-sm font-medium" style={{ color:'var(--text-secondary)' }}>Theme</span>
+                  <div className="ml-auto flex gap-1">
+                    {[['dark','🌙'],['light','☀️'],['system','💻']].map(([k,icon]) => (
+                      <button key={k} onClick={() => setTheme(k)}
+                        className="rounded-lg py-1 px-1.5 text-xs transition-all"
+                        style={{ background: theme===k ? 'rgba(6,182,212,0.12)' : 'transparent', color: theme===k ? '#22d3ee' : 'var(--text-muted)', border: theme===k ? '1px solid rgba(6,182,212,0.2)' : '1px solid transparent' }}>
+                        {icon}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+                {/* Documentation */}
+                <Link to="/help"
+                  className="flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition-all duration-200"
+                  style={{ color:'var(--text-secondary)' }}>
+                  <svg className="h-4 w-4 shrink-0" style={{ color:'var(--text-muted)' }} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0018 18a8.967 8.967 0 00-6 2.292m0-14.25v14.25" />
+                  </svg>
+                  <span>Documentation</span>
+                </Link>
+              </nav>
+              <div className="border-t p-4" style={{ borderColor:'var(--border)' }}>
+                <div className="flex items-center gap-2 rounded-xl px-3 py-2.5" style={{ background:'rgba(255,255,255,0.02)', border:'1px solid var(--border)' }}>
+                  <div className="nb-avatar shrink-0">OF</div>
+                  <div className="flex flex-col min-w-0">
+                    <span className="text-xs font-semibold truncate" style={{ color:'var(--text-primary)' }}>OrbitForesight</span>
+                    <span className="text-[9px] truncate font-mono" style={{ color:'var(--text-muted)' }}>Enterprise · AI Platform</span>
+                  </div>
+                  <div className="ml-auto flex items-center gap-1 rounded-md px-1.5 py-0.5 shrink-0" style={{ background:'rgba(52,211,153,0.08)', border:'1px solid rgba(52,211,153,0.15)' }}>
+                    <span className="relative flex h-1.5 w-1.5">
+                      <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-500 opacity-75" />
+                      <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-emerald-400" />
+                    </span>
+                    <span className="text-[8px] font-mono font-bold text-emerald-300 tracking-wider">LIVE</span>
+                  </div>
+                </div>
+              </div>
+            </motion.aside>
+          </>
+        )}
+      </AnimatePresence>
+
+      {/* ════════════════════════════════════════════════════
+          DESKTOP COMMAND CENTER DRAWER
+      ════════════════════════════════════════════════════ */}
+      <CommandCenterDrawer open={commandCenterOpen} onClose={() => setCommandCenterOpen(false)} />
+
+      {/* ════════════════════════════════════════════════════
+          MAIN CONTENT AREA
+      ════════════════════════════════════════════════════ */}
+      <div className="flex flex-1 flex-col min-w-0 relative" style={{ zIndex:1 }}>
+
+        {/* ════════════════════════════════════════════════
+            PREMIUM ENTERPRISE NAVBAR
+        ════════════════════════════════════════════════ */}
+        {!presentMode && (
+          <header className="sticky top-0 z-30 nb-glass" style={{ height:'56px' }}>
+            {/* Blueprint grid */}
+            <div className="absolute inset-0 nb-grid opacity-20 pointer-events-none" aria-hidden />
+            {/* Spotlight glow */}
+            <div className="absolute inset-0 pointer-events-none transition-all duration-700 ease-out" aria-hidden
+              style={{ background:`radial-gradient(ellipse 380px 56px at ${(() => { const idx=NAV_ITEMS.findIndex(n=>isActive(n.to)); return idx>=0?`${((idx+0.5)/NAV_ITEMS.length)*100}%`:'50%' })()} 50%, rgba(6,182,212,0.055) 0%, transparent 70%)` }} />
+            {/* Top accent */}
+            <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-cyan-500/25 to-transparent" aria-hidden />
+
+            <div className="relative flex items-center h-full px-4 lg:px-5 gap-3">
+
+              {/* ── LEFT: Hamburger + Logo + Back + LIVE ── */}
+              <div className="flex items-center gap-2 shrink-0">
+                {/* Desktop hamburger — opens Command Center */}
+                <button id="desktop-command-center-trigger" onClick={() => setCommandCenterOpen(true)}
+                  className="nb-icon-btn hidden lg:flex" aria-label="Command Center">
+                  <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
+                  </svg>
+                </button>
+                {/* Mobile hamburger — opens navigation */}
+                <button id="mobile-menu-trigger" onClick={() => setMobileMenuOpen(true)}
+                  className="nb-icon-btn lg:hidden" aria-label="Open menu">
+                  <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
+                  </svg>
+                </button>
+
+                {/* Logo */}
+                <Link to="/" className="flex items-center gap-2 group shrink-0" id="nav-logo">
+                  <div className="relative flex h-7 w-7 items-center justify-center shrink-0">
+                    <div className="absolute h-7 w-7 rounded-full bg-cyan-500/15 nb-ping" />
+                    <div className="relative h-2 w-2 rounded-full bg-cyan-400 shadow-[0_0_8px_rgba(6,182,212,0.7)]" />
+                    <div className="absolute h-4 w-4 rounded-full border border-cyan-500/25 nb-orbit" />
+                  </div>
+                  <div className="hidden sm:flex flex-col">
+                    <span className="text-[13px] font-bold tracking-tight leading-none" style={{ color:'var(--text-primary)' }}>
+                      Orbit<span className="text-cyan-400">Foresight</span>
+                    </span>
+                    <span className="text-[7px] font-mono tracking-[0.12em] uppercase leading-none mt-0.5" style={{ color:'var(--text-muted)' }}>
+                      Predict Before Production
+                    </span>
+                  </div>
+                </Link>
+
+                <div className="nb-sep hidden sm:block" />
+
+                {/* Smart back button — shows previous page name */}
+                <AnimatePresence mode="wait">
+                  {showBack && (
+                    <motion.button
+                      key={pathname}
+                      id="nav-back-btn"
+                      initial={{ opacity:0, x:-10 }}
+                      animate={{ opacity:1, x:0 }}
+                      exit={{ opacity:0, x:-10 }}
+                      transition={{ duration:.18, ease:'easeOut' }}
+                      onClick={handleBack}
+                      className="nb-back-btn hidden sm:flex"
+                      title={`Back to ${getPrevLabel() || 'previous page'}`}
+                      aria-label="Go back"
+                    >
+                      <svg className="h-3.5 w-3.5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" />
+                      </svg>
+                      <span className="hidden lg:inline ml-0.5">{getPrevLabel() || 'Back'}</span>
+                    </motion.button>
+                  )}
+                </AnimatePresence>
+
+                {/* LIVE badge */}
+                <div id="nav-live-badge"
+                  className="hidden sm:flex items-center gap-1.5 rounded-full border border-emerald-500/20 bg-emerald-500/[0.06] px-2.5 py-1 nb-live-pulse">
+                  <span className="relative flex h-1.5 w-1.5">
+                    <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75" />
+                    <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-emerald-400" />
+                  </span>
+                  <span className="text-[9px] font-mono font-bold text-emerald-300 tracking-widest">LIVE</span>
+                </div>
+
+              </div>
+
+              {/* ── CENTER: Nav items ── */}
+              <nav ref={navRef} id="main-nav"
+                className="hidden lg:flex items-center gap-0.5 mx-auto" aria-label="Main navigation">
+                {NAV_ITEMS.map(item => {
+                  const active = isActive(item.to)
+                  return (
+                    <div key={item.to} className="relative">
+                      <Link to={item.to}
+                        id={`nav-${item.label.toLowerCase().replace(/\s+/g,'-')}`}
+                        className={`nb-nav-link ${active ? 'nb-active' : ''}`}>
+                        <svg className="h-3.5 w-3.5 shrink-0 transition-colors duration-200"
+                          style={{ color: active ? '#22d3ee' : 'var(--text-muted)' }}
+                          fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={active ? 2 : 1.5}>
+                          <path strokeLinecap="round" strokeLinejoin="round" d={item.icon} />
+                        </svg>
+                        {item.label}
+                        {active && (
+                          <>
+                            <motion.div layoutId="navbar-active-bg"
+                              className="absolute inset-0 rounded-[9px] nb-active-glow"
+                              transition={{ type:'spring', stiffness:380, damping:30 }} />
+                            <div className="absolute top-0 left-1/4 right-1/4 h-[1.5px] rounded-b bg-gradient-to-r from-transparent via-cyan-400/80 to-transparent nb-glitch" />
+                          </>
+                        )}
+                      </Link>
                     </div>
                   )
                 })}
-              </div>
+              </nav>
 
-              {/* Search */}
-              <button
-                onClick={() => { setSearchOpen(!searchOpen) }}
-                className="hidden sm:flex items-center gap-1.5 rounded-lg border border-white/[0.06] bg-white/[0.03] px-2.5 py-1.5 text-[9px] text-slate-500 hover:border-cyan-500/30 hover:bg-cyan-500/[0.04] hover:text-cyan-300 hover:shadow-[0_0_12px_-4px_rgba(6,182,212,0.15)] transition-all duration-300 group"
-              >
-                <svg className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
-                </svg>
-                <span className="text-[7px] text-slate-700 border border-white/[0.06] rounded px-0.5 group-hover:border-cyan-500/20 group-hover:text-cyan-500/60 transition-all">⌘K</span>
-              </button>
-
-              {/* Fullscreen */}
-              <button
-                onClick={toggleFullscreen}
-                className="hidden sm:flex rounded-lg p-1.5 text-slate-500 hover:bg-white/[0.06] hover:text-cyan-400 hover:shadow-[0_0_12px_-4px_rgba(6,182,212,0.12)] transition-all duration-300"
-                title={isFullscreen ? 'Exit fullscreen' : 'Fullscreen'}
-              >
-                <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                  {isFullscreen
-                    ? <path strokeLinecap="round" strokeLinejoin="round" d="M9 9V4.5M9 9H4.5M9 9L3.75 3.75M9 15v4.5M9 15H4.5M9 15l-5.25 5.25M15 9h4.5M15 9V4.5M15 9l5.25-5.25M15 15h4.5M15 15v4.5m0-4.5l5.25 5.25" />
-                    : <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 3.75v4.5m0-4.5h4.5m-4.5 0L9 9M3.75 20.25v-4.5m0 4.5h4.5m-4.5 0L9 15M20.25 3.75h-4.5m4.5 0v4.5m0-4.5L15 9m5.25 11.25h-4.5m4.5 0v-4.5m0 4.5L15 15" />}
-                </svg>
-              </button>
-
-              {/* Present button with shine sweep */}
-              <button
-                onClick={togglePresentMode}
-                className={`group relative overflow-hidden flex items-center gap-1.5 rounded-lg border px-2.5 py-1.5 text-[9px] font-medium transition-all duration-300 hover:scale-[1.04] active:scale-[0.97] ${
-                  presentMode
-                    ? 'border-cyan-400/30 bg-cyan-400/10 text-cyan-200 shadow-[0_0_20px_-4px_rgba(6,182,212,0.25)]'
-                    : 'hidden sm:flex border-cyan-500/20 text-slate-500 hover:text-cyan-300 hover:border-cyan-400/30 hover:bg-cyan-500/[0.05] hover:shadow-[0_0_24px_-6px_rgba(6,182,212,0.25)]'
-                }`}
-              >
-                <div className="absolute inset-0 overflow-hidden pointer-events-none">
-                  <div className="absolute -inset-4 w-12 bg-gradient-to-r from-transparent via-white/12 to-transparent animate-shine-sweep skew-y-[25deg]" />
+              {/* ── RIGHT: Badges + actions ── */}
+              <div className="flex items-center gap-1.5 shrink-0 ml-auto lg:ml-0">
+                {/* AI Confidence */}
+                <div id="nav-ai-confidence" className="nb-conf-badge hidden md:flex" title="AI prediction confidence">
+                  <svg className="h-3 w-3 text-cyan-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09z" />
+                  </svg>
+                  <span>94%</span>
+                  <span style={{ fontSize:'9px', fontWeight:500, color:'var(--text-muted)', letterSpacing:'.05em' }}>AI</span>
                 </div>
-                <svg className="h-3.5 w-3.5 relative z-10" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 3v11.25A2.25 2.25 0 006 16.5h2.25M3.75 3h-1.5m1.5 0h16.5m0 0h1.5m-1.5 0v11.25A2.25 2.25 0 0118 16.5h-2.25m-7.5 0h7.5m-7.5 0l-1 3m8.5-3l1 3m0 0l.5 1.5m-.5-1.5h-9.5m0 0l-.5 1.5" />
-                </svg>
-                <span className="relative z-10">Present</span>
-              </button>
 
-              {/* Mission Status Hub */}
-              <div className="group relative">
-                <div className="flex items-center gap-1.5 rounded-lg bg-gradient-to-r from-cyan-500/10 to-blue-600/10 border border-cyan-500/20 px-2.5 py-1.5 cursor-default hover:border-cyan-400/30 hover:shadow-[0_0_24px_-8px_rgba(6,182,212,0.2)] transition-all duration-300">
-                  <div className="relative flex h-4 w-4 items-center justify-center">
-                    <svg className="absolute inset-0 h-4 w-4 -rotate-90" viewBox="0 0 16 16">
-                      <circle cx="8" cy="8" r="6.5" fill="none" stroke="rgba(6,182,212,0.15)" strokeWidth="1.8" />
-                      <circle cx="8" cy="8" r="6.5" fill="none" stroke="rgb(6,182,212)" strokeWidth="1.8" strokeDasharray={`${(currentSlideIdx >= 0 ? ((currentSlideIdx + 1) / workflow.length) * 100 : 0)} 100`} strokeLinecap="round" className="transition-all duration-500" />
-                    </svg>
-                    <span className="text-[6px] font-bold font-mono text-cyan-300 tabular-nums">{currentSlideIdx >= 0 ? Math.round(((currentSlideIdx + 1) / workflow.length) * 100) : 0}%</span>
-                  </div>
-                  <span className="text-[8px] font-mono font-semibold text-cyan-400 tracking-tight">Mission</span>
-                </div>
-                {/* Dropdown */}
-                <div className="absolute right-0 top-full mt-1.5 w-52 origin-top-right opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 translate-y-1 group-hover:translate-y-0 z-50">
-                  <div className="rounded-xl border border-white/[0.08] bg-slate-950/95 backdrop-blur-2xl shadow-2xl shadow-black/50 p-2.5">
-                    <div className="flex items-center justify-between mb-2">
-                      <span className="text-[8px] font-mono font-bold text-slate-400 uppercase tracking-wider">Mission Status</span>
-                      <span className="text-[8px] font-mono text-cyan-400 font-semibold tabular-nums">{currentSlideIdx >= 0 ? Math.round(((currentSlideIdx + 1) / workflow.length) * 100) : 0}%</span>
-                    </div>
-                    <div className="h-0.5 rounded-full bg-slate-800 mb-2.5 overflow-hidden">
+                <div className="nb-sep hidden md:block" />
+
+                {/* Search */}
+                <button id="nav-search" className="nb-search-btn hidden sm:flex"
+                  onClick={() => setSearchOpen(!searchOpen)} aria-label="Open search">
+                  <svg className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
+                  </svg>
+                  <span className="hidden lg:inline" style={{ color:'var(--text-muted)' }}>Search</span>
+                  <kbd className="hidden lg:inline-flex items-center gap-0.5 rounded-md border px-1.5 py-0.5 text-[9px] font-mono"
+                    style={{ borderColor:'var(--border)', background:'rgba(255,255,255,0.03)', color:'var(--text-muted)' }}>⌘K</kbd>
+                </button>
+
+                {/* Notifications */}
+                <button id="nav-notifications" className="nb-icon-btn relative hidden sm:flex" aria-label="Notifications"
+                  onClick={() => setNotificationOpen(true)}>
+                  <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M14.857 17.082a23.848 23.848 0 005.454-1.31A8.967 8.967 0 0118 9.75v-.7V9A6 6 0 006 9v.75a8.967 8.967 0 01-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 01-5.714 0m5.714 0a3 3 0 11-5.714 0" />
+                  </svg>
+                  <span className="nb-notif-badge" />
+                </button>
+
+                {/* Theme toggle */}
+                <ThemeToggle theme={theme} onChange={setTheme} />
+
+                {/* Fullscreen */}
+                <button id="nav-fullscreen" className="nb-icon-btn hidden md:flex"
+                  onClick={toggleFullscreen} aria-label={isFullscreen?'Exit fullscreen':'Enter fullscreen'}>
+                  <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                    {isFullscreen
+                      ? <path strokeLinecap="round" strokeLinejoin="round" d="M9 9V4.5M9 9H4.5M9 9L3.75 3.75M9 15v4.5M9 15H4.5M9 15l-5.25 5.25M15 9h4.5M15 9V4.5M15 9l5.25-5.25M15 15h4.5M15 15v4.5m0-4.5l5.25 5.25" />
+                      : <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 3.75v4.5m0-4.5h4.5m-4.5 0L9 9M3.75 20.25v-4.5m0 4.5h4.5m-4.5 0L9 15M20.25 3.75h-4.5m4.5 0v4.5m0-4.5L15 9m5.25 11.25h-4.5m4.5 0v-4.5m0 4.5L15 15" />}
+                  </svg>
+                </button>
+
+                {/* Present */}
+                <button id="nav-present" onClick={togglePresentMode}
+                  className={`hidden sm:flex items-center gap-1.5 rounded-[9px] border px-2.5 py-1.5 text-[11px] font-semibold transition-all duration-200 hover:scale-[1.03] active:scale-[0.97] ${presentMode ? 'border-cyan-400/30 bg-cyan-400/10 text-cyan-200' : 'text-slate-500 hover:text-cyan-300 hover:border-cyan-400/25 hover:bg-cyan-500/[0.04]'}`}
+                  style={{ borderColor: presentMode ? undefined : 'var(--border)' }}
+                  aria-label="Toggle presentation mode">
+                  <svg className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 3v11.25A2.25 2.25 0 006 16.5h2.25M3.75 3h-1.5m1.5 0h16.5m0 0h1.5m-1.5 0v11.25A2.25 2.25 0 0118 16.5h-2.25m-7.5 0h7.5m-7.5 0l-1 3m8.5-3l1 3m0 0l.5 1.5m-.5-1.5h-9.5m0 0l-.5 1.5" />
+                  </svg>
+                  <span className="hidden xl:inline">Present</span>
+                </button>
+
+                <div className="nb-sep" />
+
+                {/* Avatar / Profile */}
+                <div ref={profileRef} className="relative">
+                  <button onClick={() => setProfileOpen(o => !o)} id="nav-avatar" className="nb-avatar" aria-label="Profile">
+                    <span className="text-[9px]">OF</span>
+                  </button>
+                  <AnimatePresence>
+                    {profileOpen && (
                       <motion.div
-                        className="h-full rounded-full bg-gradient-to-r from-cyan-500 to-blue-600"
-                        initial={false}
-                        animate={{ width: `${currentSlideIdx >= 0 ? ((currentSlideIdx + 1) / workflow.length) * 100 : 0}%` }}
-                        transition={{ duration: 0.5 }}
-                      />
-                    </div>
-                    <div className="space-y-1">
-                      {workflow.map((w, i) => {
-                        const done = i <= currentSlideIdx
-                        const isNow = i === currentSlideIdx
-                        return (
-                          <div key={w.to} className={`flex items-center gap-1.5 ${isNow ? 'text-cyan-300' : done ? 'text-emerald-400/80' : 'text-slate-600'}`}>
-                            <div className={`flex h-3 w-3 items-center justify-center rounded-full ${done ? 'bg-emerald-500/20' : 'bg-slate-800'}`}>
-                              {done ? (
-                                <svg className="h-2 w-2 text-emerald-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
-                                  <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" />
-                                </svg>
-                              ) : (
-                                <div className="h-1 w-1 rounded-full bg-slate-600" />
-                              )}
+                        initial={{ opacity: 0, y: -6, scale: 0.96 }}
+                        animate={{ opacity: 1, y: 0, scale: 1 }}
+                        exit={{ opacity: 0, y: -4, scale: 0.97 }}
+                        transition={{ duration: 0.12 }}
+                        className="absolute right-0 top-full mt-2 w-56 rounded-xl border shadow-2xl overflow-hidden"
+                        style={{ background: 'var(--bg-base)', borderColor: 'var(--border)', zIndex: 100 }}
+                      >
+                        <div className="p-3 border-b" style={{ borderColor: 'var(--border)' }}>
+                          <div className="flex items-center gap-2.5">
+                            <div className="nb-avatar w-9 h-9 text-[11px]">OF</div>
+                            <div>
+                              <p className="text-xs font-semibold" style={{ color: 'var(--text-primary)' }}>OrbitForesight</p>
+                              <p className="text-[9px] font-mono" style={{ color: 'var(--text-muted)' }}>Enterprise · Admin</p>
                             </div>
-                            <span className="text-[8px] font-mono">{w.label}</span>
-                            {isNow && <span className="ml-auto text-[6px] font-mono text-cyan-400/60">ACTIVE</span>}
                           </div>
-                        )
-                      })}
-                    </div>
-                  </div>
+                        </div>
+                        <div className="p-1.5">
+                          {[
+                            { label: 'Settings', icon: 'M9.594 3.94c.09-.542.56-.94 1.11-.94h2.593c.55 0 1.02.398 1.11.94l.213 1.281c.063.374.313.686.645.87.074.04.147.083.22.127.325.196.72.257 1.075.124l1.217-.456a1.125 1.125 0 011.37.49l1.296 2.247a1.125 1.125 0 01-.26 1.431l-1.003.827c-.293.241-.438.613-.43.992a7.723 7.723 0 010 .255c-.008.378.137.75.43.991l1.004.827c.424.35.534.955.26 1.43l-1.298 2.247a1.125 1.125 0 01-1.369.491l-1.217-.456c-.355-.133-.75-.072-1.076.124a6.47 6.47 0 01-.22.128c-.331.183-.581.495-.644.869l-.213 1.281c-.09.543-.56.94-1.11.94h-2.594c-.55 0-1.019-.398-1.11-.94l-.213-1.281c-.062-.374-.312-.686-.644-.87a6.52 6.52 0 01-.22-.127c-.325-.196-.72-.257-1.076-.124l-1.217.456a1.125 1.125 0 01-1.369-.49l-1.297-2.247a1.125 1.125 0 01.26-1.431l1.004-.827c.292-.24.437-.613.43-.991a6.932 6.932 0 010-.255c.007-.38-.138-.751-.43-.992l-1.004-.827a1.125 1.125 0 01-.26-1.43l1.297-2.247a1.125 1.125 0 011.37-.491l1.216.456c.356.133.751.072 1.076-.124.072-.044.146-.086.22-.128.332-.183.582-.495.644-.869l.214-1.28z', to: '/settings' },
+                            { label: 'Help & Docs', icon: 'M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0018 18a8.967 8.967 0 00-6 2.292m0-14.25v14.25', to: '/help' },
+                            { label: 'Keyboard Shortcuts', icon: 'M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z', to: '/help?tab=shortcuts' },
+                          ].map(item => (
+                            <Link key={item.label} to={item.to} onClick={() => setProfileOpen(false)}
+                              className="flex items-center gap-2.5 w-full rounded-lg px-2.5 py-2 text-xs transition-all"
+                              style={{ color: 'var(--text-secondary)' }}
+                              onMouseEnter={e => { e.currentTarget.style.background = 'rgba(6,182,212,0.05)'; e.currentTarget.style.color = 'var(--text-primary)' }}
+                              onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = 'var(--text-secondary)' }}
+                            >
+                              <svg className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                                <path strokeLinecap="round" strokeLinejoin="round" d={item.icon} />
+                              </svg>
+                              {item.label}
+                            </Link>
+                          ))}
+                        </div>
+                        <div className="border-t p-1.5" style={{ borderColor: 'var(--border)' }}>
+                          <button
+                            className="flex items-center gap-2.5 w-full rounded-lg px-2.5 py-2 text-xs transition-all"
+                            style={{ color: '#ef4444' }}
+                            onMouseEnter={e => { e.currentTarget.style.background = 'rgba(239,68,68,0.06)' }}
+                            onMouseLeave={e => { e.currentTarget.style.background = 'transparent' }}
+                          >
+                            <svg className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                              <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6a2.25 2.25 0 00-2.25 2.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15m3 0l3-3m0 0l-3-3m3 3H9" />
+                            </svg>
+                            Sign out
+                          </button>
+                        </div>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
                 </div>
-              </div>
-
-              {/* Avatar */}
-              <div className="flex h-7 w-7 items-center justify-center rounded-full bg-gradient-to-br from-brand to-brand-dark text-[8px] font-bold text-white shadow-[0_0_16px_-2px_rgba(139,92,246,0.35)] ring-1 ring-white/[0.06]">
-                OF
               </div>
             </div>
+
+            <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-white/[0.04] to-transparent" aria-hidden />
           </header>
         )}
 
-        {/* Executive context bar — premium narrative + step controls */}
-        {!presentMode && (
-          <div className="sticky top-14 z-20 border-b border-white/[0.04] bg-slate-950/70 backdrop-blur-xl overflow-hidden shadow-[0_1px_0_rgba(255,255,255,0.03)]">
-            {/* Live intelligence ribbon */}
-            <div className="relative h-5 overflow-hidden border-b border-white/[0.02] bg-gradient-to-r from-cyan-500/[0.02] via-blue-600/[0.02] to-cyan-500/[0.02]">
-              <div className="absolute inset-0 flex items-center">
-                <div className="flex items-center gap-6 whitespace-nowrap animate-ticker-scroll will-change-transform pr-6">
-                  {[0, 1].flatMap(dup => (
-                    <div key={dup} className="flex items-center gap-6">
-                      {storyNarrative.map((story, i) => (
-                        <div key={i} className="flex items-center gap-3">
-                          <span className={`text-[7px] font-mono whitespace-nowrap tracking-tight ${
-                            i === currentSlideIdx
-                              ? 'text-cyan-300 font-semibold'
-                              : i < currentSlideIdx
-                              ? 'text-emerald-500/60'
-                              : 'text-slate-700'
-                          }`}>
-                            {story}
-                          </span>
-                          {i < storyNarrative.length - 1 && (
-                            <svg className={`h-1.5 w-1.5 ${i < currentSlideIdx ? 'text-emerald-500/40' : 'text-slate-800'}`} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                              <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
-                            </svg>
-                          )}
-                        </div>
-                      ))}
-                    </div>
-                  ))}
-                </div>
-              </div>
-              <div className="absolute left-0 top-0 bottom-0 w-12 bg-gradient-to-r from-slate-950/90 to-transparent pointer-events-none" />
-              <div className="absolute right-0 top-0 bottom-0 w-12 bg-gradient-to-l from-slate-950/90 to-transparent pointer-events-none" />
-            </div>
-
-            {/* Bottom row: narrative context + step navigation */}
-            <div className="flex items-center justify-between gap-3 px-3 sm:px-4 py-1.5">
-              {/* Left: current mission context */}
-              <div className="flex items-center gap-2 min-w-0 overflow-x-auto scrollbar-none flex-1">
-                {currentSlideIdx === 0 && (
-                  <div className="flex items-center gap-1.5 rounded-md bg-cyan-500/[0.06] border border-cyan-500/12 px-1.5 py-0.5">
-                    <span className="relative flex h-1.5 w-1.5">
-                      <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-cyan-400 opacity-75" />
-                      <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-cyan-400" />
-                    </span>
-                    <span className="text-[7px] font-mono text-cyan-300 font-semibold">Anomaly Detected</span>
-                  </div>
-                )}
-                {currentSlideIdx > 0 && currentSlideIdx < workflow.length - 1 && (
-                  <div className="flex items-center gap-1.5 rounded-md bg-amber-500/[0.06] border border-amber-500/12 px-1.5 py-0.5">
-                    <span className="text-[7px] font-mono text-amber-300 font-semibold">Step {currentSlideIdx + 1} of {workflow.length}</span>
-                  </div>
-                )}
-                {currentSlideIdx === workflow.length - 1 && (
-                  <div className="flex items-center gap-1.5 rounded-md bg-emerald-500/[0.06] border border-emerald-500/12 px-1.5 py-0.5">
-                    <svg className="h-2 w-2 text-emerald-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75m-3-7.036A11.959 11.959 0 013.598 6 11.99 11.99 0 003 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285z" />
-                    </svg>
-                    <span className="text-[7px] font-mono text-emerald-400 font-semibold">Mission Complete</span>
-                  </div>
-                )}
-                <svg className="h-2.5 w-2.5 text-cyan-400/50 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09z" />
-                </svg>
-                <span className="text-[8px] font-mono text-slate-500 tracking-wider shrink-0">CURRENT MISSION</span>
-                <span className="text-[9px] font-semibold font-mono text-white shrink-0">{workflow[currentSlideIdx >= 0 ? currentSlideIdx : 0]?.label || 'Situation'}</span>
-                <span className="hidden sm:block text-[7px] font-mono text-slate-600 shrink-0 truncate">— {workflow[currentSlideIdx >= 0 ? currentSlideIdx : 0]?.desc || 'What is happening right now?'}</span>
-              </div>
-
-              {/* Right: step navigation */}
-              <div className="flex items-center gap-1.5 shrink-0">
-                {currentSlideIdx > 0 && (
-                  <Link
-                    to={workflow[currentSlideIdx - 1].to}
-                    className="flex items-center gap-1 rounded-md border border-white/[0.05] bg-white/[0.02] px-2 py-1 text-[8px] font-mono text-slate-500 hover:text-cyan-300 hover:border-cyan-500/20 hover:bg-cyan-500/[0.05] transition-all group"
-                  >
-                    <svg className="h-2.5 w-2.5 group-hover:-translate-x-0.5 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" />
-                    </svg>
-                    <span className="hidden sm:inline">{workflow[currentSlideIdx - 1].label}</span>
-                    <span className="sm:hidden">Prev</span>
-                  </Link>
-                )}
-                {currentSlideIdx < workflow.length - 1 && (
-                  <Link
-                    to={workflow[currentSlideIdx + 1].to}
-                    className="flex items-center gap-1 rounded-md bg-gradient-to-r from-cyan-500/10 to-blue-600/10 border border-cyan-500/15 px-2 py-1 text-[8px] font-mono text-cyan-300 hover:text-white hover:border-cyan-400/30 hover:shadow-[0_0_14px_-4px_rgba(6,182,212,0.2)] transition-all group"
-                  >
-                    <span className="hidden sm:inline">Next: {workflow[currentSlideIdx + 1].label}</span>
-                    <span className="sm:hidden">Next</span>
-                    <svg className="h-2.5 w-2.5 group-hover:translate-x-0.5 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
-                    </svg>
-                  </Link>
-                )}
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* Page content */}
+        {/* ════════════════════════════════════════════════
+            PAGE CONTENT
+        ════════════════════════════════════════════════ */}
         <main className="flex-1">
-          <div className={`${presentMode ? 'p-0' : 'p-2 sm:p-3 lg:p-4'}`}>
+          <div className={`${presentMode ? 'p-0' : 'p-2 sm:p-3 lg:p-4 pb-16 lg:pb-4'}`}>
             <div className={`mx-auto w-full ${presentMode ? 'max-w-full' : 'max-w-[98vw]'}`}>
               {children}
             </div>
           </div>
         </main>
 
-        {/* QuickActionBar — hidden in present mode */}
         {!presentMode && <QuickActionBar currentPage={pathname} />}
-
-        {/* Footer — hidden in present mode */}
         {!presentMode && <Footer />}
       </div>
 
+      {/* Mobile floating back button with smart label */}
+      {showBack && !presentMode && (
+        <motion.button
+          id="mobile-back-btn"
+          key={pathname}
+          initial={{ opacity:0, scale:.85, x: -8 }}
+          animate={{ opacity:1, scale:1, x: 0 }}
+          exit={{ opacity:0, scale:.85, x: -4 }}
+          transition={{ duration:.15, ease:'easeOut' }}
+          onClick={handleBack}
+          className="of-mobile-back items-center justify-center gap-1 px-3 py-2 rounded-full shadow-xl border"
+          style={{ background:'var(--bg-base)', borderColor:'var(--border)', color:'var(--text-secondary)' }}
+          aria-label="Go back"
+        >
+          <svg className="h-3.5 w-3.5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" />
+          </svg>
+          <span className="text-[9px] font-mono font-medium max-w-[80px] truncate">{getPrevLabel() || 'Back'}</span>
+        </motion.button>
+      )}
+
+      {/* ════════════════════════════════════════════════
+          COMMAND PALETTE (⌘K)
+      ════════════════════════════════════════════════ */}
+      <CommandPalette open={searchOpen} onClose={() => setSearchOpen(false)} currentPath={pathname} />
+
+      {/* ════════════════════════════════════════════════
+          NOTIFICATION CENTER
+      ════════════════════════════════════════════════ */}
+      <NotificationCenter open={notificationOpen} onClose={() => setNotificationOpen(false)} />
+
+      {/* ════════════════════════════════════════════════
+          MOBILE BOTTOM NAVIGATION
+      ════════════════════════════════════════════════ */}
+      {!presentMode && (
+        <nav className="fixed bottom-0 left-0 right-0 z-40 lg:hidden border-t backdrop-blur-2xl"
+          style={{ background: 'var(--navbar-bg)', borderColor: 'var(--border)' }}>
+          <div className="flex items-center justify-around px-2 py-1.5">
+            {NAV_ITEMS.slice(0, 5).map(item => {
+              const active = isActive(item.to)
+              return (
+                <Link key={item.to} to={item.to}
+                  className="flex flex-col items-center gap-0.5 rounded-xl px-2 py-1.5 transition-all min-w-0"
+                  style={{
+                    color: active ? '#22d3ee' : 'var(--text-muted)',
+                    background: active ? 'rgba(6,182,212,0.08)' : 'transparent'
+                  }}
+                >
+                  <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={active ? 2 : 1.5}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d={item.icon} />
+                  </svg>
+                  <span className="text-[8px] font-medium leading-none truncate max-w-full" style={{ fontWeight: active ? 600 : 500 }}>{item.label}</span>
+                </Link>
+              )
+            })}
+            {/* More button */}
+            <button onClick={() => setMobileMenuOpen(true)}
+              className="flex flex-col items-center gap-0.5 rounded-xl px-2 py-1.5 transition-all min-w-0"
+              style={{ color: mobileMenuOpen ? '#22d3ee' : 'var(--text-muted)' }}
+            >
+              <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
+              </svg>
+              <span className="text-[8px] font-medium leading-none">More</span>
+            </button>
+          </div>
+        </nav>
+      )}
     </div>
   )
 }
