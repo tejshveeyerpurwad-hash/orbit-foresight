@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 128 128">
+  <defs>
+    <linearGradient id="g" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#06b6d4"/>
+      <stop offset="50%" stop-color="#3b82f6"/>
+      <stop offset="100%" stop-color="#8b5cf6"/>
+    </linearGradient>
+    <filter id="glow">
+      <feGaussianBlur stdDeviation="3" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+  <!-- Background circle -->
+  <circle cx="64" cy="64" r="60" fill="none" stroke="rgba(6,182,212,0.08)" stroke-width="0.5"/>
+  <circle cx="64" cy="64" r="59" fill="rgba(6,182,212,0.03)"/>
+  <!-- Orbital rings -->
+  <ellipse cx="64" cy="64" rx="38" ry="14" fill="none" stroke="#06b6d4" stroke-width="1.2" opacity="0.7" transform="rotate(45,64,64)"/>
+  <ellipse cx="64" cy="64" rx="28" ry="11" fill="none" stroke="#3b82f6" stroke-width="1" opacity="0.6" transform="rotate(67,64,64)"/>
+  <ellipse cx="64" cy="64" rx="46" ry="17" fill="none" stroke="#8b5cf6" stroke-width="0.8" opacity="0.5" transform="rotate(23,64,64)"/>
+  <ellipse cx="64" cy="64" rx="33" ry="12.5" fill="none" stroke="#22d3ee" stroke-width="0.9" opacity="0.5" transform="rotate(89,64,64)"/>
+  <!-- Crosshair -->
+  <line x1="42" y1="64" x2="86" y2="64" stroke="rgba(6,182,212,0.12)" stroke-width="0.5"/>
+  <line x1="64" y1="42" x2="64" y2="86" stroke="rgba(6,182,212,0.12)" stroke-width="0.5"/>
+  <!-- AI Core -->
+  <circle cx="64" cy="64" r="10" fill="url(#g)" filter="url(#glow)"/>
+  <!-- Inner core highlight -->
+  <circle cx="64" cy="64" r="5" fill="rgba(255,255,255,0.2)"/>
+  <!-- Glass reflection -->
+  <circle cx="58" cy="58" r="3" fill="rgba(255,255,255,0.15)"/>
+</svg>

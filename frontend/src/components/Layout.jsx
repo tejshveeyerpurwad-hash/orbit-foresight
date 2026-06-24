@@ -9,6 +9,7 @@ import CommandCenterDrawer from './CommandCenterDrawer'
 import ExecutiveCommandHeader from './ExecutiveCommandHeader'
 import CinematicMissionBriefing from './CinematicMissionBriefing'
 import AICopilot from './AICopilot'
+import OrbitLogo from './OrbitLogo'
 import { initLayoutGuard } from '../utils/layoutGuard'
 
 /* ─────────────────────────────────────────────────────────────
@@ -159,7 +160,7 @@ const GLOBAL_STYLES = `
 
   /* ── Navbar ── */
   @keyframes live-pulse { 0%,100%{box-shadow:0 0 0 0 rgba(52,211,153,0.4);} 50%{box-shadow:0 0 0 5px rgba(52,211,153,0);} }
-  @keyframes active-glow { 0%,100%{box-shadow:0 0 14px -4px rgba(6,182,212,0.15);} 50%{box-shadow:0 0 28px -4px rgba(6,182,212,0.4);} }
+  @keyframes active-glow { 0%,100%{box-shadow:0 0 16px -4px rgba(6,182,212,0.18), inset 0 0 20px -12px rgba(6,182,212,0.06);} 50%{box-shadow:0 0 32px -4px rgba(6,182,212,0.35), inset 0 0 28px -14px rgba(6,182,212,0.1);} }
   @keyframes orbit-spin { to { transform: rotate(360deg); } }
   @keyframes ping-slow { 0%{transform:scale(1);opacity:.8;} 75%,100%{transform:scale(2.1);opacity:0;} }
   @keyframes glitch-pulse { 0%,100%{opacity:.6;} 50%{opacity:1;} }
@@ -214,33 +215,35 @@ const GLOBAL_STYLES = `
 
   .nb-glass {
     background: var(--navbar-bg);
-    backdrop-filter: blur(24px) saturate(180%);
-    -webkit-backdrop-filter: blur(24px) saturate(180%);
+    backdrop-filter: blur(28px) saturate(200%);
+    -webkit-backdrop-filter: blur(28px) saturate(200%);
     border-bottom: 1px solid var(--border);
-    box-shadow: 0 1px 0 rgba(255,255,255,0.03), 0 4px 24px -8px rgba(6,182,212,0.06);
+    box-shadow: 0 1px 0 rgba(255,255,255,0.03), 0 4px 32px -8px rgba(6,182,212,0.08), 0 0 60px -20px rgba(6,182,212,0.04);
   }
-  .of-light .nb-glass { box-shadow: 0 1px 0 rgba(0,0,0,0.05), 0 2px 16px -4px rgba(6,182,212,0.04); }
+  .of-light .nb-glass { box-shadow: 0 1px 0 rgba(0,0,0,0.05), 0 4px 32px -8px rgba(6,182,212,0.06); }
 
   .nb-nav-link {
-    position: relative; display: flex; align-items: center; gap: 5px;
-    padding: 6px 12px; border-radius: 9px;
+    position: relative; display: flex; align-items: center; gap: 6px;
+    padding: 7px 14px; border-radius: 10px;
     font-size: 13px; font-weight: 500;
     color: var(--text-secondary);
     white-space: nowrap; text-decoration: none;
     letter-spacing: -0.01em; border: 1px solid transparent;
-    transition: color .2s, background .2s, transform .15s, border-color .2s;
+    transition: color .2s, background .2s, transform .2s, border-color .2s, box-shadow .2s;
   }
   .nb-nav-link:hover { color: var(--text-primary); background: rgba(255,255,255,0.04); transform: translateY(-1px); }
   .of-light .nb-nav-link:hover { background: rgba(6,182,212,0.06); }
-  .nb-nav-link:active { transform: scale(0.97); }
+  .nb-nav-link:active { transform: scale(0.96); }
   .nb-nav-link.nb-active {
     color: var(--text-primary); font-weight: 600;
     background: rgba(6,182,212,0.08); border-color: rgba(6,182,212,0.2);
+    box-shadow: 0 0 20px -6px rgba(6,182,212,0.12), inset 0 0 20px -12px rgba(6,182,212,0.08);
   }
   .nb-nav-link.nb-active::after {
-    content:''; position:absolute; bottom:-1px; left:20%; right:20%;
+    content:''; position:absolute; bottom:-1px; left:15%; right:15%;
     height:2px; border-radius:2px;
     background: linear-gradient(90deg,transparent,#06b6d4,transparent);
+    box-shadow: 0 0 8px rgba(6,182,212,0.3);
   }
   .of-light .nb-nav-link.nb-active { background: rgba(6,182,212,0.1); border-color: rgba(6,182,212,0.25); }
 
@@ -707,13 +710,9 @@ export default function Layout({ children }) {
               style={{ background:'var(--bg-base)', borderColor:'var(--border)' }}>
               <div className="flex h-16 items-center justify-between border-b px-5" style={{ borderColor:'var(--border)' }}>
                 <Link to="/" className="flex items-center gap-2.5">
-                  <div className="relative flex h-8 w-8 items-center justify-center">
-                    <div className="absolute h-8 w-8 rounded-full bg-cyan-500/15 nb-ping" />
-                    <div className="relative h-2 w-2 rounded-full bg-cyan-400 shadow-lg shadow-cyan-400/50" />
-                    <div className="absolute h-5 w-5 rounded-full border border-cyan-500/20 nb-orbit" />
-                  </div>
+                  <OrbitLogo size="md" />
                   <div className="flex flex-col">
-                    <span className="text-sm font-bold tracking-tight" style={{ color:'var(--text-primary)' }}>Orbit<span className="text-cyan-400">Foresight</span></span>
+                    <span className="text-sm font-extrabold tracking-tight" style={{ color:'var(--text-primary)' }}>Orbit<span className="bg-gradient-to-r from-cyan-400 to-blue-400 bg-clip-text text-transparent">Foresight</span></span>
                     <span className="text-[9px] font-mono tracking-wider uppercase" style={{ color:'var(--text-muted)' }}>Predict Before Production</span>
                   </div>
                 </Link>
@@ -880,17 +879,13 @@ export default function Layout({ children }) {
                 </button>
 
                 {/* Logo */}
-                <Link to="/" className="flex items-center gap-2 group shrink-0" id="nav-logo">
-                  <div className="relative flex h-7 w-7 items-center justify-center shrink-0">
-                    <div className="absolute h-7 w-7 rounded-full bg-cyan-500/15 nb-ping" />
-                    <div className="relative h-2 w-2 rounded-full bg-cyan-400 shadow-[0_0_8px_rgba(6,182,212,0.7)]" />
-                    <div className="absolute h-4 w-4 rounded-full border border-cyan-500/25 nb-orbit" />
-                  </div>
+                <Link to="/" className="flex items-center gap-2.5 group shrink-0" id="nav-logo">
+                  <OrbitLogo size="sm" />
                   <div className="hidden sm:flex flex-col">
-                    <span className="text-[13px] font-bold tracking-tight leading-none" style={{ color:'var(--text-primary)' }}>
-                      Orbit<span className="text-cyan-400">Foresight</span>
+                    <span className="text-[14px] font-extrabold tracking-tight leading-none" style={{ color:'var(--text-primary)' }}>
+                      Orbit<span className="bg-gradient-to-r from-cyan-400 to-blue-400 bg-clip-text text-transparent">Foresight</span>
                     </span>
-                    <span className="text-[7px] font-mono tracking-[0.12em] uppercase leading-none mt-0.5" style={{ color:'var(--text-muted)' }}>
+                    <span className="text-[7px] font-mono tracking-[0.14em] uppercase leading-none mt-0.5" style={{ color:'var(--text-muted)' }}>
                       Predict Before Production
                     </span>
                   </div>
@@ -957,13 +952,16 @@ export default function Layout({ children }) {
               {/* ── RIGHT GROUP ── */}
               <div className="flex items-center gap-1 sm:gap-1.5 shrink-0 ml-auto">
                 {/* Desktop badges */}
-                <div className="hidden lg:flex items-center gap-1.5">
-                  <div id="nav-ai-confidence" className="nb-conf-badge" title="AI prediction confidence">
-                    <svg className="h-3 w-3 text-cyan-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09z" />
-                    </svg>
-                    <span>94%</span>
-                    <span style={{ fontSize:'9px', fontWeight:500, color:'var(--text-muted)', letterSpacing:'.05em' }}>AI</span>
+                <div className="hidden lg:flex items-center gap-2">
+                  <div id="nav-ai-pulse" className="flex items-center gap-2 rounded-full border border-cyan-500/20 bg-cyan-500/[0.05] px-3 py-1.5">
+                    <span className="relative flex h-2 w-2">
+                      <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-cyan-400 opacity-60" />
+                      <span className="relative inline-flex h-2 w-2 rounded-full bg-cyan-400 shadow-[0_0_8px_rgba(6,182,212,0.6)]" />
+                    </span>
+                    <span className="text-xs font-bold text-cyan-300">AI Active</span>
+                    <span className="h-3 w-px bg-cyan-500/20" />
+                    <span className="text-xs font-mono font-bold text-cyan-400">94%</span>
+                    <span className="text-[9px] text-cyan-500/60">confidence</span>
                   </div>
                   <div className="nb-sep" />
                 </div>
