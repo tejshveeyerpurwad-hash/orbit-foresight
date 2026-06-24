@@ -26,6 +26,7 @@ const KnowledgeGraph = lazy(() => import('./pages/KnowledgeGraph'))
 const Analytics = lazy(() => import('./pages/Analytics'))
 const Settings = lazy(() => import('./pages/Settings'))
 const Help = lazy(() => import('./pages/Help'))
+const DecisionSimulator = lazy(() => import('./pages/DecisionSimulator'))
 
 const pageVariants = {
   initial: { opacity: 0, y: 6, filter: 'blur(2px)' },
@@ -81,6 +82,7 @@ export default function App() {
         <Route path="/analytics" element={<Suspense fallback={<PageSkeleton />}><AnimatedPage><ErrorBoundary><Analytics /></ErrorBoundary></AnimatedPage></Suspense>} />
         <Route path="/time-machine" element={<Suspense fallback={<PageSkeleton />}><AnimatedPage><ErrorBoundary><IncidentTimeMachine /></ErrorBoundary></AnimatedPage></Suspense>} />
         <Route path="/ai-planner" element={<Suspense fallback={<PageSkeleton />}><AnimatedPage><AIEngineeringPlanner /></AnimatedPage></Suspense>} />
+        <Route path="/decision-simulator" element={<Suspense fallback={<PageSkeleton />}><AnimatedPage><DecisionSimulator /></AnimatedPage></Suspense>} />
         <Route path="/execution-planner" element={<Suspense fallback={<PageSkeleton />}><AnimatedPage><OrbitExecutionPlanner /></AnimatedPage></Suspense>} />
         <Route path="/settings" element={<Suspense fallback={<PageSkeleton />}><AnimatedPage><Settings /></AnimatedPage></Suspense>} />
         <Route path="/help" element={<Suspense fallback={<PageSkeleton />}><AnimatedPage><Help /></AnimatedPage></Suspense>} />

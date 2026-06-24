@@ -8,6 +8,7 @@ import NotificationCenter from './NotificationCenter'
 import CommandCenterDrawer from './CommandCenterDrawer'
 import ExecutiveCommandHeader from './ExecutiveCommandHeader'
 import CinematicMissionBriefing from './CinematicMissionBriefing'
+import AICopilot from './AICopilot'
 import { initLayoutGuard } from '../utils/layoutGuard'
 
 /* ─────────────────────────────────────────────────────────────
@@ -20,6 +21,7 @@ const NAV_ITEMS = [
   { to: '/knowledge-graph',    label: 'Dependency Map', icon: 'M2.25 12.75V12A2.25 2.25 0 014.5 9.75h15A2.25 2.25 0 0121.75 12v.75m-8.69-6.44l-2.12-2.12a1.5 1.5 0 00-1.061-.44H4.5A2.25 2.25 0 002.25 6v12a2.25 2.25 0 002.25 2.25h15A2.25 2.25 0 0021.75 18V9a2.25 2.25 0 00-2.25-2.25h-5.379a1.5 1.5 0 01-1.06-.44z' },
   { to: '/cto-report',         label: 'Impact',         icon: 'M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z' },
   { to: '/ai-planner',         label: 'AI Strategy',    icon: 'M8.25 3v1.5M4.5 8.25H3m18 0h-1.5M4.5 12H3m18 0h-1.5m-15 3.75H3m18 0h-1.5M8.25 19.5V21M12 3v1.5m0 15V21m3.75-18v1.5m0 15V21m-9-1.5h10.5a2.25 2.25 0 002.25-2.25V6.75a2.25 2.25 0 00-2.25-2.25H6.75A2.25 2.25 0 004.5 6.75v10.5a2.25 2.25 0 002.25 2.25zm.75-12h9v9h-9v-9z' },
+  { to: '/decision-simulator', label: 'Simulator',      icon: 'M8.25 3v1.5M4.5 8.25H3m18 0h-1.5M4.5 12H3m18 0h-1.5m-15 3.75H3m18 0h-1.5M8.25 19.5V21M12 3v1.5m0 15V21m3.75-18v1.5m0 15V21m-9-1.5h10.5a2.25 2.25 0 002.25-2.25V6.75a2.25 2.25 0 00-2.25-2.25H6.75A2.25 2.25 0 004.5 6.75v10.5a2.25 2.25 0 002.25 2.25zm.75-12h9v9h-9v-9z' },
   { to: '/execution-planner',  label: 'Execute',        icon: 'M3.75 12h16.5m-16.5 3.75h16.5M3.75 19.5h16.5M5.625 4.5h12.75a1.875 1.875 0 010 3.75H5.625a1.875 1.875 0 010-3.75z' },
   { to: '/analytics',          label: 'Analytics',      icon: 'M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v6.75C7.5 20.496 6.996 21 6.375 21h-2.25A1.125 1.125 0 013 19.875v-6.75zM9.75 8.625c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125v11.25c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V8.625zM16.5 4.125c0-.621.504-1.125 1.125-1.125h2.25C20.496 3 21 3.504 21 4.125v15.75c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V4.125z' },
 ]
@@ -30,9 +32,10 @@ const WORKFLOW = [
   { to: '/time-machine',      label: 'Time Machine',   stage: 3, desc: 'Replay incident history' },
   { to: '/knowledge-graph',   label: 'Dependency Map', stage: 4, desc: 'Map the blast radius' },
   { to: '/cto-report',        label: 'Impact',         stage: 5, desc: 'Quantify business cost' },
-  { to: '/ai-planner',        label: 'AI Strategy',    stage: 6, desc: 'Plan the response' },
-  { to: '/execution-planner', label: 'Execute',        stage: 7, desc: 'Deploy the fix' },
-  { to: '/analytics',         label: 'Analytics',      stage: 8, desc: 'Measure outcomes' },
+  { to: '/ai-planner',         label: 'AI Strategy',    stage: 6, desc: 'Plan the response' },
+  { to: '/decision-simulator', label: 'Simulator',     stage: 7, desc: 'Simulate failure scenarios' },
+  { to: '/execution-planner',  label: 'Execute',       stage: 8, desc: 'Deploy the fix' },
+  { to: '/analytics',          label: 'Analytics',     stage: 9, desc: 'Measure outcomes' },
 ]
 
 const SIDEBAR_NAV = [
@@ -339,6 +342,19 @@ const GLOBAL_STYLES = `
     transition: border-color .2s, box-shadow .2s;
   }
   .of-glass-card:hover { border-color: rgba(6,182,212,.15); box-shadow: 0 8px 32px -12px rgba(6,182,212,.12); }
+
+  /* ── Present mode ── */
+  body.of-present-mode { font-size: 18px; }
+  .of-present-mode .of-present-kpi { font-size: 3.5rem !important; line-height: 1; font-weight: 800; }
+  .of-present-mode .of-present-label { font-size: 0.9rem !important; opacity: 0.7; letter-spacing: 0.05em; }
+  .of-present-mode .of-present-card { border-width: 2px; padding: 2rem; border-radius: 1rem; }
+  .of-present-mode .text-xs { font-size: 0.8rem !important; }
+  .of-present-mode .text-sm { font-size: 1rem !important; }
+  .of-present-mode .text-base { font-size: 1.1rem !important; }
+  .of-present-mode .text-lg { font-size: 1.5rem !important; }
+  .of-present-mode .text-xl { font-size: 2rem !important; }
+  .of-present-mode .text-2xl { font-size: 2.5rem !important; }
+  .of-present-mode .text-3xl { font-size: 3rem !important; }
 `
 
 /* ─────────────────────────────────────────────────────────────
@@ -510,7 +526,11 @@ export default function Layout({ children }) {
   /* Present mode */
   useEffect(() => {
     const params = new URLSearchParams(window.location.search)
-    if (params.get('present') === '1') setPresentMode(true)
+    if (params.get('present') === '1') { setPresentMode(true); document.body.classList.add('of-present-mode') }
+  }, [])
+
+  useEffect(() => {
+    return () => { document.body.classList.remove('of-present-mode') }
   }, [])
 
   useEffect(() => {
@@ -535,6 +555,8 @@ export default function Layout({ children }) {
       const p = new URLSearchParams(window.location.search)
       next ? p.set('present','1') : p.delete('present')
       window.history.replaceState(null, '', pathname + (p.toString() ? '?'+p.toString() : ''))
+      if (next) document.body.classList.add('of-present-mode')
+      else document.body.classList.remove('of-present-mode')
       return next
     })
   }, [pathname])
@@ -615,6 +637,8 @@ export default function Layout({ children }) {
       <style>{GLOBAL_STYLES}</style>
 
       {showMissionBriefing && <CinematicMissionBriefing onComplete={() => setShowMissionBriefing(false)} />}
+
+      <AICopilot />
 
       {/* ── Premium animated background ── */}
       <PremiumBackground isDark={isDark} />

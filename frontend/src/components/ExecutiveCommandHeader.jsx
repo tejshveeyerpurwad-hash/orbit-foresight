@@ -29,6 +29,7 @@ const pageStages = {
   '/analytics': { stage: 'Outcome Measurement', eta: '—', mission: 'Validate Business Impact' },
   '/impact-analysis': { stage: 'Boardroom Review', eta: '5 min', mission: 'Assess Cross-Service Impact' },
   '/deployment-simulator': { stage: 'Mission Control', eta: '15 min', mission: 'Orchestrate Safe Deployment' },
+  '/decision-simulator': { stage: 'Decision Simulator', eta: '5 min', mission: 'Simulate Failure Scenarios' },
 }
 
 export default function ExecutiveCommandHeader() {

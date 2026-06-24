@@ -167,29 +167,37 @@ function CustomNode({ data }) {
   const isDegraded = detail && detail.errorRate >= 0.5 && detail.errorRate < 2
   const healthDot = isHealthy ? '#22c55e' : isDegraded ? '#f59e0b' : '#ef4444'
   const healthPulse = isHealthy ? '' : 'animate-pulse'
+  const revenueImpact = data.risk === 'high' ? '$2.1M' : data.risk === 'medium' ? '$890K' : '$120K'
   return (
     <motion.div
-      whileHover={{ scale: 1.1 }}
+      whileHover={{ scale: 1.15 }}
       transition={{ type: 'spring', stiffness: 400, damping: 15 }}
-      className="rounded-xl border-2 px-3 py-2.5 text-center shadow-lg backdrop-blur-xl min-w-[120px] cursor-pointer relative overflow-hidden group of-glow-card"
+      className="rounded-2xl border-2 px-5 py-4 text-center shadow-2xl backdrop-blur-xl min-w-[180px] cursor-pointer relative overflow-hidden group of-glow-card"
       style={{ backgroundColor: c.bg, borderColor: c.border, boxShadow: c.glow }}
     >
-      <div className="absolute inset-0 bg-gradient-to-b from-white/[0.04] to-transparent pointer-events-none" />
-      <div className="absolute -top-4 -right-4 h-8 w-8 rounded-full opacity-[0.04] pointer-events-none"
+      <div className="absolute inset-0 bg-gradient-to-b from-white/[0.06] to-transparent pointer-events-none" />
+      <div className="absolute -top-6 -right-6 h-16 w-16 rounded-full opacity-[0.06] pointer-events-none"
         style={{ background: `radial-gradient(circle, ${c.border}, transparent)` }} />
-      <div className="flex items-center justify-center gap-1.5 mb-1 relative">
-        <span className="relative flex h-1.5 w-1.5">
+      <span className="relative flex items-center justify-center mb-2">
+        <span className="relative flex h-3 w-3 mr-1">
           <span className={`absolute inline-flex h-full w-full rounded-full opacity-75 ${healthPulse}`} style={{ background: healthDot }} />
-          <span className="relative inline-flex h-1.5 w-1.5 rounded-full" style={{ background: healthDot }} />
+          <span className="relative inline-flex h-3 w-3 rounded-full" style={{ background: healthDot }} />
         </span>
-        <span className="text-[11px] relative">{typeIcons[data.type] || '\u2699'}</span>
-      </div>
+        <span className="text-lg relative">{typeIcons[data.type] || '\u2699'}</span>
+      </span>
       <div className="relative">
-        <div className="text-xs font-bold" style={{ color: c.text }}>{data.label}</div>
-        <div className="text-[8px] text-slate-500 mt-px">{data.type} &middot; {data.team}</div>
+        <div className="text-base font-bold mb-0.5" style={{ color: c.text }}>{data.label}</div>
+        <div className="text-xs text-slate-500 mb-1.5">{data.type} &middot; {data.team}</div>
+        <div className="inline-flex items-center gap-1.5 rounded-lg border px-2.5 py-1" style={{ borderColor: `${c.border}40`, backgroundColor: `${c.border}10` }}>
+          <svg className="h-3.5 w-3.5" style={{ color: c.text }} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M12 6v12m-3-2.818l.879.659c1.171.879 3.07.879 4.242 0 1.172-.879 1.172-2.303 0-3.182C13.536 12.219 12.768 12 12 12c-.725 0-1.45-.22-2.003-.659-1.106-.879-1.106-2.303 0-3.182s2.9-.879 4.006 0l.415.33M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+          <span className="text-sm font-bold" style={{ color: c.text }}>{revenueImpact}</span>
+          <span className="text-[9px] text-slate-600">at risk</span>
+        </div>
       </div>
       {data.risk === 'high' && (
-        <div className="absolute -top-1 -right-1 w-2.5 h-2.5 rounded-full bg-red-500 animate-pulse shadow-[0_0_8px_rgba(239,68,68,0.6)]" />
+        <div className="absolute -top-1.5 -right-1.5 w-3.5 h-3.5 rounded-full bg-red-500 animate-pulse shadow-[0_0_12px_rgba(239,68,68,0.6)]" />
       )}
     </motion.div>
   )
@@ -209,26 +217,26 @@ function SearchFilterBar({ search, setSearch, activeFilter, setActiveFilter, dra
   ]
 
   return (
-    <div className="flex items-center gap-2 flex-shrink-0">
-      <div className="relative flex-1 min-w-0 max-w-[200px]">
-        <svg className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3 w-3 text-slate-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+    <div className="flex items-center gap-3 flex-shrink-0">
+      <div className="relative flex-1 min-w-0 max-w-[240px]">
+        <svg className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
           <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
         </svg>
         <input
           value={search}
           onChange={e => setSearch(e.target.value)}
           placeholder="Search nodes..."
-          className="w-full rounded-lg border border-white/[0.06] bg-white/[0.03] py-1.5 pl-8 pr-2.5 text-[10px] text-slate-300 placeholder-slate-600 outline-none focus:border-cyan-500/40 focus:bg-white/[0.06] transition-all"
+          className="w-full rounded-lg border border-white/[0.06] bg-white/[0.03] py-2 pl-9 pr-3 text-sm text-slate-300 placeholder-slate-600 outline-none focus:border-cyan-500/40 focus:bg-white/[0.06] transition-all"
         />
       </div>
-      <div className="hidden sm:flex gap-1">
+      <div className="hidden sm:flex gap-1.5">
         {filters.slice(0, 4).map(f => {
           const active = activeFilter === f.key
           return (
             <button
               key={f.key}
               onClick={() => setActiveFilter(f.key)}
-              className={`rounded-lg border px-2 py-1 text-[9px] font-medium transition-all ${
+              className={`rounded-lg border px-3 py-1.5 text-xs font-medium transition-all ${
                 active
                   ? 'border-cyan-400/40 bg-cyan-400/10 text-cyan-300'
                   : 'border-white/[0.06] text-slate-500 hover:border-white/[0.12] hover:text-slate-400'
@@ -241,11 +249,11 @@ function SearchFilterBar({ search, setSearch, activeFilter, setActiveFilter, dra
       </div>
       <button
         onClick={() => setDrawerOpen(!drawerOpen)}
-        className={`lg:hidden rounded-lg border p-1.5 transition-all ${
+        className={`lg:hidden rounded-lg border p-2 transition-all ${
           drawerOpen ? 'border-cyan-400/40 bg-cyan-400/10 text-cyan-300' : 'border-white/[0.06] text-slate-500 hover:text-slate-400'
         }`}
       >
-        <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+        <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
           <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
         </svg>
       </button>
@@ -270,7 +278,17 @@ function GraphInside() {
   const [search, setSearch] = useState('')
   const [activeFilter, setActiveFilter] = useState('all')
   const [blastMode, setBlastMode] = useState(false)
+  const [presentMode, setPresentMode] = useState(false)
   const [drawerOpen, setDrawerOpen] = useState(false)
+
+  useEffect(() => {
+    if (presentMode) {
+      document.body.classList.add('of-present-mode')
+    } else {
+      document.body.classList.remove('of-present-mode')
+    }
+    return () => document.body.classList.remove('of-present-mode')
+  }, [presentMode])
   const graphRef = useRef(null)
 
   useEffect(() => {
@@ -326,35 +344,48 @@ function GraphInside() {
 
   return (
     <div className="flex flex-col h-full">
-      <div className="flex items-center justify-between gap-2 px-3 py-2 border-b border-white/[0.06] flex-shrink-0">
-        <div className="flex items-center gap-2 min-w-0">
-          <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-cyan-500/20 to-emerald-500/20 border border-cyan-400/30 flex items-center justify-center shrink-0">
-            <NetworkIcon className="w-3.5 h-3.5 text-cyan-400" />
+      <div className="flex items-center justify-between gap-3 px-4 py-3 border-b border-white/[0.06] flex-shrink-0">
+        <div className="flex items-center gap-3 min-w-0">
+          <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-cyan-500/20 to-emerald-500/20 border border-cyan-400/30 flex items-center justify-center shrink-0">
+            <NetworkIcon className="w-5 h-5 text-cyan-400" />
           </div>
           <div className="min-w-0">
-            <h2 className="text-xs font-bold text-white truncate">Knowledge Graph</h2>
-            <p className="text-[8px] text-slate-600 truncate">{nodes.length} services \u00B7 {edges.length} deps</p>
+            <h2 className="text-base font-bold text-white truncate leading-tight">Dependency Intelligence</h2>
+            <p className="text-[10px] text-slate-500 truncate">Command Center \u00B7 {nodes.length} services \u00B7 {edges.length} dependencies</p>
           </div>
         </div>
-        <div className="flex items-center gap-1.5">
+        <div className="flex items-center gap-2">
           <button
             onClick={() => setBlastMode(!blastMode)}
-            className={`rounded-lg border px-2 py-1 text-[9px] font-medium transition-all flex items-center gap-1 ${
+            className={`rounded-lg border px-2.5 py-1.5 text-[10px] font-semibold transition-all flex items-center gap-1.5 ${
               blastMode
                 ? 'border-cyan-400/40 bg-cyan-400/10 text-cyan-300'
                 : 'border-white/[0.06] text-slate-500 hover:border-white/[0.12]'
             }`}
           >
-            <AlertTriangle className="w-2.5 h-2.5" />
-            <span className="hidden sm:inline">Blast</span>
+            <AlertTriangle className="w-3.5 h-3.5" />
+            <span>Blast Radius</span>
+          </button>
+          <button
+            onClick={() => setPresentMode(!presentMode)}
+            className={`rounded-lg border px-2.5 py-1.5 text-[10px] font-semibold transition-all flex items-center gap-1.5 ${
+              presentMode
+                ? 'border-emerald-400/40 bg-emerald-400/10 text-emerald-300'
+                : 'border-white/[0.06] text-slate-500 hover:border-white/[0.12]'
+            }`}
+          >
+            <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 3.75v4.5m0-4.5h4.5m-4.5 0L9 9M3.75 20.25v-4.5m0 4.5h4.5m-4.5 0L9 15M20.25 3.75h-4.5m4.5 0v4.5m0-4.5L15 9m5.25 11.25h-4.5m4.5 0v-4.5m0 4.5L15 15" />
+            </svg>
+            <span>{presentMode ? 'Boardroom' : 'Standard'}</span>
           </button>
           {reactFlowInstance && (
             <button
               onClick={() => reactFlowInstance.fitView({ padding: 0.06 })}
-              className="rounded-lg border border-white/[0.06] p-1.5 text-slate-500 hover:border-white/[0.12] hover:text-slate-400 transition-all"
+              className="rounded-lg border border-white/[0.06] p-2 text-slate-500 hover:border-white/[0.12] hover:text-slate-400 transition-all"
               title="Fit view"
             >
-              <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                 <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 3.75v4.5m0-4.5h4.5m-4.5 0L9 9M3.75 20.25v-4.5m0 4.5h4.5m-4.5 0L9 15M20.25 3.75h-4.5m4.5 0v4.5m0-4.5L15 9m5.25 11.25h-4.5m4.5 0v-4.5m0 4.5L15 15" />
               </svg>
             </button>
@@ -362,12 +393,16 @@ function GraphInside() {
         </div>
       </div>
 
-      <div className="flex items-center gap-2 px-3 py-1.5 border-b border-white/[0.04] flex-shrink-0">
+      <div className="flex items-center gap-3 px-4 py-2 border-b border-white/[0.04] flex-shrink-0">
         <SearchFilterBar search={search} setSearch={setSearch} activeFilter={activeFilter} setActiveFilter={setActiveFilter} drawerOpen={drawerOpen} setDrawerOpen={setDrawerOpen} />
-        <div className="hidden md:flex items-center gap-2 ml-auto text-[8px] text-slate-700">
-          <span className="flex items-center gap-1"><span className="w-1.5 h-1.5 rounded-full bg-red-500" />{highCount}</span>
-          <span className="flex items-center gap-1"><span className="w-1.5 h-1.5 rounded-full bg-amber-500" />{mediumCount}</span>
-          <span className="flex items-center gap-1"><span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />{lowCount}</span>
+        <div className="hidden md:flex items-center gap-3 ml-auto">
+          <div className="flex items-center gap-2 rounded-lg border border-white/[0.06] bg-white/[0.03] px-3 py-1.5">
+            <span className="flex items-center gap-1.5 text-xs text-slate-400"><span className="w-2 h-2 rounded-full bg-red-500" /><span className="font-bold text-white">{highCount}</span> Critical</span>
+            <span className="w-px h-4 bg-white/[0.06]" />
+            <span className="flex items-center gap-1.5 text-xs text-slate-400"><span className="w-2 h-2 rounded-full bg-amber-500" /><span className="font-bold text-white">{mediumCount}</span> Watch</span>
+            <span className="w-px h-4 bg-white/[0.06]" />
+            <span className="flex items-center gap-1.5 text-xs text-slate-400"><span className="w-2 h-2 rounded-full bg-emerald-500" /><span className="font-bold text-white">{lowCount}</span> Healthy</span>
+          </div>
         </div>
       </div>
 
@@ -400,55 +435,61 @@ function GraphInside() {
           {search && filteredNodes.length === 0 && (
             <div className="absolute inset-0 flex items-center justify-center bg-slate-950/80 backdrop-blur-sm">
               <div className="text-center">
-                <svg className="w-6 h-6 text-slate-700 mx-auto mb-1.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+                <svg className="w-8 h-8 text-slate-700 mx-auto mb-2" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
                   <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
                 </svg>
-                <p className="text-[10px] text-slate-600">No nodes matching "<span className="text-slate-400">{search}</span>"</p>
+                <p className="text-sm text-slate-500">No nodes matching "<span className="text-slate-300 font-semibold">{search}</span>"</p>
               </div>
             </div>
           )}
         </div>
 
-        <aside className="hidden lg:block border-l border-white/[0.06] bg-slate-950/95 overflow-y-auto flex-shrink-0 w-[280px]"
+        <aside className="hidden lg:block border-l border-white/[0.06] bg-slate-950/95 overflow-y-auto flex-shrink-0 w-[340px]"
           style={{ maxHeight: '100%' }}
         >
-          <div className="p-3 space-y-3 min-w-[280px]">
+          <div className="p-4 space-y-4 min-w-[340px]">
             {selectedNode && selectedDetail ? (
-              <div>
-                <div className="flex items-center justify-between mb-2">
-                  <h3 className="text-xs font-semibold text-white">{selectedNode.data.label}</h3>
+              <div className="rounded-xl border border-cyan-400/20 bg-gradient-to-br from-cyan-400/[0.04] to-transparent p-4">
+                <div className="flex items-center justify-between mb-3">
+                  <h3 className="text-lg font-bold text-white">{selectedNode.data.label}</h3>
                   <button onClick={() => setSelectedNode(null)} className="text-slate-600 hover:text-slate-400">
-                    <svg className="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                       <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
                     </svg>
                   </button>
                 </div>
-                <p className="text-[9px] text-slate-500 mb-2">{selectedDetail.description || ''}</p>
-                <div className="flex flex-wrap gap-1 mb-2">
-                  <span className={`rounded border px-1.5 py-0.5 text-[8px] font-semibold ${riskColors[selectedNode.data.risk]?.badge || riskColors.low.badge}`}>
+                <p className="text-sm text-slate-400 mb-3">{selectedDetail.description || ''}</p>
+                <div className="flex gap-2 mb-3">
+                  <span className={`rounded-lg border px-3 py-1 text-xs font-bold ${riskColors[selectedNode.data.risk]?.badge || riskColors.low.badge}`}>
                     {selectedNode.data.risk.toUpperCase()}
                   </span>
-                  <span className="rounded border border-white/[0.06] bg-white/[0.04] px-1.5 py-0.5 text-[8px] text-slate-400">{selectedNode.data.type}</span>
+                  <span className="rounded-lg border border-white/[0.06] bg-white/[0.04] px-3 py-1 text-xs text-slate-300">{selectedNode.data.type}</span>
                 </div>
-                <div className="grid grid-cols-2 gap-1.5 mb-3">
+                <div className="grid grid-cols-2 gap-2 mb-3">
                   {[
                     { label: 'Uptime', value: `${selectedDetail.uptime ?? '-'}%`, color: (selectedDetail.uptime ?? 0) >= 99.9 ? 'text-emerald-400' : 'text-amber-400' },
-                    { label: 'Resp Time', value: selectedDetail.responseTime || '-', color: 'text-cyan-400' },
+                    { label: 'Response', value: selectedDetail.responseTime || '-', color: 'text-cyan-400' },
                     { label: 'Error Rate', value: selectedDetail.errorRate != null ? `${selectedDetail.errorRate}%` : '-', color: (selectedDetail.errorRate ?? 0) < 0.5 ? 'text-emerald-400' : 'text-red-400' },
                     { label: 'Incidents', value: selectedDetail.incidents != null ? String(selectedDetail.incidents) : '-', color: (selectedDetail.incidents ?? 0) === 0 ? 'text-emerald-400' : 'text-amber-400' },
                   ].map(s => (
-                    <div key={s.label} className="rounded border border-white/[0.06] bg-white/[0.03] p-1.5">
-                      <div className="text-[7px] text-slate-600">{s.label}</div>
-                      <div className={`text-[10px] font-bold ${s.color}`}>{s.value}</div>
+                    <div key={s.label} className="rounded-lg border border-white/[0.08] bg-white/[0.04] p-2.5">
+                      <div className="text-[10px] text-slate-500 mb-0.5">{s.label}</div>
+                      <div className={`text-sm font-bold ${s.color}`}>{s.value}</div>
                     </div>
                   ))}
                 </div>
-                <div className="rounded-lg border border-cyan-400/15 bg-cyan-400/5 p-2 mb-3">
-                  <p className="text-[8px] text-slate-500 leading-relaxed">
+                <div className="rounded-xl border border-cyan-400/15 bg-cyan-400/5 p-3">
+                  <div className="flex items-center gap-2 text-xs text-slate-400 mb-1">
+                    <svg className="w-4 h-4 text-cyan-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M12 18v-5.25m0 0a6.01 6.01 0 001.5-.189m-1.5.189a6.01 6.01 0 01-1.5-.189m3.75 7.478a12.06 12.06 0 01-4.5 0m3.75 2.383a14.406 14.406 0 01-3 0M14.25 18v-.192c0-.983.658-1.823 1.508-2.316a7.5 7.5 0 10-7.517 0c.85.493 1.509 1.333 1.509 2.316V18" />
+                    </svg>
+                    <span className="font-semibold text-cyan-300">AI Recommendation</span>
+                  </div>
+                  <p className="text-sm text-slate-300 leading-relaxed">
                     {selectedNode.data.risk === 'high'
-                      ? 'Critical service. Implement circuit breakers and redundancy.'
+                      ? 'Critical service requiring immediate circuit breakers and redundancy. Deploy multi-region failover.'
                       : selectedNode.data.risk === 'medium'
-                      ? 'Moderate risk. Monitor latency and error budgets.'
+                      ? 'Moderate risk. Monitor latency and error budgets. Consider auto-scaling.'
                       : 'Low risk. Standard monitoring sufficient.'}
                   </p>
                 </div>
@@ -456,68 +497,92 @@ function GraphInside() {
             ) : null}
 
             <div>
-              <h4 className="text-[9px] font-semibold text-slate-500 uppercase tracking-wider mb-1.5">Graph Stats</h4>
-              <div className="grid grid-cols-2 gap-1.5">
+              <h4 className="text-sm font-bold text-slate-300 mb-2 flex items-center gap-2">
+                <svg className="w-4 h-4 text-cyan-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v6.75C7.5 20.496 6.996 21 6.375 21h-2.25A1.125 1.125 0 013 19.875v-6.75zM9.75 8.625c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125v11.25c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V8.625zM16.5 4.125c0-.621.504-1.125 1.125-1.125h2.25C20.496 3 21 3.504 21 4.125v15.75c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V4.125z" />
+                </svg>
+                Executive KPIs
+              </h4>
+              <div className="grid grid-cols-2 gap-2">
                 {[
-                  { label: 'Services', value: nodes.length },
-                  { label: 'Dependencies', value: edges.length },
-                  { label: 'Teams', value: uniqueTeams.length },
-                  { label: 'High Risk', value: highCount },
+                  { label: 'Total Services', value: nodes.length, icon: '\u2699' },
+                  { label: 'Dependencies', value: edges.length, icon: '\u2194' },
+                  { label: 'Teams', value: uniqueTeams.length, icon: '\u2603' },
+                  { label: 'At Risk', value: highCount, color: 'text-red-400', icon: '\u26A0' },
                 ].map(s => (
-                  <div key={s.label} className="rounded border border-white/[0.06] bg-white/[0.03] p-1.5 text-center">
-                    <div className="text-[9px] font-bold text-white">{s.value}</div>
-                    <div className="text-[7px] text-slate-600">{s.label}</div>
+                  <div key={s.label} className="rounded-xl border border-white/[0.06] bg-gradient-to-br from-white/[0.03] to-transparent p-3">
+                    <div className="text-2xl font-bold text-white mb-0.5">{s.value}</div>
+                    <div className="text-xs text-slate-500">{s.label}</div>
                   </div>
                 ))}
               </div>
             </div>
 
             <div>
-              <h4 className="text-[9px] font-semibold text-slate-500 uppercase tracking-wider mb-1.5">Dependencies</h4>
-              <div className="space-y-1 max-h-[200px] overflow-y-auto">
-                {dependencies.slice(0, 6).map(d => {
+              <h4 className="text-sm font-bold text-slate-300 mb-2 flex items-center gap-2">
+                <svg className="w-4 h-4 text-cyan-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M2.036 12.25a8.681 8.681 0 01-.839-3.5m.839 3.5c0 4.463 3.626 8.02 8.08 8.02 3.793 0 6.975-2.62 7.823-6.153m-7.823 6.153a7.25 7.25 0 003.16-1.442m-3.16 1.442L12 20.25m0 0l-2.25-2.25M12 20.25l2.25-2.25" />
+                </svg>
+                Critical Dependencies
+              </h4>
+              <div className="space-y-1.5 max-h-[220px] overflow-y-auto">
+                {dependencies.filter(d => d.risk === 'high').slice(0, 5).map(d => {
                   const src = initialNodes.find(n => n.id === d.source)?.data.label || d.source
                   const tgt = initialNodes.find(n => n.id === d.target)?.data.label || d.target
                   return (
-                    <div key={d.id} className="flex items-center gap-1 rounded border border-white/[0.04] bg-white/[0.02] px-1.5 py-1">
-                      <span className="text-[8px] text-slate-300 min-w-0 truncate flex-1">{src} \u2192 {tgt}</span>
-                      <span className={`w-1.5 h-1.5 rounded-full shrink-0 ${d.status === 'healthy' ? 'bg-emerald-500' : d.status === 'degraded' ? 'bg-amber-500' : 'bg-red-500'}`} />
+                    <div key={d.id} className="flex items-center gap-2 rounded-lg border border-red-500/20 bg-red-500/[0.03] px-3 py-2">
+                      <span className="w-2 h-2 rounded-full bg-red-500 animate-pulse shrink-0" />
+                      <span className="text-sm text-slate-200 min-w-0 truncate flex-1">{src} \u2192 {tgt}</span>
+                      <span className="text-xs font-mono text-red-400 shrink-0">{d.propagation}%</span>
                     </div>
                   )
                 })}
+                {(dependencies.filter(d => d.risk === 'high').length === 0) && (
+                  <p className="text-xs text-slate-600 italic">No critical dependencies detected</p>
+                )}
               </div>
             </div>
 
             <div>
-              <h4 className="text-[9px] font-semibold text-slate-500 uppercase tracking-wider mb-1.5">AI Insights</h4>
-              <div className="space-y-1 max-h-[180px] overflow-y-auto">
+              <h4 className="text-sm font-bold text-slate-300 mb-2 flex items-center gap-2">
+                <svg className="w-4 h-4 text-cyan-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09zM18.259 8.715L18 9.75l-.259-1.035a3.375 3.375 0 00-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 002.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 002.455 2.456L21.75 6l-1.036.259a3.375 3.375 0 00-2.455 2.456zM16.894 20.567L16.5 21.75l-.394-1.183a2.25 2.25 0 00-1.423-1.423L13.5 18.75l1.183-.394a2.25 2.25 0 001.423-1.423l.394-1.183.394 1.183a2.25 2.25 0 001.423 1.423l1.183.394-1.183.394a2.25 2.25 0 00-1.423 1.423z" />
+                </svg>
+                AI Intelligence
+              </h4>
+              <div className="space-y-1.5 max-h-[200px] overflow-y-auto">
                 {allInsights.slice(0, 4).map(inx => (
-                  <div key={inx.id} className="rounded border border-white/[0.04] bg-white/[0.02] p-1.5">
-                    <div className="flex items-center gap-1 mb-0.5">
-                      <span className={`text-[7px] font-semibold px-1 py-px rounded ${
-                        inx.priority === 'critical' ? 'bg-red-500/10 text-red-400' :
-                        inx.priority === 'high' ? 'bg-amber-500/10 text-amber-400' :
-                        inx.priority === 'medium' ? 'bg-cyan-500/10 text-cyan-400' :
-                        'bg-white/[0.04] text-slate-500'
+                  <div key={inx.id} className="rounded-xl border border-white/[0.04] bg-white/[0.02] p-3">
+                    <div className="flex items-center gap-1.5 mb-1">
+                      <span className={`text-[10px] font-bold px-2 py-0.5 rounded ${
+                        inx.priority === 'critical' ? 'bg-red-500/15 text-red-400 border border-red-500/20' :
+                        inx.priority === 'high' ? 'bg-amber-500/15 text-amber-400 border border-amber-500/20' :
+                        inx.priority === 'medium' ? 'bg-cyan-500/15 text-cyan-400 border border-cyan-500/20' :
+                        'bg-white/[0.06] text-slate-400 border border-white/[0.06]'
                       }`}>{inx.priority}</span>
-                      <span className="text-[7px] text-slate-600">{inx.category}</span>
+                      <span className="text-[10px] text-slate-600">{inx.category}</span>
                     </div>
-                    <p className="text-[8px] text-slate-400 leading-relaxed">{inx.text}</p>
+                    <p className="text-sm text-slate-300 leading-relaxed">{inx.text}</p>
                   </div>
                 ))}
               </div>
             </div>
 
             <div>
-              <h4 className="text-[9px] font-semibold text-slate-500 uppercase tracking-wider mb-1.5">Teams</h4>
-              <div className="space-y-1">
+              <h4 className="text-sm font-bold text-slate-300 mb-2 flex items-center gap-2">
+                <svg className="w-4 h-4 text-cyan-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M18 18.72a9.094 9.094 0 003.741-.479 3 3 0 00-4.682-2.72m.94 3.198l.001.031c0 .225-.012.447-.037.666A11.944 11.944 0 0112 21c-2.17 0-4.207-.576-5.963-1.584A6.062 6.062 0 016 18.719m12 0a5.971 5.971 0 00-.941-3.197m0 0A5.995 5.995 0 0012 12.75a5.995 5.995 0 00-5.058 2.772m0 0a3 3 0 00-4.681 2.72 8.986 8.986 0 003.74.477m.94-3.197a5.971 5.971 0 00-.94 3.197M15 6.75a3 3 0 11-6 0 3 3 0 016 0zm6 3a2.25 2.25 0 11-4.5 0 2.25 2.25 0 014.5 0zm-13.5 0a2.25 2.25 0 11-4.5 0 2.25 2.25 0 014.5 0z" />
+                </svg>
+                Engineering Teams
+              </h4>
+              <div className="space-y-1.5">
                 {teams.map(t => (
-                  <div key={t.id} className="flex items-center justify-between rounded border border-white/[0.04] bg-white/[0.02] px-1.5 py-1">
-                    <div className="flex items-center gap-1.5 min-w-0">
-                      <div className="w-4 h-4 rounded flex items-center justify-center text-[6px] font-bold" style={{ backgroundColor: `${t.color}22`, border: `1px solid ${t.color}44`, color: t.color }}>{t.name.slice(0, 2)}</div>
-                      <span className="text-[8px] text-slate-300 truncate">{t.name}</span>
+                  <div key={t.id} className="flex items-center justify-between rounded-lg border border-white/[0.04] bg-white/[0.02] px-3 py-2">
+                    <div className="flex items-center gap-2 min-w-0">
+                      <div className="w-7 h-7 rounded-lg flex items-center justify-center text-[10px] font-bold" style={{ backgroundColor: `${t.color}22`, border: `1px solid ${t.color}44`, color: t.color }}>{t.name.slice(0, 2)}</div>
+                      <span className="text-sm text-slate-200 truncate">{t.name}</span>
                     </div>
-                    <span className="text-[7px] text-slate-600">{t.members}</span>
+                    <span className="text-xs text-slate-500">{t.members} engineers</span>
                   </div>
                 ))}
               </div>
@@ -532,37 +597,37 @@ function GraphInside() {
             exit={{ x: '100%' }}
             className="lg:hidden fixed inset-x-0 bottom-0 z-50 max-h-[60vh] rounded-t-xl border border-white/[0.06] bg-slate-950/95 backdrop-blur-2xl overflow-y-auto"
           >
-            <div className="sticky top-0 bg-slate-950/95 backdrop-blur-sm flex items-center justify-between px-3 py-2 border-b border-white/[0.06]">
-              <span className="text-[10px] font-semibold text-slate-300">Intelligence</span>
-              <button onClick={() => setDrawerOpen(false)} className="text-slate-600 hover:text-slate-400"><svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" /></svg></button>
+            <div className="sticky top-0 bg-slate-950/95 backdrop-blur-sm flex items-center justify-between px-4 py-3 border-b border-white/[0.06]">
+              <span className="text-sm font-bold text-slate-300">Executive Intelligence</span>
+              <button onClick={() => setDrawerOpen(false)} className="text-slate-600 hover:text-slate-400"><svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" /></svg></button>
             </div>
-            <div className="p-3 space-y-3">
+            <div className="p-4 space-y-4">
               {selectedNode && selectedDetail && (
-                <div className="rounded-lg border border-white/[0.06] bg-white/[0.03] p-2">
-                  <div className="flex items-center justify-between mb-1">
-                    <span className="text-[10px] font-semibold text-white">{selectedNode.data.label}</span>
-                    <span className={`rounded border px-1 py-px text-[7px] font-semibold ${riskColors[selectedNode.data.risk]?.badge}`}>{selectedNode.data.risk}</span>
+                <div className="rounded-xl border border-cyan-400/20 bg-gradient-to-br from-cyan-400/[0.04] to-transparent p-3">
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="text-sm font-bold text-white">{selectedNode.data.label}</span>
+                    <span className={`rounded-lg border px-2 py-0.5 text-[10px] font-bold ${riskColors[selectedNode.data.risk]?.badge}`}>{selectedNode.data.risk}</span>
                   </div>
-                  <div className="grid grid-cols-4 gap-1">
-                    <div className="text-center"><div className="text-[9px] font-bold text-white">{selectedDetail.uptime ?? '-'}%</div><div className="text-[6px] text-slate-600">Uptime</div></div>
-                    <div className="text-center"><div className="text-[9px] font-bold text-cyan-400">{selectedDetail.responseTime || '-'}</div><div className="text-[6px] text-slate-600">Resp</div></div>
-                    <div className="text-center"><div className="text-[9px] font-bold" style={{ color: (selectedDetail.errorRate ?? 0) < 0.5 ? '#22c55e' : '#ef4444' }}>{selectedDetail.errorRate ?? '-'}%</div><div className="text-[6px] text-slate-600">Err</div></div>
-                    <div className="text-center"><div className="text-[9px] font-bold text-white">{selectedDetail.incidents ?? '-'}</div><div className="text-[6px] text-slate-600">Inc</div></div>
+                  <div className="grid grid-cols-4 gap-2">
+                    <div className="text-center"><div className="text-sm font-bold text-white">{selectedDetail.uptime ?? '-'}%</div><div className="text-[9px] text-slate-600">Uptime</div></div>
+                    <div className="text-center"><div className="text-sm font-bold text-cyan-400">{selectedDetail.responseTime || '-'}</div><div className="text-[9px] text-slate-600">Resp</div></div>
+                    <div className="text-center"><div className="text-sm font-bold" style={{ color: (selectedDetail.errorRate ?? 0) < 0.5 ? '#22c55e' : '#ef4444' }}>{selectedDetail.errorRate ?? '-'}%</div><div className="text-[9px] text-slate-600">Err</div></div>
+                    <div className="text-center"><div className="text-sm font-bold text-white">{selectedDetail.incidents ?? '-'}</div><div className="text-[9px] text-slate-600">Inc</div></div>
                   </div>
                 </div>
               )}
-              <div className="grid grid-cols-4 gap-1">
+              <div className="grid grid-cols-4 gap-2">
                 {[
-                  { label: 'Svc', value: nodes.length },
+                  { label: 'Services', value: nodes.length },
                   { label: 'Deps', value: edges.length },
                   { label: 'Teams', value: uniqueTeams.length },
-                  { label: 'High', value: highCount },
+                  { label: 'High Risk', value: highCount },
                 ].map(s => (
-                  <div key={s.label} className="rounded border border-white/[0.06] bg-white/[0.03] p-1 text-center"><div className="text-[9px] font-bold text-white">{s.value}</div><div className="text-[6px] text-slate-600">{s.label}</div></div>
+                  <div key={s.label} className="rounded-lg border border-white/[0.06] bg-white/[0.03] p-2 text-center"><div className="text-base font-bold text-white">{s.value}</div><div className="text-[10px] text-slate-600">{s.label}</div></div>
                 ))}
               </div>
-              <div><h4 className="text-[8px] font-semibold text-slate-500 uppercase tracking-wider mb-1">Dependencies</h4><div className="space-y-1">{dependencies.slice(0, 5).map(d => { const src = initialNodes.find(n => n.id === d.source)?.data.label || d.source; const tgt = initialNodes.find(n => n.id === d.target)?.data.label || d.target; return <div key={d.id} className="flex items-center gap-1 rounded border border-white/[0.04] bg-white/[0.02] px-1.5 py-1"><span className="text-[8px] text-slate-300 flex-1 truncate">{src} → {tgt}</span><span className={`w-1.5 h-1.5 rounded-full shrink-0 ${d.status === 'healthy' ? 'bg-emerald-500' : d.status === 'degraded' ? 'bg-amber-500' : 'bg-red-500'}`} /></div> })}</div></div>
-              <div><h4 className="text-[8px] font-semibold text-slate-500 uppercase tracking-wider mb-1">Insights</h4><div className="space-y-1">{allInsights.slice(0, 3).map(inx => <div key={inx.id} className="rounded border border-white/[0.04] bg-white/[0.02] p-1.5"><p className="text-[8px] text-slate-400">{inx.text}</p></div>)}</div></div>
+              <div><h4 className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Critical Dependencies</h4><div className="space-y-1.5">{dependencies.filter(d => d.risk === 'high').slice(0, 5).map(d => { const src = initialNodes.find(n => n.id === d.source)?.data.label || d.source; const tgt = initialNodes.find(n => n.id === d.target)?.data.label || d.target; return <div key={d.id} className="flex items-center gap-2 rounded-lg border border-red-500/20 bg-red-500/[0.03] px-3 py-2"><span className="w-2 h-2 rounded-full bg-red-500 animate-pulse shrink-0" /><span className="text-sm text-slate-200 flex-1 truncate">{src} → {tgt}</span></div> })}</div></div>
+              <div><h4 className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">AI Insights</h4><div className="space-y-1.5">{allInsights.slice(0, 3).map(inx => <div key={inx.id} className="rounded-xl border border-white/[0.04] bg-white/[0.02] p-3"><p className="text-sm text-slate-300 leading-relaxed">{inx.text}</p></div>)}</div></div>
             </div>
           </motion.aside>
         )}
@@ -570,27 +635,27 @@ function GraphInside() {
 
       <div className="border-t border-white/[0.06] bg-slate-950 flex-shrink-0">
         <div className="flex flex-col sm:flex-row">
-          <div className="flex-1 border-b sm:border-b-0 sm:border-r border-white/[0.04] p-2.5">
-            <div className="flex items-center gap-1.5 mb-1.5">
-              <BoltIcon className="w-3 h-3 text-red-400" />
-              <h4 className="text-[9px] font-semibold text-slate-400 uppercase tracking-wider">Blast Radius & Propagation</h4>
+          <div className="flex-1 border-b sm:border-b-0 sm:border-r border-white/[0.04] p-3">
+            <div className="flex items-center gap-2 mb-2">
+              <BoltIcon className="w-5 h-5 text-red-400" />
+              <h4 className="text-sm font-bold text-slate-300">Blast Radius & Propagation</h4>
             </div>
-            <div className="flex gap-1.5 overflow-x-auto pb-1">
+            <div className="flex gap-2 overflow-x-auto pb-1">
               {propagationPaths.slice(0, 4).map(p => {
                 const src = initialNodes.find(n => n.id === p.from)?.data.label || p.from
                 const tgt = initialNodes.find(n => n.id === p.to)?.data.label || p.to
                 return (
-                  <div key={p.label} className="shrink-0 rounded border border-white/[0.06] bg-white/[0.03] p-1.5 min-w-[130px]">
-                    <div className="flex items-center gap-1 text-[8px] text-slate-300 mb-1">
-                      <span className="truncate">{src}</span>
-                      <svg className="w-2 h-2 text-slate-600 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" /></svg>
-                      <span className="truncate">{tgt}</span>
+                  <div key={p.label} className="shrink-0 rounded-lg border border-white/[0.06] bg-white/[0.03] p-2.5 min-w-[170px]">
+                    <div className="flex items-center gap-1.5 text-xs text-slate-200 mb-1.5">
+                      <span className="truncate font-medium">{src}</span>
+                      <svg className="w-3 h-3 text-slate-600 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" /></svg>
+                      <span className="truncate font-medium">{tgt}</span>
                     </div>
-                    <div className="flex items-center gap-1">
-                      <div className="flex-1 h-1 rounded-full bg-white/[0.06] overflow-hidden">
+                    <div className="flex items-center gap-2">
+                      <div className="flex-1 h-2 rounded-full bg-white/[0.06] overflow-hidden">
                         <div className="h-full rounded-full" style={{ width: `${p.risk}%`, backgroundColor: p.risk > 70 ? '#ef4444' : p.risk > 30 ? '#f59e0b' : '#22c55e' }} />
                       </div>
-                      <span className={`text-[8px] font-semibold ${p.risk > 70 ? 'text-red-400' : p.risk > 30 ? 'text-amber-400' : 'text-emerald-400'}`}>{p.risk}%</span>
+                      <span className={`text-xs font-bold ${p.risk > 70 ? 'text-red-400' : p.risk > 30 ? 'text-amber-400' : 'text-emerald-400'}`}>{p.risk}%</span>
                     </div>
                   </div>
                 )
@@ -598,15 +663,15 @@ function GraphInside() {
             </div>
           </div>
 
-          <div className="flex-shrink-0 p-2.5 min-w-[200px]">
-            <div className="flex items-center gap-1.5 mb-1.5">
-              <svg className="w-3 h-3 text-emerald-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><path strokeLinecap="round" strokeLinejoin="round" d="M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v6.75C7.5 20.496 6.996 21 6.375 21h-2.25A1.125 1.125 0 013 19.875v-6.75zM9.75 8.625c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125v11.25c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V8.625zM16.5 4.125c0-.621.504-1.125 1.125-1.125h2.25C20.496 3 21 3.504 21 4.125v15.75c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V4.125z" /></svg>
-              <h4 className="text-[9px] font-semibold text-slate-400 uppercase tracking-wider">Dependency Stats</h4>
+          <div className="flex-shrink-0 p-3 min-w-[260px]">
+            <div className="flex items-center gap-2 mb-2">
+              <svg className="w-5 h-5 text-emerald-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><path strokeLinecap="round" strokeLinejoin="round" d="M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v6.75C7.5 20.496 6.996 21 6.375 21h-2.25A1.125 1.125 0 013 19.875v-6.75zM9.75 8.625c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125v11.25c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V8.625zM16.5 4.125c0-.621.504-1.125 1.125-1.125h2.25C20.496 3 21 3.504 21 4.125v15.75c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V4.125z" /></svg>
+              <h4 className="text-sm font-bold text-slate-300">Dependency Statistics</h4>
             </div>
-            <div className="grid grid-cols-3 gap-2">
-              <div className="text-center"><div className="text-[11px] font-bold text-white">{dependencies.length}</div><div className="text-[7px] text-slate-600">Total</div></div>
-              <div className="text-center"><div className="text-[11px] font-bold text-red-400">{dependencies.filter(d => d.risk === 'high').length}</div><div className="text-[7px] text-slate-600">Critical</div></div>
-              <div className="text-center"><div className="text-[11px] font-bold text-emerald-400">{dependencies.filter(d => d.status === 'healthy').length}</div><div className="text-[7px] text-slate-600">Healthy</div></div>
+            <div className="flex gap-3">
+              <div className="flex-1 rounded-lg border border-white/[0.06] bg-white/[0.03] p-2 text-center"><div className="text-lg font-bold text-white">{dependencies.length}</div><div className="text-xs text-slate-500">Total Deps</div></div>
+              <div className="flex-1 rounded-lg border border-red-500/20 bg-red-500/[0.04] p-2 text-center"><div className="text-lg font-bold text-red-400">{dependencies.filter(d => d.risk === 'high').length}</div><div className="text-xs text-slate-500">Critical</div></div>
+              <div className="flex-1 rounded-lg border border-emerald-500/20 bg-emerald-500/[0.04] p-2 text-center"><div className="text-lg font-bold text-emerald-400">{dependencies.filter(d => d.status === 'healthy').length}</div><div className="text-xs text-slate-500">Healthy</div></div>
             </div>
           </div>
         </div>
@@ -684,50 +749,50 @@ export default function KnowledgeGraph() {
       </div>
 
       {/* === RISK HEAT MAP === */}
-      <div className="rounded-xl border border-slate-800 bg-slate-900/60 p-4 mt-4">
-        <div className="flex items-center gap-2 mb-4">
-          <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-gradient-to-br from-red-500/20 to-orange-500/20">
-            <svg className="h-3.5 w-3.5 text-red-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+      <div className="rounded-xl border border-slate-800 bg-slate-900/60 p-5 mt-4">
+        <div className="flex items-center gap-3 mb-5">
+          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-red-500/20 to-orange-500/20 border border-red-500/20">
+            <svg className="h-5 w-5 text-red-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
               <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" />
             </svg>
           </div>
-          <h2 className="text-sm font-bold text-white">Real-Time Risk Heat Map</h2>
+          <h2 className="text-lg font-bold text-white">Real-Time Risk Heat Map</h2>
           <div className="flex-1" />
-          <span className="rounded-full bg-red-500/10 text-red-400 border border-red-500/20 px-2 py-0.5 text-[8px] font-mono font-bold">3 CRITICAL</span>
+          <span className="rounded-full bg-red-500/15 text-red-400 border border-red-500/25 px-3 py-1 text-xs font-mono font-bold">3 CRITICAL</span>
         </div>
-        <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
           {[
             { service: 'Payment Gateway', risk: 92, impact: '$2.1M', status: 'Degraded', color: 'from-red-500/20 to-red-500/5 border-red-500/30' },
             { service: 'Billing Service', risk: 85, impact: '$890K', status: 'At Risk', color: 'from-orange-500/20 to-orange-500/5 border-orange-500/30' },
             { service: 'Auth Service', risk: 78, impact: '$420K', status: 'Warning', color: 'from-amber-500/20 to-amber-500/5 border-amber-500/30' },
-            { service: 'User Dashboard', risk: 45, impact: '$120K', status: 'Stable', color: 'from-emerald-500/10 to-emerald-500/5 border-emerald-500/20' },
-            { service: 'Notification Bus', risk: 32, impact: '$60K', status: 'Healthy', color: 'from-emerald-500/10 to-emerald-500/5 border-emerald-500/20' },
-            { service: 'Analytics Engine', risk: 28, impact: '$40K', status: 'Healthy', color: 'from-emerald-500/10 to-emerald-500/5 border-emerald-500/20' },
-          ].map((s, i) => (
-            <div key={s.service} className={`rounded-lg border bg-gradient-to-br ${s.color} p-3 relative overflow-hidden group cursor-pointer hover:scale-[1.02] transition-transform`}>
-              <div className="flex items-center justify-between mb-2">
-                <span className="text-[9px] font-semibold text-white">{s.service}</span>
-                <span className={`text-[8px] font-mono font-bold px-1.5 py-0.5 rounded ${
-                  s.status === 'Degraded' ? 'bg-red-500/20 text-red-400' : 
-                  s.status === 'At Risk' ? 'bg-orange-500/20 text-orange-400' :
-                  s.status === 'Warning' ? 'bg-amber-500/20 text-amber-400' : 'bg-emerald-500/20 text-emerald-400'
+            { service: 'User Dashboard', risk: 45, impact: '$120K', status: 'Stable', color: 'from-emerald-500/12 to-emerald-500/5 border-emerald-500/20' },
+            { service: 'Notification Bus', risk: 32, impact: '$60K', status: 'Healthy', color: 'from-emerald-500/12 to-emerald-500/5 border-emerald-500/20' },
+            { service: 'Analytics Engine', risk: 28, impact: '$40K', status: 'Healthy', color: 'from-emerald-500/12 to-emerald-500/5 border-emerald-500/20' },
+          ].map((s) => (
+            <div key={s.service} className={`rounded-xl border bg-gradient-to-br ${s.color} p-4 relative overflow-hidden group cursor-pointer hover:scale-[1.03] transition-transform`}>
+              <div className="flex items-center justify-between mb-3">
+                <span className="text-sm font-bold text-white">{s.service}</span>
+                <span className={`text-xs font-mono font-bold px-2 py-1 rounded-lg ${
+                  s.status === 'Degraded' ? 'bg-red-500/20 text-red-400 border border-red-500/20' : 
+                  s.status === 'At Risk' ? 'bg-orange-500/20 text-orange-400 border border-orange-500/20' :
+                  s.status === 'Warning' ? 'bg-amber-500/20 text-amber-400 border border-amber-500/20' : 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/20'
                 }`}>{s.status}</span>
               </div>
-              <div className="space-y-1">
-                <div className="flex justify-between text-[8px]">
-                  <span className="text-slate-600">Risk Score</span>
+              <div className="space-y-2">
+                <div className="flex justify-between text-sm">
+                  <span className="text-slate-500">Risk Score</span>
                   <span className={`font-mono font-bold ${
                     s.risk >= 80 ? 'text-red-400' : s.risk >= 60 ? 'text-amber-400' : 'text-emerald-400'
                   }`}>{s.risk}%</span>
                 </div>
-                <div className="h-1.5 rounded-full bg-white/[0.06] overflow-hidden">
+                <div className="h-2 rounded-full bg-white/[0.06] overflow-hidden">
                   <div className={`h-full rounded-full transition-all ${
                     s.risk >= 80 ? 'bg-red-500' : s.risk >= 60 ? 'bg-amber-500' : 'bg-emerald-500'
                   }`} style={{width: `${s.risk}%`}} />
                 </div>
-                <div className="flex justify-between text-[8px]">
-                  <span className="text-slate-600">Revenue Impact</span>
-                  <span className="text-red-300 font-mono text-[8px]">{s.impact}</span>
+                <div className="flex justify-between text-sm">
+                  <span className="text-slate-500">Revenue at Risk</span>
+                  <span className="text-red-300 font-mono font-bold">{s.impact}</span>
                 </div>
               </div>
             </div>
@@ -736,18 +801,18 @@ export default function KnowledgeGraph() {
       </div>
 
       {/* === BLAST RADIUS SIMULATION === */}
-      <div className="rounded-xl border border-slate-800 bg-slate-900/60 p-4 mt-4">
-        <div className="flex items-center gap-2 mb-3">
-          <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-gradient-to-br from-red-500/20 to-rose-500/20">
-            <svg className="h-3.5 w-3.5 text-red-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+      <div className="rounded-xl border border-slate-800 bg-slate-900/60 p-5 mt-4">
+        <div className="flex items-center gap-3 mb-4">
+          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-red-500/20 to-rose-500/20 border border-red-500/20">
+            <svg className="h-5 w-5 text-red-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
               <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m9-.75a9 9 0 11-18 0 9 9 0 0118 0zm-9 3.75h.008v.008H12v-.008z" />
             </svg>
           </div>
-          <h2 className="text-sm font-bold text-white">Blast Radius Simulation</h2>
-          <span className="rounded-full bg-rose-500/10 text-rose-400 border border-rose-500/20 px-2 py-0.5 text-[8px] font-mono font-bold">SIMULATION</span>
+          <h2 className="text-lg font-bold text-white">Blast Radius Simulation</h2>
+          <span className="rounded-full bg-rose-500/15 text-rose-400 border border-rose-500/25 px-3 py-1 text-xs font-mono font-bold">SIMULATION</span>
         </div>
-        <p className="text-[10px] text-slate-400 mb-3">If Payment Gateway fails, the following services would be impacted within 90 seconds:</p>
-        <div className="grid gap-1.5">
+        <p className="text-sm text-slate-400 mb-4">If Payment Gateway fails, the following services would be impacted within 90 seconds:</p>
+        <div className="grid gap-2">
           {[
             { service: 'Payment Gateway', level: 0, impact: 'Failed', time: 'T+0s', services: 0 },
             { service: 'Billing Service', level: 1, impact: 'Degraded', time: 'T+12s', services: 3 },
@@ -756,28 +821,28 @@ export default function KnowledgeGraph() {
             { service: 'User Dashboard', level: 3, impact: 'Reduced', time: 'T+72s', services: 1 },
             { service: 'Analytics Engine', level: 3, impact: 'Reduced', time: 'T+90s', services: 1 },
           ].map((s, i) => (
-            <div key={s.service} className={`flex items-center gap-2 rounded-lg border ${
-              s.impact === 'Failed' ? 'border-red-500/30 bg-red-500/[0.04]' : 
-              s.impact === 'Degraded' ? 'border-orange-500/25 bg-orange-500/[0.03]' :
-              s.impact === 'Warning' ? 'border-amber-500/20 bg-amber-500/[0.02]' : 'border-white/[0.06] bg-white/[0.02]'
-            } p-2`}>
-              <div className="flex h-5 w-5 items-center justify-center rounded-full bg-slate-800 text-[7px] font-mono text-slate-500 font-bold">{i + 1}</div>
+            <div key={s.service} className={`flex items-center gap-3 rounded-xl border ${
+              s.impact === 'Failed' ? 'border-red-500/30 bg-red-500/[0.05]' : 
+              s.impact === 'Degraded' ? 'border-orange-500/25 bg-orange-500/[0.04]' :
+              s.impact === 'Warning' ? 'border-amber-500/20 bg-amber-500/[0.03]' : 'border-white/[0.06] bg-white/[0.02]'
+            } p-3`}>
+              <div className="flex h-8 w-8 items-center justify-center rounded-full bg-slate-800 text-xs font-mono text-slate-400 font-bold border border-white/[0.06]">{i + 1}</div>
               <div className="flex-1">
-                <div className="flex items-center gap-2">
-                  <span className="text-[9px] font-semibold text-white">{s.service}</span>
-                  <span className={`text-[7px] font-mono px-1 py-0.5 rounded ${
+                <div className="flex items-center gap-2 mb-1">
+                  <span className="text-sm font-bold text-white">{s.service}</span>
+                  <span className={`text-xs font-mono px-2 py-0.5 rounded ${
                     s.impact === 'Failed' ? 'bg-red-500/20 text-red-400' :
                     s.impact === 'Degraded' ? 'bg-orange-500/20 text-orange-400' :
-                    s.impact === 'Warning' ? 'bg-amber-500/20 text-amber-400' : 'bg-slate-500/20 text-slate-400'
+                    s.impact === 'Warning' ? 'bg-amber-500/20 text-amber-400' : 'bg-slate-500/20 text-slate-300'
                   }`}>{s.impact}</span>
                 </div>
-                <div className="flex gap-3 text-[7px] text-slate-600 mt-0.5">
+                <div className="flex gap-4 text-xs text-slate-500">
                   <span>Cascade Level {s.level}</span>
                   <span>{s.time}</span>
                   <span>{s.services} downstream services</span>
                 </div>
               </div>
-              <div className="h-2 w-20 rounded-full bg-white/[0.06] overflow-hidden">
+              <div className="h-3 w-28 rounded-full bg-white/[0.06] overflow-hidden">
                 <div className={`h-full rounded-full transition-all ${
                   s.level === 0 ? 'bg-red-500 w-full' : 
                   s.level === 1 ? 'bg-orange-500 w-3/4' :
