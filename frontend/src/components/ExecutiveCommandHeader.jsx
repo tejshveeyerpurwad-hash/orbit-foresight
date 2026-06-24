@@ -24,7 +24,11 @@ const pageStages = {
   '/time-machine': { stage: 'Historical Pattern Match', eta: '4 min', mission: 'Confirm Recurrence Pattern' },
   '/knowledge-graph': { stage: 'Dependency Impact Analysis', eta: '6 min', mission: 'Map Blast Radius' },
   '/cto-report': { stage: 'Business Impact Assessment', eta: '3 min', mission: 'Quantify Executive Risk' },
+  '/ai-planner': { stage: 'AI Strategy Planning', eta: '10 min', mission: 'Generate Remediation Strategy' },
   '/execution-planner': { stage: 'Execution Planning', eta: '12 min', mission: 'Deploy Remediation Plan' },
+  '/analytics': { stage: 'Outcome Measurement', eta: '—', mission: 'Validate Business Impact' },
+  '/impact-analysis': { stage: 'Boardroom Review', eta: '5 min', mission: 'Assess Cross-Service Impact' },
+  '/deployment-simulator': { stage: 'Mission Control', eta: '15 min', mission: 'Orchestrate Safe Deployment' },
 }
 
 export default function ExecutiveCommandHeader() {

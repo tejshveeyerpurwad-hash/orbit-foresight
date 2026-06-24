@@ -600,7 +600,8 @@ export default function AIEngineeringPlanner() {
                 </svg>
               </div>
               <div>
-                <h1 className="text-xl font-bold text-white mb-1">AI Engineering Planner</h1>
+                <h1 className="text-xl font-bold text-white mb-1">AI Strategy Room</h1>
+                <p className="text-[9px] text-violet-400 font-medium tracking-wider uppercase mb-1">Executive Remediation Planning Engine</p>
                 <p className="text-sm text-slate-400 max-w-md">Describe a feature, migration, or initiative and get a complete engineering plan with sprint breakdowns, risk analysis, and team allocation.</p>
               </div>
               <form onSubmit={e => { e.preventDefault(); generate(input) }} className="w-full max-w-lg">
@@ -722,9 +723,10 @@ export default function AIEngineeringPlanner() {
                   </div>
                   <div className="min-w-0">
                     <div className="flex items-center gap-2 mb-0.5">
-                      <h1 className="text-xl font-bold tracking-tight text-white">STRATEGIC PLANNING</h1>
+                      <h1 className="text-xl font-bold tracking-tight text-white">AI STRATEGY ROOM</h1>
                       <span className="rounded-full bg-violet-500/10 border border-violet-500/20 px-1.5 py-0.5 text-[8px] font-semibold text-violet-400 tracking-wider uppercase">Pro</span>
                     </div>
+                    <div className="text-[9px] text-violet-400 font-medium mb-0.5">Executive Remediation Planning Engine</div>
                     <div className="flex items-center gap-2 text-[10px] text-slate-600">
                       <span>Plan for &quot;{input}&quot;</span>
                       <span className="text-slate-700">&middot;</span>
@@ -829,14 +831,95 @@ export default function AIEngineeringPlanner() {
                 ))}
               </motion.div>
 
+              {/* === EXECUTIVE RECOMMENDATION === */}
+              <motion.div variants={item} className="rounded-xl border border-violet-500/20 bg-gradient-to-br from-violet-500/[0.04] to-purple-500/[0.02] p-4">
+                <div className="flex items-center gap-2 mb-4">
+                  <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-gradient-to-br from-violet-600 to-purple-600 shadow-lg shadow-violet-500/25">
+                    <svg className="h-3.5 w-3.5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 13.5l10.5-11.25L12 10.5h8.25L9.75 21.75 12 13.5H3.75z" />
+                    </svg>
+                  </div>
+                  <h2 className="text-sm font-bold text-white">AI Executive Recommendation</h2>
+                  <div className="flex-1" />
+                  <span className="rounded-full bg-violet-500/10 text-violet-400 border border-violet-500/20 px-2 py-0.5 text-[8px] font-mono font-bold">AI POWERED</span>
+                </div>
+                <div className="grid gap-4 lg:grid-cols-[1fr_280px]">
+                  <div className="space-y-3">
+                    <div className="rounded-lg border border-violet-500/15 bg-violet-500/[0.04] p-3">
+                      <div className="flex items-center gap-2 mb-1.5">
+                        <svg className="h-4 w-4 text-violet-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                        <span className="text-xs font-semibold text-violet-300">Why AI Chose This Plan</span>
+                      </div>
+                      <p className="text-[11px] text-slate-400 leading-relaxed">Based on analysis of {plan.services.length} services with {plan.impact.riskScore}% risk score, AI recommends prioritizing circuit breaker implementation across payment and billing services. This reduces blast radius from {plan.impact.blastRadius} to 2 services and achieves 85% release confidence within 2 sprints.</p>
+                    </div>
+                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                      {[
+                        { label: 'Risk Reduction', value: plan.readiness.score >= 70 ? '82%' : plan.readiness.score >= 40 ? '65%' : '45%', color: 'text-green-400', desc: 'Projected improvement' },
+                        { label: 'Cost Impact', value: plan.readiness.score >= 70 ? '$340K' : '$180K', color: 'text-cyan-400', desc: 'Revenue protected' },
+                        { label: 'Time to Value', value: plan.impact.complexity === 'High' ? '4 weeks' : '2 weeks', color: 'text-amber-400', desc: 'Expected delivery' },
+                        { label: 'AI Confidence', value: `${plan.effort.confidence === 'High' ? 92 : plan.effort.confidence === 'Medium' ? 78 : 65}%`, color: 'text-violet-400', desc: 'Pattern match certainty' },
+                      ].map((s, i) => (
+                        <div key={s.label} className="rounded-lg border border-white/[0.06] bg-white/[0.02] p-2.5 text-center hover:border-violet-500/20 transition-all">
+                          <div className={`text-lg font-bold ${s.color}`}>{s.value}</div>
+                          <div className="text-[9px] text-slate-500 font-medium">{s.label}</div>
+                          <div className="text-[7px] text-slate-600 mt-0.5">{s.desc}</div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                  <div className="rounded-lg border border-emerald-500/15 bg-emerald-500/[0.03] p-3 flex flex-col items-center justify-center text-center">
+                    <svg className="h-8 w-8 text-emerald-400 mb-2" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    <div className="text-2xl font-bold text-emerald-400">{plan.readiness.score}%</div>
+                    <div className="text-[9px] font-mono text-emerald-400/80">Readiness Score</div>
+                    <div className="text-[7px] text-slate-600 mt-1 max-w-[140px]">AI evaluation of plan completeness and execution readiness</div>
+                  </div>
+                </div>
+              </motion.div>
+
+              {/* === COST VS BENEFIT === */}
+              <motion.div variants={item} className="rounded-xl border border-slate-800 bg-slate-900/60 p-4">
+                <div className="flex items-center gap-2 mb-4">
+                  <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-gradient-to-br from-amber-500/20 to-orange-500/20">
+                    <svg className="h-3.5 w-3.5 text-amber-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M12 6v12m-3-2.818l.879.659c1.171.879 3.07.879 4.242 0 1.172-.879 1.172-2.303 0-3.182C13.536 12.219 12.768 12 12 12c-.725 0-1.45-.22-2.003-.659-1.106-.879-1.106-2.303 0-3.182s2.9-.879 4.006 0l.415.33M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                  </div>
+                  <h2 className="text-sm font-bold text-white">Cost vs Benefit Analysis</h2>
+                  <span className="rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 px-2 py-0.5 text-[8px] font-mono font-bold">ROI OPTIMIZED</span>
+                </div>
+                <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+                  {[
+                    { label: 'Engineering Cost', value: `${plan.effort.engineeringHours}h`, cost: `${(plan.effort.engineeringHours * 150).toLocaleString()}`, icon: 'M12 6v12m-3-2.818l.879.659c1.171.879 3.07.879 4.242 0 1.172-.879 1.172-2.303 0-3.182C13.536 12.219 12.768 12 12 12c-.725 0-1.45-.22-2.003-.659-1.106-.879-1.106-2.303 0-3.182s2.9-.879 4.006 0l.415.33M21 12a9 9 0 11-18 0 9 9 0 0118 0z' },
+                    { label: 'Revenue Protected', value: '$340K', cost: 'Projected savings', icon: 'M3.75 13.5l10.5-11.25L12 10.5h8.25L9.75 21.75 12 13.5H3.75z' },
+                    { label: 'Risk Avoidance', value: '$180K', cost: 'Potential loss prevented', icon: 'M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z' },
+                    { label: 'Net ROI', value: `${plan.readiness.score >= 70 ? '285' : '150'}%`, cost: 'Return on investment', icon: 'M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z' },
+                  ].map((s, i) => (
+                    <div key={s.label} className="rounded-lg border border-white/[0.06] bg-white/[0.02] p-3 hover:border-amber-500/20 transition-all">
+                      <div className="flex items-center gap-2 mb-1.5">
+                        <svg className="h-3.5 w-3.5 text-amber-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                          <path strokeLinecap="round" strokeLinejoin="round" d={s.icon} />
+                        </svg>
+                        <span className="text-[9px] text-slate-500">{s.label}</span>
+                      </div>
+                      <div className="text-lg font-bold text-white">{s.value}</div>
+                      <div className="text-[8px] text-slate-600">{s.cost}</div>
+                    </div>
+                  ))}
+                </div>
+              </motion.div>
+
               <motion.div variants={item} className="rounded-xl border border-slate-800 bg-slate-900/60 p-4">
                 <div className="flex items-center gap-2 mb-4">
                   <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-violet-500/20 text-xs font-bold text-violet-400">
                     <svg className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
                       <path strokeLinecap="round" strokeLinejoin="round" d="M6.429 9.75L2.25 12l4.179 2.25m0-4.5l5.571 3 5.571-3m-11.142 0L2.25 7.5 12 2.25l9.75 5.25-4.179 2.25m0 0L21.75 12l-4.179 2.25m0 0l4.179 2.25L12 21.75 2.25 16.5l4.179-2.25m11.142 0l-5.571 3-5.571-3" />
-                    </svg>
-                  </div>
-                  <h2 className="text-sm font-semibold text-white">Architecture Generator</h2>
+                      </svg>
+                    </div>
+                    <h2 className="text-sm font-semibold text-white">Architecture Generator</h2>
                   <div className="flex-1" />
                   <span className="text-[9px] text-slate-600">{plan.services.length} services &middot; {plan.services.reduce((a, s) => a + s.files, 0)} files</span>
                 </div>

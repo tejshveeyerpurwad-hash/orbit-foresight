@@ -4,6 +4,9 @@ import Layout from '../components/Layout'
 import StatCard from '../components/StatCard'
 import StatusBadge from '../components/StatusBadge'
 import MetricCard from '../components/MetricCard'
+import PageHero from '../components/PageHero'
+import ExecutiveSummary from '../components/ExecutiveSummary'
+import AIRecommendations from '../components/AIRecommendations'
 
 const services = [
   { name: 'Payment Service', risk: 87, files: 12, teams: ['Payments'], pipelines: ['CI/CD Payments'], status: 'critical', deps: ['Billing Service', 'Auth Service'], db: 'payment_db' },
@@ -222,6 +225,32 @@ export default function ChangeImpactAnalysis() {
   return (
     <Layout>
       <motion.div variants={container} initial="hidden" animate="show" className="space-y-3">
+        <PageHero
+          title="Boardroom Decision Center"
+          subtitle="Executive impact analysis quantifying business risk, revenue exposure, and remediation ROI across all services."
+          impact="$2.8M"
+          impactLabel="Revenue at Risk"
+          confidence={92}
+          actionLabel="View CTO Report"
+          actionTo="/cto-report"
+        />
+
+        <ExecutiveSummary
+          pageTitle="Boardroom Impact Overview"
+          metrics={{
+            revenueProtected: '$2.4M',
+            costAvoided: '$840K', 
+            downtimePrevented: '47min',
+            incidentsAnalyzed: 128,
+            aiConfidence: 94,
+            criticalRisks: 3,
+            servicesMonitored: 47
+          }}
+          confidence={94}
+        />
+
+        <AIRecommendations />
+
         <motion.div variants={item}>
           <h1 className="text-2xl font-bold tracking-tight sm:text-3xl text-white">Change Impact Analysis</h1>
           <p className="mt-1 text-sm text-slate-500">Service-level risk propagation and blast radius visualization</p>

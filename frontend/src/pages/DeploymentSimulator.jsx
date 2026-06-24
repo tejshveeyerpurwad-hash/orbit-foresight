@@ -3,6 +3,7 @@ import { motion } from 'framer-motion'
 import Layout from '../components/Layout'
 import StatCard from '../components/StatCard'
 import StatusBadge from '../components/StatusBadge'
+import PageHero from '../components/PageHero'
 
 const pipelineStages = [
   { id: 'build', label: 'Build', status: 'success', time: '32s', detail: 'Docker image v3.2.1 compiled', artifacts: '12 MB' },
@@ -273,6 +274,46 @@ export default function DeploymentSimulator() {
   return (
     <Layout>
       <motion.div variants={container} initial="hidden" animate="show" className="space-y-3">
+
+        <PageHero
+          title="Mission Control Center"
+          subtitle="Live orchestration of deployment pipelines, canary analysis, and automated remediation — real-time mission operations."
+          impact="97.2"
+          impactLabel="Launch Readiness %"
+          confidence={94}
+          actionLabel="View Execution Plan"
+          actionTo="/execution-planner"
+        />
+
+        {/* === MISSION STATUS BAR === */}
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 mb-4">
+          {[
+            { label: 'Launch Readiness', value: '97.2%', color: 'text-emerald-400', bg: 'from-emerald-500/10 to-emerald-500/5', icon: 'M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z' },
+            { label: 'Deployment Countdown', value: 'T-12:45', color: 'text-cyan-400', bg: 'from-cyan-500/10 to-cyan-500/5', icon: 'M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z' },
+            { label: 'Active Pipelines', value: '3 running', color: 'text-amber-400', bg: 'from-amber-500/10 to-amber-500/5', icon: 'M3.75 12h16.5m-16.5 3.75h16.5M3.75 19.5h16.5M5.625 4.5h12.75a1.875 1.875 0 010 3.75H5.625a1.875 1.875 0 010-3.75z' },
+            { label: 'Completion Probability', value: '94.2%', color: 'text-violet-400', bg: 'from-violet-500/10 to-violet-500/5', icon: 'M12 6v12m-3-2.818l.879.659c1.171.879 3.07.879 4.242 0 1.172-.879 1.172-2.303 0-3.182C13.536 12.219 12.768 12 12 12c-.725 0-1.45-.22-2.003-.659-1.106-.879-1.106-2.303 0-3.182s2.9-.879 4.006 0l.415.33M21 12a9 9 0 11-18 0 9 9 0 0118 0z' },
+          ].map((s, i) => (
+            <div key={s.label} className={`rounded-lg border border-white/[0.06] bg-gradient-to-br ${s.bg} p-3`}>
+              <div className="flex items-center gap-1.5 mb-1">
+                <svg className="h-3 w-3 text-slate-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d={s.icon} />
+                </svg>
+                <span className="text-[9px] font-mono text-slate-500">{s.label}</span>
+              </div>
+              <div className={`text-lg font-bold ${s.color}`}>{s.value}</div>
+            </div>
+          ))}
+        </div>
+
+        {/* === LIVE STATUS BANNER === */}
+        <div className="rounded-lg border border-emerald-500/15 bg-emerald-500/[0.03] p-2 mb-4 flex items-center gap-2">
+          <span className="relative flex h-2 w-2">
+            <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-500 opacity-75" />
+            <span className="relative inline-flex h-2 w-2 rounded-full bg-emerald-500" />
+          </span>
+          <span className="text-[9px] font-mono text-emerald-400 font-bold tracking-widest uppercase">Mission Control Active</span>
+          <span className="text-[8px] text-slate-600">— Monitoring 5 pipelines across 3 environments</span>
+        </div>
 
         {/* ===== SECTION 1: SIMULATOR HERO ===== */}
         <motion.div variants={item} className="rounded-xl border border-white/[0.06] bg-slate-900/50 p-4">

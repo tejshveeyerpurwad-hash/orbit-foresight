@@ -665,8 +665,8 @@ export default function KnowledgeGraph() {
     <Layout>
       <div className="px-2 sm:px-3 pt-2 space-y-2">
         <PageHero
-          title="Live Enterprise Digital Twin"
-          subtitle="Real-time service topology with animated dependency tracing, health monitoring, and blast radius simulation across 10 services, 8 dependencies, and 47 monitored endpoints."
+          title="Digital Twin — Service Dependency Map"
+          subtitle="Live interactive model of your entire infrastructure topology showing real-time risk propagation, blast radius, and dependency health across all 47 services."
           impact="$340K"
           impactLabel="Blast Radius Exposure"
           confidence={92}
@@ -682,6 +682,113 @@ export default function KnowledgeGraph() {
           </div>
         </div>
       </div>
+
+      {/* === RISK HEAT MAP === */}
+      <div className="rounded-xl border border-slate-800 bg-slate-900/60 p-4 mt-4">
+        <div className="flex items-center gap-2 mb-4">
+          <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-gradient-to-br from-red-500/20 to-orange-500/20">
+            <svg className="h-3.5 w-3.5 text-red-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" />
+            </svg>
+          </div>
+          <h2 className="text-sm font-bold text-white">Real-Time Risk Heat Map</h2>
+          <div className="flex-1" />
+          <span className="rounded-full bg-red-500/10 text-red-400 border border-red-500/20 px-2 py-0.5 text-[8px] font-mono font-bold">3 CRITICAL</span>
+        </div>
+        <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
+          {[
+            { service: 'Payment Gateway', risk: 92, impact: '$2.1M', status: 'Degraded', color: 'from-red-500/20 to-red-500/5 border-red-500/30' },
+            { service: 'Billing Service', risk: 85, impact: '$890K', status: 'At Risk', color: 'from-orange-500/20 to-orange-500/5 border-orange-500/30' },
+            { service: 'Auth Service', risk: 78, impact: '$420K', status: 'Warning', color: 'from-amber-500/20 to-amber-500/5 border-amber-500/30' },
+            { service: 'User Dashboard', risk: 45, impact: '$120K', status: 'Stable', color: 'from-emerald-500/10 to-emerald-500/5 border-emerald-500/20' },
+            { service: 'Notification Bus', risk: 32, impact: '$60K', status: 'Healthy', color: 'from-emerald-500/10 to-emerald-500/5 border-emerald-500/20' },
+            { service: 'Analytics Engine', risk: 28, impact: '$40K', status: 'Healthy', color: 'from-emerald-500/10 to-emerald-500/5 border-emerald-500/20' },
+          ].map((s, i) => (
+            <div key={s.service} className={`rounded-lg border bg-gradient-to-br ${s.color} p-3 relative overflow-hidden group cursor-pointer hover:scale-[1.02] transition-transform`}>
+              <div className="flex items-center justify-between mb-2">
+                <span className="text-[9px] font-semibold text-white">{s.service}</span>
+                <span className={`text-[8px] font-mono font-bold px-1.5 py-0.5 rounded ${
+                  s.status === 'Degraded' ? 'bg-red-500/20 text-red-400' : 
+                  s.status === 'At Risk' ? 'bg-orange-500/20 text-orange-400' :
+                  s.status === 'Warning' ? 'bg-amber-500/20 text-amber-400' : 'bg-emerald-500/20 text-emerald-400'
+                }`}>{s.status}</span>
+              </div>
+              <div className="space-y-1">
+                <div className="flex justify-between text-[8px]">
+                  <span className="text-slate-600">Risk Score</span>
+                  <span className={`font-mono font-bold ${
+                    s.risk >= 80 ? 'text-red-400' : s.risk >= 60 ? 'text-amber-400' : 'text-emerald-400'
+                  }`}>{s.risk}%</span>
+                </div>
+                <div className="h-1.5 rounded-full bg-white/[0.06] overflow-hidden">
+                  <div className={`h-full rounded-full transition-all ${
+                    s.risk >= 80 ? 'bg-red-500' : s.risk >= 60 ? 'bg-amber-500' : 'bg-emerald-500'
+                  }`} style={{width: `${s.risk}%`}} />
+                </div>
+                <div className="flex justify-between text-[8px]">
+                  <span className="text-slate-600">Revenue Impact</span>
+                  <span className="text-red-300 font-mono text-[8px]">{s.impact}</span>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* === BLAST RADIUS SIMULATION === */}
+      <div className="rounded-xl border border-slate-800 bg-slate-900/60 p-4 mt-4">
+        <div className="flex items-center gap-2 mb-3">
+          <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-gradient-to-br from-red-500/20 to-rose-500/20">
+            <svg className="h-3.5 w-3.5 text-red-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m9-.75a9 9 0 11-18 0 9 9 0 0118 0zm-9 3.75h.008v.008H12v-.008z" />
+            </svg>
+          </div>
+          <h2 className="text-sm font-bold text-white">Blast Radius Simulation</h2>
+          <span className="rounded-full bg-rose-500/10 text-rose-400 border border-rose-500/20 px-2 py-0.5 text-[8px] font-mono font-bold">SIMULATION</span>
+        </div>
+        <p className="text-[10px] text-slate-400 mb-3">If Payment Gateway fails, the following services would be impacted within 90 seconds:</p>
+        <div className="grid gap-1.5">
+          {[
+            { service: 'Payment Gateway', level: 0, impact: 'Failed', time: 'T+0s', services: 0 },
+            { service: 'Billing Service', level: 1, impact: 'Degraded', time: 'T+12s', services: 3 },
+            { service: 'Invoice Engine', level: 1, impact: 'Degraded', time: 'T+14s', services: 2 },
+            { service: 'Notification Bus', level: 2, impact: 'Warning', time: 'T+45s', services: 5 },
+            { service: 'User Dashboard', level: 3, impact: 'Reduced', time: 'T+72s', services: 1 },
+            { service: 'Analytics Engine', level: 3, impact: 'Reduced', time: 'T+90s', services: 1 },
+          ].map((s, i) => (
+            <div key={s.service} className={`flex items-center gap-2 rounded-lg border ${
+              s.impact === 'Failed' ? 'border-red-500/30 bg-red-500/[0.04]' : 
+              s.impact === 'Degraded' ? 'border-orange-500/25 bg-orange-500/[0.03]' :
+              s.impact === 'Warning' ? 'border-amber-500/20 bg-amber-500/[0.02]' : 'border-white/[0.06] bg-white/[0.02]'
+            } p-2`}>
+              <div className="flex h-5 w-5 items-center justify-center rounded-full bg-slate-800 text-[7px] font-mono text-slate-500 font-bold">{i + 1}</div>
+              <div className="flex-1">
+                <div className="flex items-center gap-2">
+                  <span className="text-[9px] font-semibold text-white">{s.service}</span>
+                  <span className={`text-[7px] font-mono px-1 py-0.5 rounded ${
+                    s.impact === 'Failed' ? 'bg-red-500/20 text-red-400' :
+                    s.impact === 'Degraded' ? 'bg-orange-500/20 text-orange-400' :
+                    s.impact === 'Warning' ? 'bg-amber-500/20 text-amber-400' : 'bg-slate-500/20 text-slate-400'
+                  }`}>{s.impact}</span>
+                </div>
+                <div className="flex gap-3 text-[7px] text-slate-600 mt-0.5">
+                  <span>Cascade Level {s.level}</span>
+                  <span>{s.time}</span>
+                  <span>{s.services} downstream services</span>
+                </div>
+              </div>
+              <div className="h-2 w-20 rounded-full bg-white/[0.06] overflow-hidden">
+                <div className={`h-full rounded-full transition-all ${
+                  s.level === 0 ? 'bg-red-500 w-full' : 
+                  s.level === 1 ? 'bg-orange-500 w-3/4' :
+                  s.level === 2 ? 'bg-amber-500 w-1/2' : 'bg-slate-500 w-1/4'
+                }`} />
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+
       <div className="px-2 sm:px-4 pb-2">
         <NarrativeCTA currentPage="/knowledge-graph" confidence={92} impact="$340K blast radius exposure" />
       </div>

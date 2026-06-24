@@ -366,7 +366,35 @@ export default function Analytics() {
     <Layout>
       <motion.div variants={container} initial="hidden" animate="show" className="space-y-3 overflow-x-hidden">
 
-        <PageHero title="Platform Analytics & AI Performance Center" subtitle="Real-time observability across 47 services — incident trends, deployment success rates, cost impact analysis, and predictive forecasting." impact="97.2" impactLabel="Uptime % (30d)" confidence={94} />
+        <PageHero
+          title="Platform Analytics & AI Performance Center"
+          subtitle="Executive measurement of AI accuracy, engineering velocity, incident prevention, and business outcomes."
+          impact="97.2"
+          impactLabel="Uptime % (30d)"
+          confidence={94}
+        />
+
+        {/* === EXECUTIVE KPI STRIP === */}
+        <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-6 gap-2 mb-4">
+          {[
+            { label: 'AI Accuracy', value: '94.2%', trend: '+2.1%', color: 'text-violet-400', up: true },
+            { label: 'Incidents Prevented', value: '128', trend: '+18', color: 'text-emerald-400', up: true },
+            { label: 'MTTR', value: '12min', trend: '-34%', color: 'text-cyan-400', up: true },
+            { label: 'ROI Realized', value: '$2.4M', trend: '+18%', color: 'text-amber-400', up: true },
+            { label: 'Prediction Accuracy', value: '91.7%', trend: '+3.4%', color: 'text-green-400', up: true },
+            { label: 'Services Monitored', value: '47', trend: '—', color: 'text-slate-400', up: false },
+          ].map((kpi, i) => (
+            <div key={kpi.label} className="rounded-lg border border-white/[0.06] bg-white/[0.02] p-2.5">
+              <p className="text-[8px] font-mono text-slate-600 uppercase tracking-wider">{kpi.label}</p>
+              <div className="flex items-baseline gap-1.5 mt-0.5">
+                <span className={`text-lg font-bold ${kpi.color}`}>{kpi.value}</span>
+                {kpi.trend !== '—' && (
+                  <span className={`text-[9px] font-mono font-bold ${kpi.up ? 'text-emerald-500' : 'text-red-500'}`}>{kpi.trend}</span>
+                )}
+              </div>
+            </div>
+          ))}
+        </div>
         <ExecutiveSummary />
 
         <motion.div variants={item} className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
