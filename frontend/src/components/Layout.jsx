@@ -218,9 +218,9 @@ const GLOBAL_STYLES = `
     backdrop-filter: blur(28px) saturate(200%);
     -webkit-backdrop-filter: blur(28px) saturate(200%);
     border-bottom: 1px solid var(--border);
-    box-shadow: 0 1px 0 rgba(255,255,255,0.03), 0 4px 32px -8px rgba(6,182,212,0.08), 0 0 60px -20px rgba(6,182,212,0.04);
+    box-shadow: 0 4px 32px -8px rgba(6,182,212,0.08);
   }
-  .of-light .nb-glass { box-shadow: 0 1px 0 rgba(0,0,0,0.05), 0 4px 32px -8px rgba(6,182,212,0.06); }
+  .of-light .nb-glass { box-shadow: 0 4px 32px -8px rgba(6,182,212,0.06); }
 
   .nb-nav-link {
     position: relative; display: flex; align-items: center; gap: 6px;
@@ -239,15 +239,12 @@ const GLOBAL_STYLES = `
     background: rgba(6,182,212,0.08); border-color: rgba(6,182,212,0.2);
     box-shadow: 0 0 20px -6px rgba(6,182,212,0.12), inset 0 0 20px -12px rgba(6,182,212,0.08);
   }
-  .nb-nav-link.nb-active::after {
-    content:''; position:absolute; bottom:-1px; left:15%; right:15%;
-    height:2px; border-radius:2px;
-    background: linear-gradient(90deg,transparent,#06b6d4,transparent);
-    box-shadow: 0 0 8px rgba(6,182,212,0.3);
-  }
+
   .of-light .nb-nav-link.nb-active { background: rgba(6,182,212,0.1); border-color: rgba(6,182,212,0.25); }
 
   .nb-sep { width:1px; height:20px; background: var(--border); flex-shrink:0; }
+  #main-nav { scrollbar-width: none; -ms-overflow-style: none; overflow-x: auto; }
+  #main-nav::-webkit-scrollbar { display: none; }
   .nb-icon-btn {
     position:relative; display:flex; align-items:center; justify-content:center;
     width:32px; height:32px; border-radius:9px;
@@ -962,9 +959,9 @@ export default function Layout({ children }) {
                         {active && (
                           <>
                             <motion.div layoutId="navbar-active-bg"
-                              className="absolute inset-0 rounded-[9px] nb-active-glow"
+                              className="absolute inset-0 rounded-[9px]"
+                              style={{ background:'rgba(6,182,212,0.06)' }}
                               transition={{ type:'spring', stiffness:380, damping:30 }} />
-                            <div className="absolute top-0 left-1/4 right-1/4 h-[1.5px] rounded-b bg-gradient-to-r from-transparent via-cyan-400/80 to-transparent nb-glitch" />
                           </>
                         )}
                       </Link>
